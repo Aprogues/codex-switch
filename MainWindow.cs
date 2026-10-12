@@ -760,13 +760,13 @@ internal sealed class MainWindow : Window
         if (_closing) return; _closing = true; _refreshTimer.Stop(); _clockTimer.Stop(); _lifetime.Cancel(); _loginCancellation?.Cancel();
         await _drives.DisposeAsync(); await _hardware.DisposeAsync(); await _sessions.DisposeAsync(); await _service.StopAsync(); await Task.WhenAll(_operations.ToArray()); _exit = true; _tray?.Dispose(); Application.Current.Shutdown();
     }
-    internal void CapturePreview(string path)
+    internal void CapturePreview(string path, double scale = 1)
     {
-        CaptureWindow(this, path);
+        CaptureWindow(this, path, scale);
     }
-    private static void CaptureWindow(Window window, string path)
+    private static void CaptureWindow(Window window, string path, double scale = 1)
     {
-        window.UpdateLayout(); var bitmap = new RenderTargetBitmap((int)window.ActualWidth, (int)window.ActualHeight, 96, 96, PixelFormats.Pbgra32); bitmap.Render(window);
+        window.UpdateLayout(); var bitmap = new RenderTargetBitmap((int)Math.Round(window.ActualWidth * scale), (int)Math.Round(window.ActualHeight * scale), 96 * scale, 96 * scale, PixelFormats.Pbgra32); bitmap.Render(window);
         var encoder = new PngBitmapEncoder(); encoder.Frames.Add(BitmapFrame.Create(bitmap)); Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path))!); using var output = File.Create(path); encoder.Save(output);
     }
     private SolidColorBrush Color(string name) => _theme.Color(name);

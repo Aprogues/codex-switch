@@ -14,9 +14,25 @@
 
 A local Windows and macOS utility for switching between your Codex accounts, backing up the current login and handing local chats back to the desktop. Live quota gauges help you choose which account to use next.
 
-Independent community software; not affiliated with or endorsed by OpenAI. Source version **1.26.0**. English is the default; the app also supports Korean and preserves your saved language choice.
+Independent community software; not affiliated with or endorsed by OpenAI. Version **1.27.0**. English is the default; the app also supports Korean and preserves your saved language choice.
 
-![Codex Switch in everyday use, compact window with permanently redacted account names](docs/media/compact.gif)
+<p align="center">
+  <img src="docs/media/compact.gif" width="500" alt="Live compact Codex Switch dashboard, with permanently redacted account names and no cursor" />
+</p>
+
+## Download and run
+
+Download a complete self-contained package; **no source build or .NET installation is needed**. Codex desktop/CLI must already be installed.
+
+| Platform | Download | Start |
+| --- | --- | --- |
+| Windows x64 | [Windows ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.27.0/CodexSwitch-v1.27.0-win-x64.zip) | Extract the whole folder and run `CodexSwitch.exe` |
+| Mac Apple Silicon | [Apple Silicon ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.27.0/CodexSwitch-v1.27.0-osx-arm64.zip) | Extract, run `Install.command`, open **Codex Switch.app** |
+| Mac Intel | [Intel ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.27.0/CodexSwitch-v1.27.0-osx-x64.zip) | Extract, run `Install.command`, open **Codex Switch.app** |
+
+[Release notes](https://github.com/Gaebabi/codex-switch/releases/tag/v1.27.0) · [SHA-256 checksums](https://github.com/Gaebabi/codex-switch/releases/download/v1.27.0/SHA256SUMS.txt)
+
+Keep the complete Windows folder and Mac app bundle intact. Packages are unsigned; Mac installation applies local ad-hoc signing and macOS may require its normal opening/Keychain authorization flow. Developer ID notarization is not configured. Native Mac account switching and Intel-device acceptance remain separate from cross-build/package checks. [Mac setup](docs/MACOS.md)
 
 ## Account switching comes first
 
@@ -30,20 +46,20 @@ Switching intentionally restarts Codex and affects other CLI/IDE clients sharing
 
 ## One utility, three window sizes
 
-These are live recordings of the maintainer's everyday Windows session, captured with **Codex Switch 1.26**. Quota values are not staged. Account identity regions are permanently overwritten before a generic blurred placeholder is added; the original name pixels are absent from every exported frame.
+These are live recordings of the maintainer's everyday Windows session with **Codex Switch 1.27**, rendered directly from the running app at **2× resolution** into lossless PNG frames. No mouse pointer or external Codex cursor overlay is captured. Quota values are not staged. Account identity regions are permanently overwritten before a generic blurred placeholder is added.
 
 | Compact | Standard | Large |
 | --- | --- | --- |
-| [500 × 360](docs/media/compact.gif) | [699 × 543](docs/media/standard.gif) | [1007 × 708](docs/media/large.gif) |
+| [500 × 360 UI / 1000 × 720 GIF](docs/media/compact.gif) | [700 × 550 UI / 1400 × 1100 GIF](docs/media/standard.gif) | [1000 × 700 UI / 2000 × 1400 GIF](docs/media/large.gif) |
 
 <details><summary>Standard window</summary>
 
-![Live standard-size dashboard](docs/media/standard.gif)
+<p align="center"><img src="docs/media/standard.gif" width="700" alt="Live standard dashboard, lossless source frames and no cursor" /></p>
 
 </details>
 <details><summary>Large window</summary>
 
-![Live large-size dashboard](docs/media/large.gif)
+<p align="center"><img src="docs/media/large.gif" width="850" alt="Live large dashboard, lossless source frames and no cursor" /></p>
 
 </details>
 
@@ -51,7 +67,7 @@ The recordings show the live dashboard and responsive layout. They do not show a
 
 ## Build and run
 
-Install the **.NET 8 SDK or later** and Codex desktop/CLI. Packaged builds are self-contained. No GitHub Release or automatic updater is configured yet.
+For development, install the **.NET 8 SDK or later** and Codex desktop/CLI. For everyday use, [download the Release](#download-and-run); packages are self-contained. Automatic updates are not configured.
 
 ### Windows x64
 
@@ -100,6 +116,7 @@ Codex app-server and local desktop protocols can change. Missing/unsupported dat
 - [Conditional quota forecasts](docs/FORECAST.md)
 - [Mac setup](docs/MACOS.md)
 - [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
+- [Binary packages and release checks](docs/RELEASES.md)
 - [Media provenance and redaction](docs/media/README.md)
 - [Reddit post draft](docs/REDDIT.md)
 

@@ -30,6 +30,8 @@ internal static class Program
         public string? SwitchAccount { get; set; }
         public string? HardwareReportPath { get; set; }
         public string? HardwarePreviewDirectory { get; set; }
+        public string? RecordDirectory { get; set; }
+        public string? IconDirectory { get; set; }
         public static Options Parse(string[] arguments)
         {
             var options = new Options();
@@ -55,11 +57,15 @@ internal static class Program
                     case "--switch-account": options.SwitchAccount = value; break;
                     case "--verify-resources": options.HardwareReportPath = Path.GetFullPath(value); break;
                     case "--preview-resources": options.HardwarePreviewDirectory = Path.GetFullPath(value); break;
+                    case "--record-dashboard": options.RecordDirectory = Path.GetFullPath(value); break;
+                    case "--export-icons": options.IconDirectory = Path.GetFullPath(value); break;
                     default: throw new ArgumentException("알 수 없는 명령행 옵션입니다.");
                 }
             }
             if (options.PreviewPath != null && options.ReportPath == null) throw new ArgumentException("미리보기는 조회 검증 모드에서 사용할 수 있습니다.");
             if (options.SwitchAccount != null && options.ReportPath != null) throw new ArgumentException("조회 검증 모드에서 계정을 전환할 수 없습니다.");
+            if (options.RecordDirectory != null && (options.SwitchAccount != null || options.ReportPath != null || options.ExitExisting || options.IconDirectory != null || options.SelfTest))
+                throw new ArgumentException("Choose dashboard recording separately from other commands.");
             return options;
         }
     }
@@ -70,6 +76,7 @@ internal static class Program
         try
         {
             var options = Options.Parse(arguments);
+            if (options.IconDirectory != null) { AppIdentity.ExportIcons(options.IconDirectory); return 0; }
             if (options.SelfTest) return Diagnostics.RunSelfTests(options.ReportPath ?? Path.Combine(options.DataDirectory, "self-tests.json"));
             if (options.SessionReportPath != null) return Diagnostics.VerifySessionsAsync(options.CodexHome, options.SessionReportPath).GetAwaiter().GetResult();
             if (options.QueueReportPath != null) return QueueDiagnostics.VerifyAsync(options.CodexHome, options.QueueReportPath).GetAwaiter().GetResult();
@@ -92,6 +99,7 @@ internal static class Program
             }
             var namespaceKey = SecureFiles.Hash(WindowsIdentity.GetCurrent().User?.Value + "\n" + Path.GetFullPath(options.DataDirectory))[..24];
             if (options.ExitExisting) { RequestExisting(namespaceKey, "exit"); return 0; }
+            if (options.RecordDirectory != null) { RequestExisting(namespaceKey, "record:" + options.RecordDirectory); return 0; }
             using var mutex = new Mutex(true, "Local\\CodexAccountDesk-" + namespaceKey, out var firstInstance);
             if (!firstInstance) { RequestExisting(namespaceKey, options.SwitchAccount == null ? "activate" : "switch:" + options.SwitchAccount); return 0; }
             var app = new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
@@ -142,6 +150,7 @@ internal static class Program
                 if (command == "activate") await app.Dispatcher.InvokeAsync(window.BringToFront);
                 else if (command == "exit") await app.Dispatcher.InvokeAsync(window.ExitAsync).Task.Unwrap();
                 else if (command.StartsWith("switch:", StringComparison.Ordinal)) await app.Dispatcher.InvokeAsync(() => window.SwitchToAccountAsync(command[7..])).Task.Unwrap();
+                else if (command.StartsWith("record:", StringComparison.Ordinal)) await app.Dispatcher.InvokeAsync(() => DashboardRecording.RecordAsync(window, command[7..])).Task.Unwrap();
             }
         }
         catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { }

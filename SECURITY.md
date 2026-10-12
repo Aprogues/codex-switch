@@ -18,4 +18,6 @@ Use this repository's GitHub **Report a vulnerability** option when available. D
 
 ## Public media
 
-The public GIFs are recordings of the maintainer's live Windows utility, with account identity regions overwritten before a generic blurred placeholder is added. GIF frames contain no original account-name pixels in those regions, raw frame files, hidden text or account metadata. The raw recordings remain outside the public repository. Blur alone is not an adequate redaction method.
+The public GIFs are recordings of the maintainer's live Windows utility, with account identity regions overwritten before a generic blurred placeholder is added. GIF frames contain no original account-name pixels in those regions, raw frame files, hidden text or account metadata. The raw recordings remain outside the public Git tree and Release packages. Blur alone is not adequate redaction.
+
+`--record-dashboard` writes unredacted PNGs from the running app into the private directory you specify, at the current-user-only IPC boundary. These files are private even though the capture excludes external cursors. Run the redaction/export tool and inspect every frame before publishing. Never record directly into a tracked docs/assets directory.

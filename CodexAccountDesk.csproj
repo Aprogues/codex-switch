@@ -11,14 +11,14 @@
     <RootNamespace>CodexAccountDesk</RootNamespace>
     <Title>Codex Switch</Title>
     <Product>Codex Switch</Product>
-    <Version>1.26.0</Version>
+    <Version>1.27.0</Version>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets/app-icon.ico</ApplicationIcon>
     <DebugType>none</DebugType>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
   </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Assets/mark.png" LogicalName="CodexAccountDesk.Mark.png" />
+    <EmbeddedResource Include="Assets/mark.path" LogicalName="CodexAccountDesk.Mark.path" />
     <EmbeddedResource Include="Assets/app-icon.ico" LogicalName="CodexAccountDesk.AppIcon.ico" />
     <Compile Remove="macos/**/*.cs" />
     <EmbeddedResource Include="Burn0Tokens.css" />

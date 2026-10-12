@@ -141,11 +141,4 @@ internal sealed class MacMenuBar : IDisposable
 
 internal sealed record MenuBarState(string Title, bool Visible, bool Template, int MenuItems, double X, double Y, double Width, double Height);
 
-internal sealed class MenuBarSymbol : Control
-{
-    private static readonly Bitmap Mark = new(Avalonia.Platform.AssetLoader.Open(new Uri("avares://CodexSwitch/Assets/app-icon.png")));
-    public override void Render(DrawingContext context)
-    {
-        context.DrawImage(Mark, new Rect(Bounds.Size));
-    }
-}
+internal sealed class MenuBarSymbol : BrandMark { }

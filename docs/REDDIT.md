@@ -21,7 +21,7 @@ To help choose an account, it shows reported remaining quota, reset times, plan/
 
 **Live GIFs:** [compact](https://github.com/Gaebabi/codex-switch/blob/main/docs/media/compact.gif), [standard](https://github.com/Gaebabi/codex-switch/blob/main/docs/media/standard.gif), [large](https://github.com/Gaebabi/codex-switch/blob/main/docs/media/large.gif).
 
-The GIFs show my actual Windows dashboard with names permanently redacted. They show usage/layout, not a staged switching success. Switching really restarts Codex and can affect CLI/IDE tools sharing its login. Mac source is available; real Mac account switching/chat resumption and Intel-device acceptance still need native testing. Builds are from source, with no binary release yet.
+The GIFs show my actual Windows dashboard with names permanently redacted, recorded from lossless 2× app renders without a cursor overlay. They show usage/layout, not a staged switching success. Switching really restarts Codex and can affect CLI/IDE tools sharing its login. Download complete [Windows, Apple Silicon and Intel packages](https://github.com/Gaebabi/codex-switch/releases/tag/v1.27.0) without building source or installing .NET. Packages are unsigned; real Mac account switching/chat resumption and Intel-device acceptance still need native testing.
 
 Independent community software, not an official OpenAI product. Feedback on the switching flow and native Mac testing would be useful.
 

@@ -16,7 +16,7 @@ parser.add_argument("output", type=Path)
 parser.add_argument("--rects", required=True, help="JSON list of [left,top,right,bottom] rectangles covering ALL names and aliases")
 args = parser.parse_args()
 rects = json.loads(args.rects)
-paths = sorted(args.input.glob("*.jpg"))
+paths = sorted(args.input.glob("*.png")) or sorted(args.input.glob("*.jpg"))
 times = json.loads((args.input / "timing.json").read_text())
 if not paths or len(paths) != len(times) or len(rects) != 4:
     raise ValueError("Expected a four-account recording and one timestamp per frame")
@@ -59,4 +59,4 @@ frames[0].save(args.output.with_suffix(".png"))
 print(json.dumps({"file":args.output.name, "width":size[0], "height":size[1], "frames":count,
                   "durationMs":sum(durations), "sha256":hashlib.sha256(args.output.read_bytes()).hexdigest(),
                   "identityRectangles":rects, "identityPolicy":"source pixels replaced before generic placeholder blur",
-                  "source":"live Windows Codex Switch 1.26; no account switch performed"}))
+                  "source":"live Windows Codex Switch 1.27 lossless WPF visual; no account switch performed"}))

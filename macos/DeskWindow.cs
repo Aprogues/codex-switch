@@ -103,7 +103,7 @@ internal sealed class DeskWindow : Window
         var shell = new Grid { RowDefinitions = new RowDefinitions("34,36,*,28") };
         var titlebar = new Grid { Background = _theme.Brush("chrome"), ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto,Auto"), Margin = new Thickness(0) };
         var caption = _theme.Text("Codex Switch", 12); caption.VerticalAlignment = VerticalAlignment.Center;
-        var mark = new Border { Width = 18, Height = 18, Background = _theme.Brush("text"), OpacityMask = new ImageBrush(new Avalonia.Media.Imaging.Bitmap(Avalonia.Platform.AssetLoader.Open(new Uri("avares://CodexSwitch/Assets/app-icon.png")))) };
+        var mark = new BrandMark { Width = 18, Height = 18, Ink = _theme.Brush("text") };
         var captionContent = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, VerticalAlignment = VerticalAlignment.Center };
         captionContent.Children.Add(mark); captionContent.Children.Add(caption);
         var dragRegion = new Border { Background = Brushes.Transparent, Margin = new Thickness(84, 0, 0, 0), Child = captionContent };

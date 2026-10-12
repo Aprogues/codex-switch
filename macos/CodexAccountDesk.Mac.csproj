@@ -6,7 +6,7 @@
     <RootNamespace>CodexAccountDesk</RootNamespace>
     <Title>Codex Switch</Title>
     <Product>Codex Switch</Product>
-    <Version>1.26.0</Version>
+    <Version>1.27.0</Version>
     <Nullable>enable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
     <UseAppHost>true</UseAppHost>
@@ -23,5 +23,6 @@
     <EmbeddedResource Include="../Strings.ko.json" LogicalName="CodexAccountDesk.Strings.ko.json" WithCulture="false" />
     <EmbeddedResource Include="../Strings.en.json" LogicalName="CodexAccountDesk.Strings.en.json" WithCulture="false" />
     <AvaloniaResource Include="Assets/**" />
+    <EmbeddedResource Include="../Assets/mark.path" LogicalName="CodexAccountDesk.Mark.path" />
   </ItemGroup>
 </Project>
