@@ -32,14 +32,22 @@ trap task_cleanup EXIT
 task_stage="$(mktemp -d "$task_install_root/.account-desk-install.XXXXXX")"
 task_candidate="$task_stage/Codex Switch.app"
 ditto "$task_source" "$task_candidate"
-chmod +x "$task_candidate/Contents/MacOS/CodexSwitch"
 plutil -lint "$task_candidate/Contents/Info.plist"
-while IFS= read -r -d '' task_binary; do
+task_preserve_signature=false
+if task_signature="$(codesign -dv --verbose=4 "$task_source" 2>&1)" && [[ "$task_signature" == *"Authority=Developer ID Application:"* ]]; then
+  codesign --verify --deep --strict "$task_source"
+  codesign --verify --deep --strict "$task_candidate"
+  [[ -x "$task_candidate/Contents/MacOS/CodexSwitch" ]] || { echo 'Signed bundle has no executable entry point.' >&2; exit 1; }
+  task_preserve_signature=true
+else
+  chmod +x "$task_candidate/Contents/MacOS/CodexSwitch"
+  while IFS= read -r -d '' task_binary; do
+    codesign --force --sign - --timestamp=none --options runtime \
+      --entitlements "$task_candidate/Contents/Resources/entitlements.plist" "$task_binary"
+  done < <(find "$task_candidate/Contents/MacOS" -type f ! -name CodexSwitch -print0)
   codesign --force --sign - --timestamp=none --options runtime \
-    --entitlements "$task_candidate/Contents/Resources/entitlements.plist" "$task_binary"
-done < <(find "$task_candidate/Contents/MacOS" -type f ! -name CodexSwitch -print0)
-codesign --force --sign - --timestamp=none --options runtime \
-  --entitlements "$task_candidate/Contents/Resources/entitlements.plist" "$task_candidate"
+    --entitlements "$task_candidate/Contents/Resources/entitlements.plist" "$task_candidate"
+fi
 codesign --verify --deep --strict "$task_candidate"
 "$task_candidate/Contents/MacOS/CodexSwitch" --help >/dev/null
 if [[ -e "$task_destination" ]]; then
@@ -50,4 +58,9 @@ mv "$task_candidate" "$task_destination"
 task_complete=true
 if [[ -n "$task_backup" ]]; then printf 'Existing installation preserved at %s\n' "$task_backup"; fi
 printf 'Installed: %s\n' "$task_destination"
+echo 'Open this installed application, not the original copy in the downloaded ZIP folder.'
+if [[ "$task_preserve_signature" == false ]]; then
+  echo 'This is locally signed, not Apple-notarized. macOS may block its first launch.'
+  echo 'If you trust this release, use System Settings > Privacy & Security > Open Anyway for this installed app.'
+fi
 echo 'Open it from Finder. To keep it in the Dock, choose Options > Keep in Dock.'

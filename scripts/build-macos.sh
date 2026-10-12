@@ -19,11 +19,13 @@ cp "$task_root/scripts/install-macos.sh" "$task_output/Install.command"
 chmod +x "$task_output/Install.command"
 chmod +x "$task_app/Contents/MacOS/CodexSwitch"
 task_identity="${MAC_CODESIGN_IDENTITY:--}"
+task_timestamp=(--timestamp=none)
+if [[ "$task_identity" != "-" ]]; then task_timestamp=(--timestamp); fi
 while IFS= read -r -d '' task_binary; do
-  codesign --force --sign "$task_identity" --timestamp=none --options runtime \
+  codesign --force --sign "$task_identity" "${task_timestamp[@]}" --options runtime \
     --entitlements "$task_root/macos/entitlements.plist" "$task_binary"
 done < <(find "$task_app/Contents/MacOS" -type f ! -name CodexSwitch -print0)
-codesign --force --sign "$task_identity" --timestamp=none --options runtime \
+codesign --force --sign "$task_identity" "${task_timestamp[@]}" --options runtime \
   --entitlements "$task_root/macos/entitlements.plist" "$task_app"
 plutil -lint "$task_app/Contents/Info.plist"
 codesign --verify --deep --strict "$task_app"
