@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <StartupObject>CodexAccountDesk.Program</StartupObject>
+    <AssemblyName>CodexSwitch</AssemblyName>
+    <RootNamespace>CodexAccountDesk</RootNamespace>
+    <Title>Codex Switch</Title>
+    <Product>Codex Switch</Product>
+    <Version>1.26.0</Version>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets/app-icon.ico</ApplicationIcon>
+    <DebugType>none</DebugType>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets/mark.png" LogicalName="CodexAccountDesk.Mark.png" />
+    <EmbeddedResource Include="Assets/app-icon.ico" LogicalName="CodexAccountDesk.AppIcon.ico" />
+    <Compile Remove="macos/**/*.cs" />
+    <EmbeddedResource Include="Burn0Tokens.css" />
+    <EmbeddedResource Include="Burn0Icons.json" />
+    <EmbeddedResource Include="Strings.ko.json" WithCulture="false" LogicalName="CodexAccountDesk.Strings.ko.json" />
+    <EmbeddedResource Include="Strings.en.json" WithCulture="false" LogicalName="CodexAccountDesk.Strings.en.json" />
+  </ItemGroup>
+</Project>

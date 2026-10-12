@@ -1,0 +1,164 @@
+:root {
+  --burn0-font: "Segoe UI Variable Text", "Segoe UI", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --burn0-canvas-rgb: 255 255 255;
+  --burn0-sidebar-rgb: 247 247 247;
+  --burn0-chrome-rgb: 240 240 240;
+  --burn0-surface-rgb: 243 243 243;
+  --burn0-elevated-rgb: 255 255 255;
+  --burn0-hover-rgb: 237 237 237;
+  --burn0-selected-rgb: 232 232 232;
+  --burn0-text-rgb: 32 33 35;
+  --burn0-muted-rgb: 98 101 106;
+  --burn0-subtle-rgb: 102 102 102;
+  --burn0-divider-rgb: 229 229 229;
+  --burn0-canvas: rgb(var(--burn0-canvas-rgb));
+  --burn0-sidebar: rgb(var(--burn0-sidebar-rgb));
+  --burn0-chrome: rgb(var(--burn0-chrome-rgb));
+  --burn0-surface: rgb(var(--burn0-surface-rgb));
+  --burn0-elevated: rgb(var(--burn0-elevated-rgb));
+  --burn0-hover: rgb(var(--burn0-hover-rgb));
+  --burn0-selected: rgb(var(--burn0-selected-rgb));
+  --burn0-text: rgb(var(--burn0-text-rgb));
+  --burn0-muted: rgb(var(--burn0-muted-rgb));
+  --burn0-subtle: rgb(var(--burn0-subtle-rgb));
+  --burn0-divider: rgb(var(--burn0-divider-rgb));
+  --burn0-accent: #1668e8;
+  --burn0-action: #202123;
+  --burn0-on-action: #ffffff;
+  --burn0-danger: #c73535;
+  --burn0-success: #16804a;
+  --burn0-warning: #996312;
+  --burn0-shadow: 0 8px 32px rgb(0 0 0 / 0.12);
+  --burn0-rail-width: 52px;
+  --burn0-sidebar-width: 260px;
+  --burn0-chat-width: 896px;
+  --burn0-control-height: 32px;
+  --burn0-row-height: 36px;
+  --burn0-radius: 8px;
+  --burn0-popup-radius: 12px;
+  --burn0-composer-radius: 20px;
+  --burn0-ui-size: 14px;
+  --burn0-caption-size: 12px;
+  --burn0-message-size: 16px;
+  --burn0-icon-size: 18px;
+  --burn0-icon-stroke: 1.75;
+  --burn0-meter-thickness: 4px;
+  --burn0-range-thumb: 14px;
+  --burn0-motion-fast: 140ms;
+  --burn0-motion-normal: 180ms;
+  --burn0-list-inline-padding: 8px;
+  --burn0-list-block-padding: 4px;
+  --app-primary: var(--burn0-canvas);
+  --app-primary-dark: var(--burn0-canvas);
+  --app-text-primary: var(--burn0-text);
+  --app-text-primary-dark: var(--burn0-text);
+  --app-text-secondary: var(--burn0-muted);
+  --app-accent: var(--burn0-accent);
+  --app-border: var(--burn0-divider);
+}
+
+:root.dark {
+  color-scheme: dark;
+  --burn0-canvas-rgb: 21 21 21;
+  --burn0-sidebar-rgb: 29 29 29;
+  --burn0-chrome-rgb: 29 29 29;
+  --burn0-surface-rgb: 37 37 37;
+  --burn0-elevated-rgb: 36 36 36;
+  --burn0-hover-rgb: 42 42 42;
+  --burn0-selected-rgb: 48 48 48;
+  --burn0-text-rgb: 244 244 244;
+  --burn0-muted-rgb: 177 177 177;
+  --burn0-subtle-rgb: 160 160 160;
+  --burn0-divider-rgb: 52 52 52;
+  --burn0-accent: #80afff;
+  --burn0-action: #f4f4f4;
+  --burn0-on-action: #151515;
+  --burn0-danger: #ff9292;
+  --burn0-success: #72d4a1;
+  --burn0-warning: #edc179;
+  --burn0-shadow: 0 8px 32px rgb(0 0 0 / 0.32);
+}
+
+.burn0-button, .burn0-icon-button, .burn0-nav-row, .burn0-menu-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--burn0-control-height);
+  border: 0;
+  border-radius: var(--burn0-radius);
+  padding: 6px 12px;
+  background: transparent;
+  color: var(--burn0-text);
+  font-family: var(--burn0-font);
+  font-size: var(--burn0-ui-size);
+  font-weight: 500;
+  line-height: 20px;
+  transition: background-color var(--burn0-motion-fast) ease, color var(--burn0-motion-fast) ease;
+}
+.burn0-button:hover:where(:not(:disabled):not([aria-disabled="true"])), .burn0-icon-button:hover:where(:not(:disabled):not([aria-disabled="true"])), .burn0-nav-row:hover:where(:not(:disabled):not([aria-disabled="true"])), .burn0-menu-item:hover:where(:not(:disabled):not([aria-disabled="true"])) {
+  background: var(--burn0-hover);
+}
+.burn0-button-primary { background: var(--burn0-action); color: var(--burn0-on-action); }
+.burn0-button-primary:hover:where(:not(:disabled):not([aria-disabled="true"])) { background: var(--burn0-action); opacity: 0.88; }
+.burn0-button-secondary { background: var(--burn0-surface); }
+.burn0-icon-button { width: var(--burn0-control-height); justify-content: center; padding: 6px; }
+.burn0-nav-row, .burn0-menu-item { width: 100%; min-height: var(--burn0-row-height); text-align: left; }
+.burn0-nav-row[aria-current="page"], .burn0-menu-item[aria-selected="true"] { background: var(--burn0-selected); }
+:is(.burn0-button,.burn0-icon-button)[aria-pressed="true"] { background: var(--burn0-selected); color: var(--burn0-text); }
+:is(.burn0-button, .burn0-icon-button, .burn0-nav-row, .burn0-menu-item):is(:disabled, [aria-disabled="true"]) { opacity: 0.45; }
+.burn0-icon { width: var(--burn0-icon-size); height: var(--burn0-icon-size); flex-shrink: 0; }
+.burn0-select { height: var(--burn0-control-height); }
+.burn0-dropdown-menu { position: fixed; z-index: 102; width: max-content; min-width: min(var(--burn0-anchor-width), calc(var(--burn0-floating-viewport-width, 100vw) - 16px)); max-width: calc(var(--burn0-floating-viewport-width, 100vw) - 16px); border: 0; background: var(--burn0-elevated); color: var(--burn0-text); box-shadow: var(--burn0-shadow); overscroll-behavior: contain; }
+.burn0-dropdown-option { min-height: 36px; font-size: 14px; overflow-wrap: anywhere; white-space: normal; }
+.burn0-dropdown-backdrop, .burn0-dropdown-sheet-heading { display: none; }
+@media (max-width: 767px) {
+  .burn0-dropdown-backdrop { display: block; position: fixed; inset: 0; z-index: 101; background: rgb(0 0 0 / 0.22); border: 0; }
+  .burn0-dropdown-menu { inset: auto 8px max(8px, env(safe-area-inset-bottom)); width: auto; min-width: 0; max-width: none; max-height: 75dvh; overflow-y: auto; border-radius: 16px; padding: 8px; }
+  .burn0-dropdown-menu button { min-height: 44px; }
+  .burn0-dropdown-menu .burn0-icon-button { width: 44px; }
+  .burn0-dropdown-sheet-heading { display: flex; align-items: center; justify-content: space-between; padding: 0 8px 8px; }
+}
+.lucide { stroke-width: var(--burn0-icon-stroke); }
+.burn0-search {
+  display: flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 8px;
+  border-radius: 10px;
+  padding: 0 12px;
+  background: var(--burn0-surface);
+  color: var(--burn0-muted);
+}
+.burn0-search input { min-width: 0; width: 100%; border: 0; background: transparent; color: var(--burn0-text); font: inherit; outline: none; }
+.burn0-search input::placeholder { color: var(--burn0-subtle); }
+.burn0-popover { border: 0; border-radius: var(--burn0-popup-radius); background: var(--burn0-elevated); color: var(--burn0-text); padding: 6px; box-shadow: var(--burn0-shadow); }
+.burn0-setting-row { display: flex; min-height: 52px; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 0; }
+.burn0-setting-row + .burn0-setting-row { border-top: 1px solid var(--burn0-divider); }
+.burn0-status { display: flex; align-items: center; gap: 8px; color: var(--burn0-muted); font-size: 12px; line-height: 20px; }
+.burn0-button:focus-visible, .burn0-icon-button:focus-visible, .burn0-nav-row:focus-visible, .burn0-menu-item:focus-visible, .burn0-search:focus-within {
+  outline: 2px solid var(--burn0-accent);
+  outline-offset: 2px;
+}
+@media (max-width: 767px) {
+  :root { --burn0-control-height: 44px; --burn0-row-height: 44px; }
+  .burn0-search { min-height: 44px; }
+  .burn0-search input { font-size: 16px; min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .burn0-button, .burn0-icon-button, .burn0-nav-row, .burn0-menu-item { transition: none; }
+}
+
+@layer base {
+  :where(button, summary, select, a[href], [role="button"], [role="combobox"], [role="option"], [role="menuitem"], [role="switch"], input[type="checkbox"], input[type="radio"], input[type="file"], input[type="color"], input[type="button"], input[type="submit"], input[type="reset"]) { cursor: pointer; }
+  :where(button, select, input, textarea):disabled, :where([role="button"], [role="combobox"], [role="option"], [role="menuitem"], [role="switch"], a[href])[aria-disabled="true"] { cursor: not-allowed; }
+  :where(textarea, input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="file"]):not([type="color"])):not(:disabled) { cursor: text; }
+  :where(input[type="range"]):not(:disabled) { cursor: ew-resize; }
+  :where(label:has(input[type="checkbox"]:enabled), label:has(input[type="radio"]:enabled)) { cursor: pointer; }
+}
+
+.burn0-tooltip {
+  position: fixed; z-index: 9999; max-width: min(320px, calc(100vw - 16px)); padding: 6px 10px;
+  border: 0; border-radius: var(--burn0-radius); background: var(--burn0-text); color: var(--burn0-canvas);
+  font: 12px/1.5 var(--burn0-font); white-space: pre-line; overflow-wrap: anywhere; pointer-events: none;
+  box-shadow: var(--burn0-shadow);
+}
