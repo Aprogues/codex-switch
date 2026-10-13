@@ -43,10 +43,10 @@ internal sealed class AccountDetailWindow : Window
         quota.ToolTip = choice?.BucketLabel; quota.IsEnabled = choices.Length > 1;
         quota.Click += (_, _) =>
         {
-            var menu = new ContextMenu { PlacementTarget = quota };
+            var menu = DropdownTheme.Create(quota, theme);
             foreach (var entry in choices)
             {
-                var item = new MenuItem { Header = entry.BucketLabel + " · " + entry.Window.PeriodLabel, IsCheckable = true, IsChecked = entry == choice };
+                var item = new MenuItem { Header = entry.BucketLabel + "  " + entry.Window.PeriodLabel, IsCheckable = true, IsChecked = entry == choice };
                 item.Click += (_, _) => { _selectedQuota = entry.BucketId + ":" + entry.Slot; Refresh(profile, theme, resources, hours); }; menu.Items.Add(item);
             }
             menu.IsOpen = true;

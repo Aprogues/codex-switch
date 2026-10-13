@@ -11,7 +11,7 @@
     <RootNamespace>CodexAccountDesk</RootNamespace>
     <Title>Codex Switch</Title>
     <Product>Codex Switch</Product>
-    <Version>1.27.0</Version>
+    <Version>1.27.6</Version>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets/app-icon.ico</ApplicationIcon>
     <DebugType>none</DebugType>
@@ -19,8 +19,10 @@
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="Assets/mark.path" LogicalName="CodexAccountDesk.Mark.path" />
+    <EmbeddedResource Include="Assets/mark-body.path" LogicalName="CodexAccountDesk.MarkBody.path" />
     <EmbeddedResource Include="Assets/app-icon.ico" LogicalName="CodexAccountDesk.AppIcon.ico" />
     <Compile Remove="macos/**/*.cs" />
+    <Compile Remove="artifacts/**/*.cs" />
     <EmbeddedResource Include="Burn0Tokens.css" />
     <EmbeddedResource Include="Burn0Icons.json" />
     <EmbeddedResource Include="Strings.ko.json" WithCulture="false" LogicalName="CodexAccountDesk.Strings.ko.json" />

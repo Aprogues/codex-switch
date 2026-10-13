@@ -14,7 +14,7 @@
 
 A local Windows and macOS utility for switching between your Codex accounts, backing up the current login and handing local chats back to the desktop. Live quota gauges help you choose which account to use next.
 
-Independent community software; not affiliated with or endorsed by OpenAI. Version **1.27.0**. English is the default; the app also supports Korean and preserves your saved language choice.
+Independent community software; not affiliated with or endorsed by OpenAI. Local version **1.27.6**. English is the default; the app also supports Korean and preserves your saved language choice.
 
 <p align="center">
   <img src="docs/media/compact.gif" width="500" alt="Live compact Codex Switch dashboard, with permanently redacted account names and no cursor" />

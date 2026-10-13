@@ -31,9 +31,10 @@ internal sealed class MainWindow : Window
     private Burn0Theme _theme;
     private readonly System.Windows.Controls.Primitives.UniformGrid _rows = new();
     private readonly ScrollViewer _scroll = new() { VerticalScrollBarVisibility = ScrollBarVisibility.Disabled, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled, HorizontalContentAlignment = HorizontalAlignment.Stretch, VerticalContentAlignment = VerticalAlignment.Stretch };
-    private readonly TextBlock _status = new(), _count = new(), _loginText = new();
+    private readonly TextBlock _status = new(), _loginText = new();
     private readonly SessionUsagePanel _sessionCount = new();
-    private readonly Button _import = new(), _add = new(), _cancelLogin = new(), _cancelSwitch = new();
+    private readonly Button _refresh = new(), _add = new(), _cancelLogin = new(), _cancelSwitch = new();
+    private MenuItem? _importCurrent;
     private readonly CheckBox _auto = new();
     private readonly Border _loginPanel = new();
     private readonly List<AccountTankCard> _tankCards = new();
@@ -57,8 +58,6 @@ internal sealed class MainWindow : Window
     private bool _statusWarning;
     private object? _languageInteraction;
     private object? _alternateWindowFrame;
-    private TextBlock? _breadcrumb;
-    private bool? _compactChrome;
     public MainWindow(AccountService service, Program.Options options)
     {
         _service = service; _options = options;
@@ -74,14 +73,7 @@ internal sealed class MainWindow : Window
         ApplyTheme();
         _scroll.SizeChanged += (_, _) => LayoutCards();
         _scroll.ScrollChanged += (_, args) => { if (args.ViewportWidthChange != 0) LayoutCards(); };
-        SizeChanged += (_, _) => UpdateCompactChrome();
-        _import.Click += async (_, _) => await RunAsync("현재 로그인 가져오는 중…", async token =>
-        {
-            await EnsureInitializedAsync(token);
-            var profile = await Task.Run(() => { var p = _service.SynchronizeCurrent(); _service.Vault.Save(); return p; }, token);
-            if (profile == null) throw new InvalidOperationException("Codex에서 먼저 로그인하거나 계정 추가를 선택해 주세요.");
-            RenderAccounts(); await _service.RefreshAccountAsync(profile.Key, token); SetRefreshStatus();
-        });
+        _refresh.Click += async (_, _) => await RefreshAsync();
         _add.Click += async (_, _) => await AddAsync();
         _cancelLogin.Click += (_, _) => _loginCancellation?.Cancel();
         _cancelSwitch.Click += (_, _) => CancelSwitch();
@@ -104,7 +96,7 @@ internal sealed class MainWindow : Window
     }
     private void ApplyTheme()
     {
-        foreach (var element in new FrameworkElement[] { _count, _sessionCount, _hardwarePanel, _drivePanel, _status, _loginText, _add, _import, _cancelLogin, _cancelSwitch, _auto, _loginPanel, _scroll })
+        foreach (var element in new FrameworkElement[] { _sessionCount, _hardwarePanel, _drivePanel, _status, _loginText, _add, _refresh, _cancelLogin, _cancelSwitch, _auto, _loginPanel, _scroll })
         {
             if (element.Parent is Panel panel) panel.Children.Remove(element);
             else if (element.Parent is ContentControl control && ReferenceEquals(control.Content, element)) control.Content = null;
@@ -114,40 +106,40 @@ internal sealed class MainWindow : Window
         WindowFrame.RefreshBorder(this);
         Language = System.Windows.Markup.XmlLanguage.GetLanguage(Loc.Culture.IetfLanguageTag);
         SetResources();
-        ConfigureButton(_add, "계정 추가", "plus", true); ConfigureButton(_import, "현재 계정 가져오기", "user");
+        ConfigureTitleAction(_add, "계정 추가", "plus"); ConfigureTitleAction(_refresh, "새로 고침", "refresh");
+        var refreshMenu = DropdownTheme.Create(_refresh, _theme);
+        _importCurrent = new MenuItem { Header = Loc.T("현재 계정 가져오기") };
+        _importCurrent.Click += async (_, _) => await ImportCurrentAsync();
+        refreshMenu.Items.Add(_importCurrent); _refresh.ContextMenu = refreshMenu;
         ConfigureButton(_cancelLogin, "로그인 취소", "close"); ConfigureButton(_cancelSwitch, "전환 취소", "close");
-        foreach (var text in new[] { _status, _count, _loginText }) { text.Foreground = Color("muted"); text.FontSize = _theme.Number("caption-size"); }
+        foreach (var text in new[] { _status, _loginText }) { text.Foreground = Color("muted"); text.FontSize = _theme.Number("caption-size"); }
         RenderSessions();
         _hardwarePanel.Refresh(_hardware.Current, _theme);
         _drivePanel.Refresh(_drives.Current, _theme);
-        _status.TextWrapping = TextWrapping.Wrap; _status.Margin = new Thickness(0, 0, 16, 0);
+        _status.TextWrapping = TextWrapping.NoWrap; _status.TextTrimming = TextTrimming.CharacterEllipsis; _status.Margin = new Thickness(0, 0, 16, 0);
         _auto.Content = Loc.T("60초 자동 조회"); _auto.Foreground = Color("muted"); _auto.FontSize = 12; _auto.VerticalAlignment = VerticalAlignment.Center;
         _loginText.Text = Loc.T("브라우저에서 추가할 계정으로 로그인해 주세요.");
         _auto.IsChecked = _service.Vault.Data.AutoRefresh;
         _loginPanel.Background = Color("surface"); _loginPanel.CornerRadius = new CornerRadius(_theme.Number("radius")); _loginPanel.Padding = new Thickness(12);
-        Content = BuildRoot(); _compactChrome = null; UpdateCompactChrome(); RenderAccounts(); UpdateControls(); RenderStatus();
+        Content = BuildRoot(); RenderAccounts(); UpdateControls(); RenderStatus();
     }
     private UIElement BuildRoot()
     {
         var root = new Grid(); root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(40) }); root.RowDefinitions.Add(new RowDefinition());
         root.Children.Add(BuildTitleBar());
-        var body = new Grid { Margin = new Thickness(12, 10, 12, 10) };
+        var body = new Grid { Margin = new Thickness(12, 8, 12, 8) };
         body.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         body.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         body.RowDefinitions.Add(new RowDefinition());
         body.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-        var toolbarRow = new Grid { Margin = new Thickness(0, 0, 0, 8) };
-        toolbarRow.ColumnDefinitions.Add(new() { Width = GridLength.Auto }); toolbarRow.ColumnDefinitions.Add(new()); toolbarRow.ColumnDefinitions.Add(new() { Width = GridLength.Auto });
-        var counters = new StackPanel { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(8, 0, 0, 0) };
-        _count.HorizontalAlignment = HorizontalAlignment.Right; _sessionCount.HorizontalAlignment = HorizontalAlignment.Right;
-        counters.Children.Add(_count); counters.Children.Add(_sessionCount); Grid.SetColumn(counters, 2); toolbarRow.Children.Add(counters);
-        var toolbar = new StackPanel { Orientation = Orientation.Horizontal };
-        foreach (var button in new[] { _add, _import }) { button.Margin = new Thickness(0, 0, 8, 0); toolbar.Children.Add(button); }
-        toolbarRow.Children.Add(toolbar); Grid.SetColumn(_hardwarePanel, 1); toolbarRow.Children.Add(_hardwarePanel); body.Children.Add(toolbarRow);
+        var toolbarRow = new Grid { Margin = new Thickness(0, 0, 0, 6) };
+        _sessionCount.HorizontalAlignment = HorizontalAlignment.Center;
+        toolbarRow.Children.Add(_sessionCount); body.Children.Add(toolbarRow);
         var login = new DockPanel(); DockPanel.SetDock(_cancelLogin, Dock.Right); login.Children.Add(_cancelLogin); _loginText.TextWrapping = TextWrapping.Wrap; _loginText.VerticalAlignment = VerticalAlignment.Center; _loginText.Margin = new Thickness(0, 0, 12, 0); login.Children.Add(_loginText);
         _loginPanel.Child = login; _loginPanel.Margin = new Thickness(0, 0, 0, 16); Grid.SetRow(_loginPanel, 1); body.Children.Add(_loginPanel);
         _scroll.Content = _rows; Grid.SetRow(_scroll, 2); body.Children.Add(_scroll);
-        var footer = new StackPanel { Margin = new Thickness(0, 6, 0, 0) };
+        var footer = new StackPanel { Margin = new Thickness(0, 4, 0, 0) };
+        _hardwarePanel.Margin = new Thickness(0, 0, 0, 4); footer.Children.Add(_hardwarePanel);
         var statusLine = new DockPanel(); DockPanel.SetDock(_auto, Dock.Right); statusLine.Children.Add(_auto);
         var statusHost = new Grid(); statusHost.Children.Add(_status); statusHost.Children.Add(_drivePanel); statusLine.Children.Add(statusHost); footer.Children.Add(statusLine);
         _cancelSwitch.HorizontalAlignment = HorizontalAlignment.Left; _cancelSwitch.Margin = new Thickness(0, 10, 0, 0); footer.Children.Add(_cancelSwitch);
@@ -159,8 +151,8 @@ internal sealed class MainWindow : Window
         bar.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); bar.ColumnDefinitions.Add(new ColumnDefinition()); bar.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         var identity = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(12, 0, 0, 0) };
         identity.Children.Add(AppIdentity.Glyph(Color("text"), 18)); var title = Label("Codex Switch", 12, "text", FontWeights.SemiBold); title.Margin = new Thickness(8, 0, 0, 0); identity.Children.Add(title); bar.Children.Add(identity);
-        var context = Label(Loc.T("계정  /  사용량"), 12, "muted"); _breadcrumb = context; context.HorizontalAlignment = HorizontalAlignment.Center; context.VerticalAlignment = VerticalAlignment.Center; Grid.SetColumn(context, 1); bar.Children.Add(context);
         var controls = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
+        controls.Children.Add(_add); controls.Children.Add(_refresh);
         var language = NewButton(Loc.LanguageName + " ▾", null, false, true); language.Padding = new Thickness(10, 0, 10, 0); language.Background = Brushes.Transparent; language.ToolTip = Loc.T("언어 설정");
         language.Click += (_, _) => OpenLanguageMenu(language); WindowChrome.SetIsHitTestVisibleInChrome(language, true); controls.Children.Add(language);
         var theme = NewButton(_theme.Dark ? "라이트" : "다크", null, false); theme.Padding = new Thickness(10, 0, 10, 0); theme.Background = Brushes.Transparent; theme.ToolTip = Loc.T("Burn0 테마 전환");
@@ -181,22 +173,20 @@ internal sealed class MainWindow : Window
         button.MouseLeave += (_, _) => { button.Background = Brushes.Transparent; button.Content = Burn0Theme.Icon(icon is "window-maximize" or "window-restore" ? WindowState == WindowState.Maximized ? "window-restore" : "window-maximize" : icon, Color("muted"), 12, true); };
         button.Click += (_, _) => action(); WindowChrome.SetIsHitTestVisibleInChrome(button, true); return button;
     }
-    private void UpdateCompactChrome()
+    private void ConfigureTitleAction(Button button, string label, string icon)
     {
-        var compact = (ActualWidth > 0 ? ActualWidth : Width) < 720;
-        if (_compactChrome == compact) return; _compactChrome = compact;
-        ConfigureButton(_import, compact ? "" : "현재 계정 가져오기", "user");
-        _import.ToolTip = Loc.T("현재 계정 가져오기");
-        _count.Visibility = compact ? Visibility.Collapsed : Visibility.Visible;
-        if (_breadcrumb != null) _breadcrumb.Visibility = compact ? Visibility.Collapsed : Visibility.Visible;
-        _status.TextWrapping = TextWrapping.NoWrap; _status.TextTrimming = TextTrimming.CharacterEllipsis;
+        button.Style = (Style)Resources["TitleActionButton"];
+        button.Content = Burn0Theme.Icon(icon, Color("text"), 16);
+        button.ToolTip = Loc.T(label);
+        System.Windows.Automation.AutomationProperties.SetName(button, Loc.T(label));
+        WindowChrome.SetIsHitTestVisibleInChrome(button, true);
     }
     private void OpenLanguageMenu(Button owner)
     {
-        var menu = new ContextMenu { PlacementTarget = owner };
+        var menu = DropdownTheme.Create(owner, _theme);
         foreach (var option in Loc.Languages)
         {
-            var item = new MenuItem { Header = (option.Code == Loc.Language ? "✓  " : "    ") + option.Name };
+            var item = new MenuItem { Header = option.Name, IsCheckable = true, IsChecked = option.Code == Loc.Language };
             item.Click += (_, _) => ChangeLanguage(option.Code); menu.Items.Add(item);
         }
         owner.ContextMenu = menu; menu.IsOpen = true;
@@ -235,12 +225,14 @@ internal sealed class MainWindow : Window
         var primary = new Style(typeof(Button), style); primary.Setters.Add(new Setter(Control.BackgroundProperty, Color("action"))); primary.Setters.Add(new Setter(Control.ForegroundProperty, Color("on-action")));
         var primaryHover = new Trigger { Property = UIElement.IsMouseOverProperty, Value = true }; primaryHover.Setters.Add(new Setter(Control.BackgroundProperty, Color("action"))); primaryHover.Setters.Add(new Setter(UIElement.OpacityProperty, 0.88)); primary.Triggers.Add(primaryHover);
         var caption = new Style(typeof(Button), style); caption.Setters.Add(new Setter(Control.TemplateProperty, ButtonTemplate(0)));
-        var context = new Style(typeof(ContextMenu)); context.Setters.Add(new Setter(Control.BackgroundProperty, Color("elevated"))); context.Setters.Add(new Setter(Control.ForegroundProperty, Color("text"))); context.Setters.Add(new Setter(Control.BorderThicknessProperty, new Thickness(0))); context.Setters.Add(new Setter(Control.PaddingProperty, new Thickness(6)));
-        var menuItem = new Style(typeof(MenuItem)); menuItem.Setters.Add(new Setter(Control.BackgroundProperty, Color("elevated"))); menuItem.Setters.Add(new Setter(Control.ForegroundProperty, Color("text"))); menuItem.Setters.Add(new Setter(Control.BorderThicknessProperty, new Thickness(0))); menuItem.Setters.Add(new Setter(Control.PaddingProperty, new Thickness(10, 7, 10, 7)));
-        var menuTemplate = new ControlTemplate(typeof(MenuItem)); var menuBorder = new FrameworkElementFactory(typeof(Border)); menuBorder.Name = "menuSurface"; menuBorder.SetValue(Border.CornerRadiusProperty, new CornerRadius(6));
-        menuBorder.SetBinding(Border.BackgroundProperty, new System.Windows.Data.Binding("Background") { RelativeSource = System.Windows.Data.RelativeSource.TemplatedParent });
-        var menuLabel = new FrameworkElementFactory(typeof(ContentPresenter)); menuLabel.SetValue(ContentPresenter.ContentSourceProperty, "Header"); menuLabel.SetBinding(FrameworkElement.MarginProperty, new System.Windows.Data.Binding("Padding") { RelativeSource = System.Windows.Data.RelativeSource.TemplatedParent }); menuBorder.AppendChild(menuLabel); menuTemplate.VisualTree = menuBorder;
-        var highlighted = new Trigger { Property = MenuItem.IsHighlightedProperty, Value = true }; highlighted.Setters.Add(new Setter(Border.BackgroundProperty, Color("hover"), "menuSurface")); menuTemplate.Triggers.Add(highlighted); menuItem.Setters.Add(new Setter(Control.TemplateProperty, menuTemplate));
+        var titleAction = new Style(typeof(Button), style);
+        titleAction.Setters.Add(new Setter(Control.BackgroundProperty, Brushes.Transparent));
+        titleAction.Setters.Add(new Setter(Control.PaddingProperty, new Thickness(0)));
+        titleAction.Setters.Add(new Setter(FrameworkElement.WidthProperty, 32.0)); titleAction.Setters.Add(new Setter(FrameworkElement.HeightProperty, 32.0));
+        titleAction.Setters.Add(new Setter(FrameworkElement.MinHeightProperty, 32.0));
+        titleAction.Setters.Add(new Setter(FrameworkElement.VerticalAlignmentProperty, VerticalAlignment.Center));
+        DropdownTheme.Install(Resources, _theme);
+        ToolTipTheme.Install(Resources, _theme);
         var switchStyle = new Style(typeof(CheckBox)); var switchTemplate = new ControlTemplate(typeof(CheckBox));
         var switchPanel = new FrameworkElementFactory(typeof(StackPanel)); switchPanel.SetValue(StackPanel.OrientationProperty, Orientation.Horizontal);
         var switchGrid = new FrameworkElementFactory(typeof(Grid)); switchGrid.SetValue(FrameworkElement.WidthProperty, 44.0); switchGrid.SetValue(FrameworkElement.HeightProperty, 24.0);
@@ -252,8 +244,7 @@ internal sealed class MainWindow : Window
         Resources[typeof(Button)] = style;
         Resources["PrimaryButton"] = primary;
         Resources["CaptionButton"] = caption;
-        Resources[typeof(ContextMenu)] = context;
-        Resources[typeof(MenuItem)] = menuItem;
+        Resources["TitleActionButton"] = titleAction;
         Resources[typeof(CheckBox)] = switchStyle;
     }
     private static ControlTemplate ButtonTemplate(double radius)
@@ -410,6 +401,13 @@ internal sealed class MainWindow : Window
         if (!_ready || _closing) return;
         await RunAsync("사용량 갱신 중… 다른 기능을 계속 사용할 수 있습니다.", async token => { await _service.RefreshAllAsync(null, token); SetRefreshStatus(); });
     }
+    private Task ImportCurrentAsync() => RunAsync("현재 로그인 가져오는 중…", async token =>
+    {
+        await EnsureInitializedAsync(token);
+        var profile = await Task.Run(() => { var p = _service.SynchronizeCurrent(); _service.Vault.Save(); return p; }, token);
+        if (profile == null) throw new InvalidOperationException("Codex에서 먼저 로그인하거나 계정 추가를 선택해 주세요.");
+        RenderAccounts(); await _service.RefreshAccountAsync(profile.Key, token); SetRefreshStatus();
+    });
     private async Task AddAsync()
     {
         if (!_ready || _loggingIn || _closing) return;
@@ -459,7 +457,7 @@ internal sealed class MainWindow : Window
     {
         var activity = illustrative ?? _sessions.Current;
         _sessionCount.Refresh(activity, _theme);
-        _sessionCount.ToolTip = activity.Available ? _count.Text + "\n" + Loc.T("이 PC의 로컬 Codex 주 채팅\n하위 에이전트 제외\n계정별 구분 없음") + "\n" +
+        _sessionCount.ToolTip = activity.Available ? Loc.T("이 PC의 로컬 Codex 주 채팅\n하위 에이전트 제외\n계정별 구분 없음") + "\n" +
             Loc.F("승인/입력 대기 {0}", activity.Waiting) + "\n" +
             (activity.Queued.HasValue ? Loc.F("큐는 예약 메시지 수\n보류된 큐 {0}", activity.PausedQueued) : Loc.T(activity.QueueProblem ?? "큐 상태 확인 중…")) + "\n" +
             (activity.Goals.HasValue ? Loc.F("목표는 진행 중인 Goal 수\n멈춘 목표 {0}", activity.PausedGoals) : Loc.T("목표 상태 확인 중…")) : Loc.T(activity.Problem ?? "채팅 상태 확인 중…");
@@ -467,7 +465,7 @@ internal sealed class MainWindow : Window
     private void RenderAccounts()
     {
         var offset = _scroll.VerticalOffset; _rows.Children.Clear(); _tankCards.Clear();
-        var accounts = _service.Accounts; _count.Text = (accounts.Length == 1 ? Loc.T("1개 계정") : Loc.F("{0}개 계정", accounts.Length)) + (_service.RefreshingCount > 0 ? "   " + Loc.F("{0}개 갱신 중", _service.RefreshingCount) : "");
+        var accounts = _service.Accounts;
         RenderSessions();
         if (accounts.Length == 0)
         { var message = Label(Loc.T("현재 계정을 가져오거나 다른 계정으로 로그인하세요."), 14, "muted"); message.Margin = new Thickness(0, 18, 0, 0); _rows.Children.Add(message); return; }
@@ -552,7 +550,6 @@ internal sealed class MainWindow : Window
         var sessionBounds = _sessionCount.TransformToAncestor(this).TransformBounds(new Rect(_sessionCount.RenderSize));
         var hardwareBounds = _hardwarePanel.TransformToAncestor(this).TransformBounds(new Rect(_hardwarePanel.RenderSize));
         var driveBounds = _drivePanel.TransformToAncestor(this).TransformBounds(new Rect(_drivePanel.RenderSize));
-        var addBounds = _import.TransformToAncestor(this).TransformBounds(new Rect(_import.RenderSize));
         var sessionScenarios = new List<object>();
         foreach (var scenario in new[] { new SessionActivity(false, 0, 0, 0), new SessionActivity(true, 0, 0, 0, Queued: 0, Goals: 0),
             new SessionActivity(true, 99, 0, 99, Queued: 99, Goals: 99) })
@@ -560,20 +557,21 @@ internal sealed class MainWindow : Window
             RenderSessions(scenario); UpdateLayout();
             var bounds = _sessionCount.TransformToAncestor(this).TransformBounds(new Rect(_sessionCount.RenderSize));
             var resourceBounds = _hardwarePanel.TransformToAncestor(this).TransformBounds(new Rect(_hardwarePanel.RenderSize));
-            sessionScenarios.Add(new { text = _sessionCount.Text, illustrative = true, fits = bounds.Left >= resourceBounds.Right && bounds.Right <= ActualWidth &&
-                resourceBounds.Left >= addBounds.Right && _sessionCount.Fits(),
+            sessionScenarios.Add(new { text = _sessionCount.Text, illustrative = true, fits = bounds.Left >= 0 && bounds.Right <= ActualWidth &&
+                Math.Abs((bounds.Left + bounds.Right) / 2 - ActualWidth / 2) <= 0.5 && bounds.Bottom <= resourceBounds.Top && _sessionCount.Fits(),
                 noMiddleDot = !_sessionCount.Text.Contains('·') });
         }
         RenderSessions(); UpdateLayout();
         return new { language = Loc.Language, width = ActualWidth, height = ActualHeight, columns = _rows.Columns, rows = _rows.Rows, allCardsVisible = cards.All(c => c.visible),
             drivePanelVisible = driveBounds.Left >= 0 && driveBounds.Right <= ActualWidth && driveBounds.Bottom <= ActualHeight,
-            hardware = _hardwarePanel.Probe(), hardwareVisible = hardwareBounds.Left >= addBounds.Right && hardwareBounds.Right <= sessionBounds.Left && hardwareBounds.Top >= 0,
+            hardware = _hardwarePanel.Probe(), hardwareVisible = hardwareBounds.Left >= 0 && hardwareBounds.Right <= ActualWidth && hardwareBounds.Bottom <= driveBounds.Top,
             sessionCount = _sessionCount.Text, sessionCountVisible = sessionBounds.Left >= 0 && sessionBounds.Right <= ActualWidth && sessionBounds.Top >= 0,
+            sessionsCentered = Math.Abs((sessionBounds.Left + sessionBounds.Right) / 2 - ActualWidth / 2) <= 0.5,
             sessionScenarios, cards };
     }
     private void OpenAccountMenu(Button owner, AccountProfile profile)
     {
-        var menu = new ContextMenu { PlacementTarget = owner };
+        var menu = DropdownTheme.Create(owner, _theme);
         var history = new MenuItem { Header = Loc.T("추이 보기") }; history.Click += (_, _) => OpenDetails(profile.Key);
         menu.Items.Add(history); menu.Items.Add(new Separator());
         if (_switching && profile.Key == _queuedKey && _switchPhase is SwitchPhase.BackingUp or SwitchPhase.Resuming)
@@ -613,7 +611,7 @@ internal sealed class MainWindow : Window
                 var snapshot = MeasureGrid();
                 if (_options.PreviewPath != null) CapturePreview(Path.ChangeExtension(_options.PreviewPath, null) + "-switch-" + stage + "-" + lang + ".png");
                 cases.Add(new { stage = stage.ToString(), lang, illustrative = true, layout = snapshot,
-                    otherControlsEnabled = _add.IsEnabled && _import.IsEnabled && _auto.IsEnabled });
+                    otherControlsEnabled = _add.IsEnabled && _refresh.IsEnabled && _auto.IsEnabled });
             }
         }
         finally
@@ -714,19 +712,20 @@ internal sealed class MainWindow : Window
     }
     private void UpdateControls()
     {
-        _import.IsEnabled = !_closing; _add.IsEnabled = _ready && !_loggingIn && !_closing;
+        _refresh.IsEnabled = _ready && !_closing; _add.IsEnabled = _ready && !_loggingIn && !_closing;
+        if (_importCurrent != null) _importCurrent.IsEnabled = !_closing;
         _auto.IsEnabled = !_closing; _loginPanel.Visibility = _loggingIn ? Visibility.Visible : Visibility.Collapsed;
         _cancelSwitch.Visibility = Visibility.Collapsed;
     }
     internal object ProbeInteractionState()
     {
         var oldLogin = _loggingIn; _loggingIn = true; UpdateControls();
-        var result = new { manualRefreshAvailableDuringLogin = _ready && !_closing, importEnabledDuringLogin = _import.IsEnabled, autoRefreshEnabledDuringLogin = _auto.IsEnabled,
+        var result = new { manualRefreshAvailableDuringLogin = _refresh.IsEnabled, importEnabledDuringLogin = _importCurrent?.IsEnabled == true, autoRefreshEnabledDuringLogin = _auto.IsEnabled,
             duplicateLoginDisabled = !_add.IsEnabled, captionHeight = WindowChrome.GetWindowChrome(this).CaptionHeight, theme = _theme.Dark ? "dark" : "light" };
         _loggingIn = oldLogin; UpdateControls(); return result;
     }
     private object CaptureControls() => new { activeQueries = _service.RefreshingCount, visibleRefreshButtons = CountRefreshButtons(this),
-        importEnabled = _import.IsEnabled, addAccountEnabled = _add.IsEnabled, autoRefreshEnabled = _auto.IsEnabled };
+        importEnabled = _importCurrent?.IsEnabled == true, addAccountEnabled = _add.IsEnabled, autoRefreshEnabled = _auto.IsEnabled };
     private static int CountRefreshButtons(DependencyObject root)
     {
         var count = root is Button button && (Equals(button.Content, Loc.T("새로 고침")) || Equals(button.ToolTip, Loc.T("새로 고침")) || Equals(button.ToolTip, Loc.T("이 계정 즉시 새로 고침"))) ? 1 : 0;

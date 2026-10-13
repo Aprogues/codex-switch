@@ -100,8 +100,8 @@ internal sealed class DeskWindow : Window
     private void Build()
     {
         _theme.Apply(this);
-        var shell = new Grid { RowDefinitions = new RowDefinitions("34,36,*,28") };
-        var titlebar = new Grid { Background = _theme.Brush("chrome"), ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto,Auto"), Margin = new Thickness(0) };
+        var shell = new Grid { RowDefinitions = new RowDefinitions("34,22,*,50") };
+        var titlebar = new Grid { Background = _theme.Brush("chrome"), ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto,Auto,Auto,Auto"), Margin = new Thickness(0) };
         var caption = _theme.Text("Codex Switch", 12); caption.VerticalAlignment = VerticalAlignment.Center;
         var mark = new BrandMark { Width = 18, Height = 18, Ink = _theme.Brush("text") };
         var captionContent = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, VerticalAlignment = VerticalAlignment.Center };
@@ -113,6 +113,11 @@ internal sealed class DeskWindow : Window
             BeginMoveDrag(args); args.Handled = true;
         };
         titlebar.Children.Add(dragRegion);
+        _add = _theme.IconButton(DeskButtonIconKind.Plus, Loc.T("계정 추가"), () => _ = AddAccountAsync());
+        _add.Classes.Add("title-action"); Grid.SetColumn(_add, 1); titlebar.Children.Add(_add);
+        _refresh = _theme.IconButton(DeskButtonIconKind.Refresh, Loc.T("새로 고침"), () => _ = RefreshAsync());
+        _refresh.Classes.Add("title-action"); ToolTip.SetTip(_refresh, Loc.T("새로 고침") + " (⌘R / F5)");
+        Grid.SetColumn(_refresh, 2); titlebar.Children.Add(_refresh);
         var language = _theme.Button(Loc.LanguageName, () =>
         {
             _ = RunAsync(_ =>
@@ -121,7 +126,7 @@ internal sealed class DeskWindow : Window
                 if (_service != null) { lock (_service.Vault.SyncRoot) { _service.Vault.Data.Language = next; _service.Vault.Save(); } }
                 Loc.SetLanguage(next); Build(); UpdateTray(); return Task.CompletedTask;
             });
-        }); Grid.SetColumn(language, 1); titlebar.Children.Add(language);
+        }); Grid.SetColumn(language, 3); titlebar.Children.Add(language);
         var theme = _theme.Button(Loc.T(_theme.Dark ? "라이트" : "다크"), () =>
         {
             _ = RunAsync(_ =>
@@ -130,25 +135,23 @@ internal sealed class DeskWindow : Window
                 if (_service != null) { lock (_service.Vault.SyncRoot) { _service.Vault.Data.Theme = next.Dark ? "dark" : "light"; _service.Vault.Save(); } }
                 _theme = next; Build(); return Task.CompletedTask;
             });
-        }); Grid.SetColumn(theme, 2); titlebar.Children.Add(theme);
+        }); Grid.SetColumn(theme, 4); titlebar.Children.Add(theme);
         _settingsButton = _theme.IconButton(DeskButtonIconKind.More, Loc.T("설정"), OpenSettings); _settingsButton.Width = 28; _settingsButton.Padding = new Thickness(0);
-        Grid.SetColumn(_settingsButton, 3); titlebar.Children.Add(_settingsButton); shell.Children.Add(titlebar);
-        var toolbar = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,Auto,Auto,*,118,174"), Margin = new Thickness(8, 1) };
-        _add = _theme.Button(Loc.T("계정 추가"), () => _ = AddAccountAsync()); toolbar.Children.Add(_add);
+        Grid.SetColumn(_settingsButton, 5); titlebar.Children.Add(_settingsButton); shell.Children.Add(titlebar);
+        var toolbar = new Grid { Margin = new Thickness(8, 1) };
         _cancel = _theme.Button(Loc.T("취소"), () => { _login?.Cancel(); _switch?.Cancel(); }); _cancel.IsVisible = _login != null || _switch != null;
-        Grid.SetColumn(_cancel, 1); toolbar.Children.Add(_cancel);
-        _refresh = _theme.IconButton(DeskButtonIconKind.Refresh, Loc.T("새로 고침"), () => _ = RefreshAsync()); _refresh.Width = 28; _refresh.Padding = new Thickness(0);
-        ToolTip.SetTip(_refresh, Loc.T("새로 고침") + " (⌘R / F5)"); Grid.SetColumn(_refresh, 2); toolbar.Children.Add(_refresh);
-        _sessionValues = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
-        Grid.SetColumn(_sessionValues, 4); toolbar.Children.Add(_sessionValues);
-        _hardware = new Grid { Margin = new Thickness(6, 0, 0, 0) }; Grid.SetColumn(_hardware, 5); toolbar.Children.Add(_hardware); Grid.SetRow(toolbar, 1); shell.Children.Add(toolbar);
+        _cancel.HorizontalAlignment = HorizontalAlignment.Left;
+        toolbar.Children.Add(_cancel);
+        _sessionValues = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 24, HorizontalAlignment = HorizontalAlignment.Center };
+        toolbar.Children.Add(_sessionValues); Grid.SetRow(toolbar, 1); shell.Children.Add(toolbar);
         _accounts = new Grid { Margin = new Thickness(4, 2) };
         _accountScroll = new ScrollViewer { Content = _accounts, HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled };
         _accountScroll.SizeChanged += (_, _) => ResizeAccounts(); Grid.SetRow(_accountScroll, 2); shell.Children.Add(_accountScroll);
-        var footer = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto"), Margin = new Thickness(8, 2) };
-        _volumes = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 }; footer.Children.Add(_volumes);
+        var footer = new Grid { RowDefinitions = new RowDefinitions("22,24"), ColumnDefinitions = new ColumnDefinitions("*,Auto"), Margin = new Thickness(8, 2) };
+        _hardware = new Grid { Height = 18, Margin = new Thickness(0, 0, 0, 4) }; Grid.SetColumnSpan(_hardware, 2); footer.Children.Add(_hardware);
+        _volumes = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 }; Grid.SetRow(_volumes, 1); footer.Children.Add(_volumes);
         _status = _theme.Text(_statusMessage, 10, "muted"); ToolTip.SetTip(_status, _statusMessage); _status.MaxWidth = 150; _status.VerticalAlignment = VerticalAlignment.Center;
-        Grid.SetColumn(_status, 1); footer.Children.Add(_status); Grid.SetRow(footer, 3); shell.Children.Add(footer); Content = shell;
+        Grid.SetColumn(_status, 1); Grid.SetRow(_status, 1); footer.Children.Add(_status); Grid.SetRow(footer, 3); shell.Children.Add(footer); Content = shell;
         RenderAccounts(); RenderSessions(); RenderHardware(); RenderVolumes();
     }
     private void RenderAccounts()
@@ -243,11 +246,11 @@ internal sealed class DeskWindow : Window
     private void AccountMenu(Button target, AccountProfile profile)
     {
         MenuItem Item(string text, Action action) { var item = new MenuItem { Header = text }; item.Click += (_, _) => action(); return item; }
-        var menu = new ContextMenu { ItemsSource = new[] {
-            Item("History", () => new HistoryWindow(_service!, profile.Key, _theme).Show(this)),
+        var menu = _theme.Menu(target); menu.ItemsSource = new[] {
+            Item(Loc.T("추이 보기"), () => new HistoryWindow(_service!, profile.Key, _theme).Show(this)),
             Item(Loc.T("이 계정 즉시 새로 고침"), () => _ = RunAsync(token => _service!.RefreshAccountAsync(profile.Key, token, true))),
             Item(Loc.T("이름 변경"), async () => { var value = await DeskDialogs.Prompt(this, _theme, Loc.T("이름 변경"), profile.Alias); if (value != null) await RunAsync(_ => { _service!.Rename(profile.Key, value); return Task.CompletedTask; }); }),
-            Item(Loc.T("삭제"), async () => { if (_switch != null) return; if (await DeskDialogs.Confirm(this, _theme, Loc.T("삭제"), profile.DisplayName)) await RunAsync(_ => _service!.RemoveAsync(profile.Key)); }) } };
+            Item(Loc.T("삭제"), async () => { if (_switch != null) return; if (await DeskDialogs.Confirm(this, _theme, Loc.T("삭제"), profile.DisplayName)) await RunAsync(_ => _service!.RemoveAsync(profile.Key)); }) };
         menu.Open(target);
     }
     private void RenderSessions()
@@ -257,8 +260,9 @@ internal sealed class DeskWindow : Window
         var labels = new[] { "실행", "큐", "목표" };
         for (var i = 0; i < 3; i++)
         {
-            var cell = new StackPanel { Width = 39 }; var label = _theme.Text(Loc.T(labels[i]), 10, "muted"); label.HorizontalAlignment = HorizontalAlignment.Center;
-            var value = _theme.Text(numbers[i]?.ToString(Loc.Culture) ?? "—", 16); value.HorizontalAlignment = HorizontalAlignment.Center; value.FontWeight = FontWeight.SemiBold;
+            var cell = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, VerticalAlignment = VerticalAlignment.Center };
+            var label = _theme.Text(Loc.T(labels[i]), 10, "muted"); label.VerticalAlignment = VerticalAlignment.Center;
+            var value = _theme.Text(numbers[i]?.ToString(Loc.Culture) ?? "—", 16); value.VerticalAlignment = VerticalAlignment.Center; value.FontWeight = FontWeight.SemiBold;
             cell.Children.Add(label); cell.Children.Add(value); _sessionValues.Children.Add(cell);
         }
         ToolTip.SetTip(_sessionValues, current.Available ? Loc.F("승인/입력 대기 {0}", current.Waiting) + "\n" +
@@ -266,46 +270,62 @@ internal sealed class DeskWindow : Window
     }
     private void RenderHardware()
     {
-        _hardware.Children.Clear(); _hardware.ColumnDefinitions.Clear(); var usage = _resources.Current;
+        var usage = _resources.Current;
         var readings = new[] { usage.Cpu, usage.Memory, usage.Gpu, usage.Vram }; var labels = new[] { "CPU", "MEM", "GPU", "VRAM" };
+        var scopes = new[] { "PC 전체 CPU", "PC 전체 물리 메모리", "가장 바쁜 GPU 엔진", "가장 높은 전용 GPU 메모리 사용률" };
         for (var i = 0; i < 4; i++)
         {
-            var index = i; _hardware.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star)); var reading = readings[i]; _pressure[i] = HardwareMath.Pressure(reading.Percent, _pressure[i]);
+            var index = i; var reading = readings[i]; _pressure[i] = HardwareMath.Pressure(reading.Percent, _pressure[i]);
             var color = _pressure[i] switch { ResourcePressure.Warning => "warning", ResourcePressure.Critical => "danger", ResourcePressure.Unknown => "muted", _ => "accent" };
-            var cell = new Grid { ClipToBounds = true, Margin = new Thickness(1) };
-            var chart = new PercentChart { Palette = _theme, ColorName = color, Points = (usage.History ?? Array.Empty<HardwareObservation>()).Select(p =>
-                new ResourceTrendPoint(p.At, index switch { 0 => p.Cpu, 1 => p.Memory, 2 => p.Gpu, _ => p.Vram })).ToArray() }; cell.Children.Add(chart);
-            var text = new StackPanel { VerticalAlignment = VerticalAlignment.Center }; var label = _theme.Text(labels[i], 9, "muted"); label.HorizontalAlignment = HorizontalAlignment.Center;
-            var value = _theme.Text(reading.Percent is double actual ? actual.ToString("0", Loc.Culture) + "%" : "—", 12, _pressure[i] is ResourcePressure.Warning or ResourcePressure.Critical ? color : "text"); value.HorizontalAlignment = HorizontalAlignment.Center;
-            text.Children.Add(label); text.Children.Add(value); cell.Children.Add(text);
-            ToolTip.SetTip(cell, (reading.Device ?? labels[i]) + "\n" + (reading.Problem == null ? "70% warning / 85% critical" : Loc.Error(reading.Problem)) +
-                (reading.UsedBytes.HasValue && reading.TotalBytes.HasValue ? "\n" + (reading.UsedBytes.Value / 1073741824.0).ToString("0.##") + " / " + (reading.TotalBytes.Value / 1073741824.0).ToString("0.##") + " GiB" : ""));
-            Grid.SetColumn(cell, i); _hardware.Children.Add(cell);
+            Grid cell;
+            if (_hardware.Children.Count <= i)
+            {
+                _hardware.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star)); cell = new Grid { ClipToBounds = true, Margin = new Thickness(1) }; cell.Children.Add(new PercentChart());
+                var text = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+                var label = _theme.Text(labels[i], 10, "muted"); label.VerticalAlignment = VerticalAlignment.Center; text.Children.Add(label);
+                text.Children.Add(_theme.Text("", 12)); cell.Children.Add(text); Grid.SetColumn(cell, i); _hardware.Children.Add(cell);
+            }
+            else cell = (Grid)_hardware.Children[i];
+            var chart = (PercentChart)cell.Children[0]; chart.Palette = _theme; chart.ColorName = color;
+            chart.Points = (usage.History ?? Array.Empty<HardwareObservation>()).Select(p => new ResourceTrendPoint(p.At, index switch { 0 => p.Cpu, 1 => p.Memory, 2 => p.Gpu, _ => p.Vram })).ToArray(); chart.InvalidateVisual();
+            var value = (TextBlock)((StackPanel)cell.Children[1]).Children[1]; value.Text = reading.Percent is double actual ? actual.ToString("0", Loc.Culture) + "%" : "—";
+            value.Foreground = _theme.Brush(_pressure[i] is ResourcePressure.Warning or ResourcePressure.Critical ? color : "text");
+            var details = Loc.T(scopes[i]) + (reading.Device == null ? "" : "\n" + reading.Device) + (reading.Problem == null ? "" : "\n" + Loc.Error(reading.Problem)) +
+                (reading.UsedBytes.HasValue && reading.TotalBytes.HasValue ? "\n" + Loc.F("{0:0.##} / {1:0.##} GiB", reading.UsedBytes.Value / 1073741824.0, reading.TotalBytes.Value / 1073741824.0) : "") +
+                "\n" + Loc.F("2초 간격\n경고 {0}% / 위험 {1}%\n해제 기준 {2}%p 낮음", HardwareMath.WarningPercent, HardwareMath.CriticalPercent, HardwareMath.ReleaseMargin);
+            MacToolTipTheme.Resource(cell, labels[i], reading.Percent is double percent ? percent.ToString("0.0", Loc.Culture) + "%" : "—", details, _theme,
+                _pressure[i] switch { ResourcePressure.Warning or ResourcePressure.Critical => color, ResourcePressure.Unknown => "muted", _ => "text" });
         }
     }
     private void RenderVolumes()
     {
-        _volumes.Children.Clear();
         var readings = _drives.Current;
         var visibleCount = Math.Min(readings.Length, Math.Max(1, (int)((Bounds.Width - 170) / 91)));
-        foreach (var drive in readings.Take(visibleCount))
+        var visible = readings.Take(visibleCount).ToArray();
+        if (!_volumes.Children.Select(control => (string?)control.Tag).SequenceEqual(visible.Select(drive => drive.Root))) _volumes.Children.Clear();
+        for (var index = 0; index < visible.Length; index++)
         {
-            var width = Math.Min(160, Math.Max(85, (Bounds.Width - 170) / visibleCount - 6));
-            var cell = new Grid { Width = width, Height = 22, ClipToBounds = true };
-            cell.Children.Add(new Border { Background = _theme.Brush("surface"), CornerRadius = new CornerRadius(6) });
-            if (drive.FreePercent is double value) cell.Children.Add(new Border { Width = width * value / 100, HorizontalAlignment = HorizontalAlignment.Left, Background = _theme.Brush(value <= 15 ? "danger" : value <= 30 ? "warning" : "selected"), CornerRadius = new CornerRadius(6) });
-            var text = _theme.Text(drive.Label + " " + (drive.Free.HasValue ? (drive.Free.Value / 1073741824.0).ToString("0.#", Loc.Culture) + " GiB" : "—"), 10);
-            text.Margin = new Thickness(5, 2); cell.Children.Add(text);
-            ToolTip.SetTip(cell, drive.Root + (drive.Total.HasValue ? "\n" + (drive.Free!.Value / 1073741824.0).ToString("0.##", Loc.Culture) + " / " +
-                (drive.Total.Value / 1073741824.0).ToString("0.##", Loc.Culture) + " GiB" : "\n—")); _volumes.Children.Add(cell);
+            var drive = visible[index]; var width = Math.Min(160, Math.Max(85, (Bounds.Width - 170) / visibleCount - 6));
+            Grid cell;
+            if (_volumes.Children.Count <= index)
+            {
+                cell = new Grid { Height = 22, ClipToBounds = true, Tag = drive.Root }; cell.Children.Add(new Border { CornerRadius = new CornerRadius(6) });
+                cell.Children.Add(new Border { HorizontalAlignment = HorizontalAlignment.Left, CornerRadius = new CornerRadius(6) }); cell.Children.Add(_theme.Text("", 10)); _volumes.Children.Add(cell);
+            }
+            else cell = (Grid)_volumes.Children[index];
+            cell.Width = width; ((Border)cell.Children[0]).Background = _theme.Brush("surface");
+            var fill = (Border)cell.Children[1]; fill.Width = width * (drive.FreePercent ?? 0) / 100;
+            var color = drive.FreePercent is double value ? value <= 15 ? "danger" : value <= 30 ? "warning" : "selected" : "muted"; fill.Background = _theme.Brush(color);
+            var freeText = drive.Free.HasValue ? (drive.Free.Value / 1073741824.0).ToString("0.#", Loc.Culture) + " GiB" : "—";
+            var text = (TextBlock)cell.Children[2]; text.Text = drive.Label + " " + freeText; text.Margin = new Thickness(5, 2);
+            var details = drive.Root + "\n" + (drive.Free.HasValue ? Loc.F("남음 {0:0.##} / {1:0.##} GiB\n잔여 {2:0.0}%", drive.Free.Value / 1073741824.0, drive.Total!.Value / 1073741824.0, drive.FreePercent) : Loc.T("드라이브 조회 불가"));
+            MacToolTipTheme.Resource(cell, drive.Label, freeText, details, _theme, color is "warning" or "danger" ? color : "text");
         }
-        ToolTip.SetTip(_volumes, string.Join("\n", readings.Select(d => d.Label + " · " + d.Root + " · " +
-            (d.Free.HasValue ? (d.Free.Value / 1073741824.0).ToString("0.##", Loc.Culture) + " GiB" : "—"))));
     }
     private void OpenSettings()
     {
         if (_service == null) return;
-        var menu = new ContextMenu();
+        var menu = _theme.Menu(_settingsButton);
         var auto = new MenuItem { Header = Loc.T("자동 갱신"), ToggleType = MenuItemToggleType.CheckBox, IsChecked = _service.Vault.Data.AutoRefresh };
         auto.Click += (_, _) => _ = RunAsync(_ => { lock (_service.Vault.SyncRoot) { _service.Vault.Data.AutoRefresh = auto.IsChecked; _service.Vault.Save(); } return Task.CompletedTask; });
         var drives = new MenuItem { Header = Loc.T("드라이브 설정") }; drives.Click += async (_, _) =>

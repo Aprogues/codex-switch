@@ -70,10 +70,10 @@ internal sealed class AccountTankCard : Grid
         _metricHost = new Grid { Background = Brushes.Transparent, ToolTip = period + (profile.Error == null ? "" : "\n" + Loc.Error(profile.Error)) }; _metricHost.Children.Add(metric);
         if (choices.Length > 1)
         {
-            var menu = new ContextMenu();
+            var menu = DropdownTheme.Create(_metricHost, theme);
             foreach (var quota in choices)
             {
-                var item = new MenuItem { Header = quota.BucketLabel + " · " + Loc.F("{0} {1:0.#}%", quota.Window.PeriodLabel, quota.Window.Remaining), IsCheckable = true, IsChecked = quota == choice };
+                var item = new MenuItem { Header = quota.BucketLabel + "  " + Loc.F("{0} {1:0.#}%", quota.Window.PeriodLabel, quota.Window.Remaining), IsCheckable = true, IsChecked = quota == choice };
                 item.Click += (_, _) => selectWindow(quota.BucketId + ":" + quota.Slot); menu.Items.Add(item);
             }
             _metricHost.ContextMenu = menu; _metricHost.Cursor = System.Windows.Input.Cursors.Hand; _metricHost.ToolTip = period + "\n" + Loc.T("클릭하여 다른 한도 선택");

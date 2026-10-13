@@ -40,8 +40,8 @@ internal sealed class MacAccountCard : Grid
         var choices = Choices(profile);
         if (choices.Length > 1)
         {
-            var menu = new ContextMenu();
-            menu.ItemsSource = choices.Select(q => { var item = new MenuItem { Header = q.BucketLabel + " " + Loc.F("{0} {1:0.#}%", q.Window.PeriodLabel, q.Window.Remaining) }; item.Click += (_, _) => select(q.BucketId + ":" + q.Slot); return item; }).ToArray();
+            var menu = theme.Menu(metricHost);
+            menu.ItemsSource = choices.Select(q => { var item = new MenuItem { Header = q.BucketLabel + "  " + Loc.F("{0} {1:0.#}%", q.Window.PeriodLabel, q.Window.Remaining), ToggleType = MenuItemToggleType.Radio, IsChecked = q == quota }; item.Click += (_, _) => select(q.BucketId + ":" + q.Slot); return item; }).ToArray();
             metricHost.ContextMenu = menu; metricHost.PointerPressed += (_, args) => { if (args.GetCurrentPoint(metricHost).Properties.IsLeftButtonPressed) menu.Open(metricHost); };
         }
         var footer = new Grid { RowDefinitions = new RowDefinitions("14,14,14"), ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto") };

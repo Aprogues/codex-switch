@@ -9,10 +9,11 @@ namespace CodexAccountDesk;
 
 internal static class AppIdentity
 {
-    private static readonly Geometry Mark = ReadMark();
-    private static Geometry ReadMark()
+    private static readonly Geometry Mark = ReadGeometry("Mark.path");
+    private static readonly Geometry Body = ReadGeometry("MarkBody.path");
+    private static Geometry ReadGeometry(string resource)
     {
-        using var stream = typeof(AppIdentity).Assembly.GetManifestResourceStream("CodexAccountDesk.Mark.path")!;
+        using var stream = typeof(AppIdentity).Assembly.GetManifestResourceStream("CodexAccountDesk." + resource)!;
         using var reader = new StreamReader(stream);
         var geometry = Geometry.Parse("F0 " + reader.ReadToEnd()); geometry.Freeze(); return geometry;
     }
@@ -41,6 +42,7 @@ internal static class AppIdentity
             using (var context = visual.RenderOpen())
             {
                 context.PushTransform(new ScaleTransform(size / 1000d, size / 1000d));
+                context.DrawGeometry(Brushes.White, null, Body);
                 context.DrawGeometry(Brushes.Black, null, Mark); context.Pop();
             }
             var bitmap = new RenderTargetBitmap(size, size, 96, 96, PixelFormats.Pbgra32); bitmap.Render(visual);

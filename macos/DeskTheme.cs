@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Automation;
+using Avalonia.Controls.Primitives;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Styling;
@@ -41,6 +42,7 @@ internal sealed class DeskTheme
         window.Background = Brush("canvas"); window.Foreground = Brush("text"); window.FontFamily = new FontFamily("Helvetica Neue");
         window.RequestedThemeVariant = Dark ? ThemeVariant.Dark : ThemeVariant.Light;
         window.Styles.Clear();
+        window.Resources[typeof(ToolTip)] = MacToolTipTheme.For(this);
         window.Styles.Add(new Style(selector => selector.OfType<Button>()) { Setters = {
             new Setter(AButton.BackgroundProperty, Brush("surface")), new Setter(AButton.ForegroundProperty, Brush("text")),
             new Setter(AButton.BorderThicknessProperty, new Thickness(0)), new Setter(AButton.CornerRadiusProperty, new CornerRadius(8)),
@@ -48,8 +50,34 @@ internal sealed class DeskTheme
             new Setter(AButton.MinHeightProperty, 26.0), new Setter(AButton.PaddingProperty, new Thickness(8, 3)), new Setter(AButton.FontSizeProperty, 12.0) } });
         window.Styles.Add(new Style(selector => selector.OfType<AButton>().Class(":pointerover")) { Setters = { new Setter(AButton.BackgroundProperty, Brush("hover")) } });
         window.Styles.Add(new Style(selector => selector.OfType<AButton>().Class(":disabled")) { Setters = { new Setter(AButton.OpacityProperty, 0.5) } });
+        window.Styles.Add(new Style(selector => selector.OfType<AButton>().Class("title-action")) { Setters = {
+            new Setter(AButton.BackgroundProperty, Brushes.Transparent), new Setter(AButton.WidthProperty, 28.0), new Setter(AButton.HeightProperty, 28.0),
+            new Setter(AButton.PaddingProperty, new Thickness(0)), new Setter(AButton.VerticalAlignmentProperty, VerticalAlignment.Center) } });
+        window.Styles.Add(new Style(selector => selector.OfType<AButton>().Class("title-action").Class(":pointerover")) { Setters = { new Setter(AButton.BackgroundProperty, Brush("hover")) } });
     }
     public TextBlock Text(string value, double size = 12, string color = "text") => new() { Text = value, FontSize = size, Foreground = Brush(color), TextTrimming = TextTrimming.CharacterEllipsis };
+    public ContextMenu Menu(Control owner)
+    {
+        var menu = new ContextMenu { Placement = PlacementMode.BottomEdgeAlignedRight, VerticalOffset = 4 };
+        menu.Styles.Add(new Style(selector => selector.OfType<ContextMenu>()) { Setters = {
+            new Setter(ContextMenu.BackgroundProperty, Brush("elevated")), new Setter(ContextMenu.ForegroundProperty, Brush("text")),
+            new Setter(ContextMenu.BorderThicknessProperty, new Thickness(0)), new Setter(ContextMenu.CornerRadiusProperty, new CornerRadius(12)),
+            new Setter(ContextMenu.PaddingProperty, new Thickness(6)), new Setter(ContextMenu.FontSizeProperty, 13.0),
+            new Setter(ContextMenu.MinWidthProperty, 160.0), new Setter(ContextMenu.MaxWidthProperty, 336.0), new Setter(ContextMenu.MaxHeightProperty, 336.0) } });
+        menu.Styles.Add(new Style(selector => selector.OfType<MenuItem>()) { Setters = {
+            new Setter(MenuItem.ForegroundProperty, Brush("text")), new Setter(MenuItem.BackgroundProperty, Brushes.Transparent),
+            new Setter(MenuItem.PaddingProperty, new Thickness(8, 6, 10, 6)), new Setter(MenuItem.MinHeightProperty, 32.0),
+            new Setter(MenuItem.FontSizeProperty, 13.0), new Setter(MenuItem.CornerRadiusProperty, new CornerRadius(6)) } });
+        menu.Styles.Add(new Style(selector => selector.OfType<MenuItem>().Class(":pointerover")) { Setters = { new Setter(MenuItem.BackgroundProperty, Brush("hover")) } });
+        menu.Styles.Add(new Style(selector => selector.OfType<MenuItem>().Class(":checked")) { Setters = { new Setter(MenuItem.BackgroundProperty, Brush("selected")) } });
+        menu.Styles.Add(new Style(selector => selector.OfType<MenuItem>().Class(":disabled")) { Setters = { new Setter(MenuItem.OpacityProperty, 0.45) } });
+        menu.Styles.Add(new Style(selector => selector.OfType<Separator>()) { Setters = {
+            new Setter(Separator.BackgroundProperty, Brush("divider")), new Setter(Separator.MarginProperty, new Thickness(8, 5)), new Setter(Separator.HeightProperty, 1.0) } });
+        EventHandler<VisualTreeAttachmentEventArgs> detached = (_, _) => menu.Close();
+        menu.Opened += (_, _) => owner.DetachedFromVisualTree += detached;
+        menu.Closed += (_, _) => owner.DetachedFromVisualTree -= detached;
+        return menu;
+    }
     public Button Button(string value, Action action) { var button = new Button { Content = value }; button.Click += (_, _) => action(); return button; }
     public Button IconButton(DeskButtonIconKind kind, string label, Action action)
     {

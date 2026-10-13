@@ -32,6 +32,7 @@ def simplify(points,epsilon):
     return simplify(points[:index+1],epsilon)[:-1]+simplify(points[index:],epsilon)
 
 paths=[]
+contours=[]
 while edges:
     start=next(iter(edges));p=start;points=[]
     while True:
@@ -41,8 +42,13 @@ while edges:
     midpoint=len(points)//2
     points=simplify(points[:midpoint+1],1)+simplify(points[midpoint:]+[points[0]],1)[1:]
     coords=[(x*1000/w,y*1000/h) for x,y in points]
+    contours.append(coords)
     paths.append('M '+' L '.join(f'{x:.3f},{y:.3f}' for x,y in coords)+' Z')
 data=' '.join(paths)
 (root/'Assets/mark.path').write_text(data+'\n',encoding='utf-8')
 (root/'Assets/mark.svg').write_text(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><path fill="currentColor" fill-rule="evenodd" d="{data}"/></svg>\n',encoding='utf-8')
+def area(contour):
+    return abs(sum(a[0]*b[1]-b[0]*a[1] for a,b in zip(contour,contour[1:]+contour[:1])))
+body=paths[max(range(len(contours)),key=lambda index:area(contours[index]))]
+(root/'Assets/mark-body.path').write_text(body+'\n',encoding='utf-8')
 print({'contours':len(paths),'pathBytes':len(data),'viewBox':[0,0,1000,1000]})
