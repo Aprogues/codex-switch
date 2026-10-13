@@ -1,5 +1,14 @@
 # Delivery state
 
+## 2026-10-14 single canonical repository
+
+- All latest 1.27.6 source/assets/docs and private ignored evidence are consolidated at D:/Git/codex-switch. The destination's Developer ID timestamp, signed-bundle installer preservation and notarization helper were retained.
+- Both Git histories have verified local bundle backups. Old private artifacts were copied with SHA-256 verification and collisions were preserved separately. GitHub repository/branch/tag/release/issue metadata were archived privately.
+- Windows publish/Mac compilation and 93 Windows internal plus 23 disposable queue/WAL checks passed from the new root. Native Mac execution and real account actions were not performed.
+- The existing snapshot automation created local commit d3844fc during the transfer. The user subsequently approved a scoped consolidation documentation commit and push to the private codex-switch main; this includes the transferred source commits and does not publish a Release.
+- D:/Git/codex-account-desk is absent after checked-path removal. All123 current source files have SHA-256 verified recovery copies, a final bundle is valid and a complete private Git ZIP passed its integrity check. Git objects required clearing their read-only attribute strictly inside the checked retired directory.
+- GitHub's deletion-success banner and authenticated API404 confirm Gaebabi/codex-account-desk was deleted. Gaebabi/codex-switch remains available/private. Active instructions, build root and origin/upstream now select only codex-switch. Local/remote receipts and screenshots are ignored/private.
+
 ## 2026-10-14 clear session counter groups (1.27.6)
 
 - Removed the Windows titlebar account/usage breadcrumb and its compact-window visibility branch.

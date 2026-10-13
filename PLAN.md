@@ -1,4 +1,14 @@
-# Codex Account Desk
+# Codex Switch
+
+## 2026-10-14 single canonical repository
+
+- [x] Compare both repositories, transfer all latest 1.27.6 source/assets/docs and retain the Mac signing/installer improvements unique to codex-switch.
+- [x] Preserve old Git refs/history, working state, private captures/tools and remote repository metadata inside ignored recovery storage.
+- [x] Build Windows/Mac and pass 93 Windows internal checks plus 23 isolated queue/WAL checks from codex-switch.
+- [x] Retire the previous local/GitHub repository and verify that only codex-switch is an active repository.
+- [x] Update canonical-path guidance and record deletion evidence; commit/push the reviewed consolidation under explicit user approval.
+
+The old local checkout is absent. GitHub reports successful deletion of Gaebabi/codex-account-desk and an authenticated API read confirms 404; Gaebabi/codex-switch remains private and available. Windows/Mac builds and 93 internal plus 23 queue/WAL checks passed. Current source files, full old Git state and private evidence are preserved in ignored recovery storage. The user explicitly approved the final deletion and commit/push. Native Mac execution, real account switching and public Release were not performed.
 
 ## 2026-10-14 clear session counter groups
 

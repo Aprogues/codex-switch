@@ -16,21 +16,23 @@ A local Windows and macOS utility for switching between your Codex accounts, bac
 
 Independent community software; not affiliated with or endorsed by OpenAI. Local version **1.27.6**. English is the default; the app also supports Korean and preserves your saved language choice.
 
+The sole development repository is **codex-switch** (`D:/Git/codex-switch` on Windows), with private GitHub origin `Gaebabi/codex-switch`. All current Windows/Mac changes and working documents are here. See [repository status](REPOSITORY.md) and [operations](OPERATIONS.md). Earlier repository names in dated work records describe historical locations.
+
 <p align="center">
   <img src="docs/media/compact.gif" width="500" alt="Live compact Codex Switch dashboard, with permanently redacted account names and no cursor" />
 </p>
 
-## Download and run
+## Local package and run
 
-Download a complete self-contained package; **no source build or .NET installation is needed**. Codex desktop/CLI must already be installed.
+Use the complete self-contained Windows folder at `artifacts/win-x64` or a Mac app bundle built by the scripts below. The current local source is 1.27.6. Public distribution was stopped; the previous 1.27.0 Release is not the current package. Codex desktop/CLI must already be installed.
 
 | Platform | Download | Start |
 | --- | --- | --- |
-| Windows x64 | [Windows ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.27.0/CodexSwitch-v1.27.0-win-x64.zip) | Extract the whole folder and run `CodexSwitch.exe` |
-| Mac Apple Silicon | [Apple Silicon ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.27.0/CodexSwitch-v1.27.0-osx-arm64.zip) | Extract, run `Install.command`, open **Codex Switch.app** |
-| Mac Intel | [Intel ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.27.0/CodexSwitch-v1.27.0-osx-x64.zip) | Extract, run `Install.command`, open **Codex Switch.app** |
+| Windows x64 | `artifacts/win-x64` | Keep the whole folder and run `CodexSwitch.exe` |
+| Mac Apple Silicon | `bash scripts/build-macos.sh osx-arm64` | Extract the resulting ZIP, run `Install.command`, open **Codex Switch.app** |
+| Mac Intel | `bash scripts/build-macos.sh osx-x64` | Extract the resulting ZIP, run `Install.command`, open **Codex Switch.app** |
 
-[Release notes](https://github.com/Gaebabi/codex-switch/releases/tag/v1.27.0) · [SHA-256 checksums](https://github.com/Gaebabi/codex-switch/releases/download/v1.27.0/SHA256SUMS.txt)
+Build outputs, local recovery bundles and personal diagnostics are excluded from Git. A source push does not publish a new executable Release.
 
 Keep the complete Windows folder and Mac app bundle intact. Packages are unsigned; Mac installation applies local ad-hoc signing and macOS may require its normal opening/Keychain authorization flow. Developer ID notarization is not configured. Native Mac account switching and Intel-device acceptance remain separate from cross-build/package checks. [Mac setup](docs/MACOS.md)
 
@@ -67,7 +69,7 @@ The recordings show the live dashboard and responsive layout. They do not show a
 
 ## Build and run
 
-For development, install the **.NET 8 SDK or later** and Codex desktop/CLI. For everyday use, [download the Release](#download-and-run); packages are self-contained. Automatic updates are not configured.
+For development, install the **.NET 8 SDK or later** and Codex desktop/CLI. For everyday use, keep the complete local package together; packages are self-contained. Automatic updates are not configured.
 
 ### Windows x64
 
@@ -95,7 +97,7 @@ Earlier Apple Silicon native storage/resource/layout checks passed. Real Mac sig
 
 ## Everyday workflow
 
-1. Select **Add account** to sign in through your browser, or use the account icon beside it to import the current Codex login.
+1. Select **Add account** in the title bar to sign in through your browser. On Windows, right-click the refresh icon to import the current Codex login.
 2. Compare the account cards. The active account is labeled **In use**. Use quota selectors to inspect available windows.
 3. Choose **Switch** on the account you want next. The utility backs up and hands off local chats as described in [switch behavior](docs/SWITCHING.md).
 4. Refresh with **F5** or the tray. Automatic reads run every 60 seconds. Open **History** from an account's `···` menu; configure local drives from the footer's `···` menu.

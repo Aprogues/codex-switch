@@ -1,5 +1,9 @@
 # 운영 안내
 
+## 유일한 정본 (2026-10-14)
+
+사용자 요청으로 최신 1.27.6 코드, 아이콘, Windows/Mac UI, 개발 문서와 개인 검증 자료를 `D:/Git/codex-switch`에 통합했다. GitHub 정본은 `Gaebabi/codex-switch`, private, `main`이다. 이전 `D:/Git/codex-account-desk` 및 GitHub `Gaebabi/codex-account-desk`는 검증한 복구 자료를 남긴 뒤 삭제했고, 로컬 경로 부재/GitHub 삭제 성공 메시지와 인증 API404를 확인했다. 새 작업/빌드/배포는 codex-switch만 사용한다. 사용자가 통합 커밋/푸시를 명시 승인했으며 원격 main SHA 일치로 확인한다. 저장소 복구 자료와 정리 상태는 `REPOSITORY.md`가 소유한다. 과거 날짜의 로그에 있는 이전 경로는 당시 기록이며 현재 정본을 뜻하지 않는다. 계정 vault/home/호환 namespace와 설치된 앱 경로는 그대로 유지한다.
+
 ## 현재 공개 중단 상태 (2026-10-13)
 
 사용자가 공개/Release/공증 작업을 취소하고 개인 사용으로 전환했다. `Gaebabi/codex-switch` 완전 삭제는 토큰의 delete_repo 권한 부족으로403거절되어 private으로 전환했고 비로그인 저장소/Release접근404를 확인했다. 실제삭제는아직안됐다. 기존 `Gaebabi/codex-account-desk` private과개인소스/계정/실행패키지는보존한다. 아이콘변경은현재checkout에유지하며만족확인/직접요청없이추가commit/push하지않는다. 이후공개/Release/공증은새사용자요청이있을때만재개한다.
@@ -83,9 +87,9 @@ Sync worker는 기존 로그인/계정 전환/사용량 갱신과 분리해 비�
 
 ## 저장소와 실행 경로
 
-- 소스: Windows의 기존 로컬 checkout 및 Mac의 같은 비공개 저장소 checkout
-- 기존 GitHub: `Gaebabi/codex-account-desk`, private, 기준 브랜치 `main`; 이력은 비공개로 보존
-- 새 공개 프로젝트: `Gaebabi/codex-switch`, public, `main`; 과거 커밋/개인 이메일을 가져오지 않고 검수한 source/docs/assets만 새 이력으로 게시
+- 소스: Windows `D:/Git/codex-switch` 및 Mac의 같은 `codex-switch` 저장소 checkout
+- GitHub: `Gaebabi/codex-switch`, private, 기준 브랜치 `main`; 추가 공개/Release는 별도 요청이 필요하다.
+- 이전 Git 이력은 ignored `artifacts/repository-migration-20261014`의 검증한 bundle로 보존하며 현재 브랜치에 병합하지 않는다.
 - 기술: .NET 8 WPF/WinForms 트레이, 자체 포함 Windows x64, 별도 앱 NuGet 의존성 없음
 - macOS: 별도 `macos/CodexAccountDesk.Mac.csproj`, .NET 8/Avalonia 11.3.22, osx-arm64/osx-x64, 기존 코어 소스 링크 공유
 - 빌드 출력: `artifacts/win-x64`, Git 제외
