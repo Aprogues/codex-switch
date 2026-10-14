@@ -4,7 +4,9 @@ import argparse
 from pathlib import Path
 import subprocess
 import tempfile
+import hashlib
 import xml.etree.ElementTree as ET
+from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 WORK = ROOT / 'artifacts/documentation-demo'
@@ -215,9 +217,18 @@ def main():
     subprocess.run(['dotnet', 'build', str(WORK / 'Demo.csproj'), '-c', 'Release', '--nologo', '-p:UseSharedCompilation=false'], check=True)
     with tempfile.TemporaryDirectory(prefix='fixture-', dir=WORK) as fixture:
         subprocess.run(['dotnet', str(WORK / 'bin/Release/net10.0-windows/CodexSwitch.Demo.dll'), str(output), fixture, options.language, str(options.width), str(options.height), str(options.pack.resolve()) if options.pack else '', 'live' if options.live_resources else 'demo' if options.temperature_preview else '', 'dates' if options.deadline_preview else '', options.theme], check=True, timeout=30)
+    with Image.open(output) as raw:
+        raw.load()
+        clean = Image.new('RGBA', raw.size)
+        clean.paste(raw.convert('RGBA'))
+    clean.save(output, format='PNG')
     manifest_path = output.with_suffix('.json')
     manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
-    manifest['sourceVersion'] = ET.parse(ROOT / 'src/windows/CodexSwitch.Windows.csproj').findtext('PropertyGroup/Version')
+    manifest['sourceVersion'] = ET.parse(ROOT / 'Directory.Build.props').findtext('PropertyGroup/Version')
+    manifest['sourceRevision'] = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
+    manifest['language'] = options.language
+    manifest['theme'] = options.theme
+    manifest['sha256'] = hashlib.sha256(output.read_bytes()).hexdigest()
     manifest_path.write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
     print(json.dumps({'screenshot': str(output), 'bytes': output.stat().st_size, 'language':options.language, 'data': 'fictional', 'liveAccountsTouched': False}))
 
