@@ -1,6 +1,10 @@
 # Current status
 
-Updated 2026-10-15. Source version **1.30.1**; published binaries **1.27.6**.
+Updated 2026-10-15. Source version **1.30.2**; published binaries **1.27.6**.
+
+Issue31: common rounded scrollbars now apply at the window and popup theme boundary; title-bar theme actions use vector sun/moon icons with existing localized names/tooltips and save behavior. Mac history uses a scrollable content layout with a readable chart minimum; settings/future scroll viewers inherit the same theme. Isolated native Windows menu/history scrolling and all size/theme/language captures pass; Mac compiles. Native Mac images, final-head CI/review/merge remain gates. No personal data/screen or live Codex process is used.
+
+[Program comparison/confirmation](../evidence/scrollbars-theme-icons/README.md) now includes native language/history scrollbars and theme icons in Windows/macOS15 arm64/Intel. All56 PNGs contain fictional data only and stripped metadata. Run38631880233 passes all four jobs, including real overflow/offset assertions and Mac's visible language scrollbar. [PR32](https://github.com/Gaebabi/codex-switch/pull/32) owns final-head CI/review/merge. The Mac arrow-only menu template was replaced at the shared menu boundary; production rendering/storage/IPC behavior remains unchanged.
 
 Runtime issue4 is complete: PR27 merged to main de66231 after all four complete-head jobs in run38623109273 and an author self-review. Issue4 and its superseded dependency PR20 are closed. Native app/window evidence below retains its original1.30.0 checkpoint.
 

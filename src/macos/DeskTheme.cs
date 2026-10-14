@@ -6,6 +6,9 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Automation;
 using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Presenters;
+using Avalonia.Controls.Templates;
+using Avalonia.Data;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Styling;
@@ -42,6 +45,7 @@ internal sealed class DeskTheme
         window.Background = Brush("canvas"); window.Foreground = Brush("text"); window.FontFamily = new FontFamily("Helvetica Neue");
         window.RequestedThemeVariant = Dark ? ThemeVariant.Dark : ThemeVariant.Light;
         window.Styles.Clear();
+        MacScrollTheme.Install(window.Resources, this);
         window.Resources[typeof(ToolTip)] = MacToolTipTheme.For(this);
         window.Styles.Add(new Style(selector => selector.OfType<Button>()) { Setters = {
             new Setter(AButton.BackgroundProperty, Brush("surface")), new Setter(AButton.ForegroundProperty, Brush("text")),
@@ -59,6 +63,16 @@ internal sealed class DeskTheme
     public ContextMenu Menu(Control owner)
     {
         var menu = new ContextMenu { Placement = PlacementMode.BottomEdgeAlignedRight, VerticalOffset = 4 };
+        MacScrollTheme.Install(menu.Resources, this);
+        menu.Template = new FuncControlTemplate<ContextMenu>((parent, scope) =>
+        {
+            var items = new ItemsPresenter { Name = "PART_ItemsPresenter" };
+            scope.Register(items.Name, items);
+            items.Bind(ItemsPresenter.ItemsPanelProperty, new Binding("ItemsPanel") { Source = parent });
+            var scroll = new ScrollViewer { Content = items, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto, AllowAutoHide = false };
+            return new Border { Background = Brush("elevated"), CornerRadius = new CornerRadius(12), Padding = new Thickness(6), Child = scroll };
+        });
         menu.Styles.Add(new Style(selector => selector.OfType<ContextMenu>()) { Setters = {
             new Setter(ContextMenu.BackgroundProperty, Brush("elevated")), new Setter(ContextMenu.ForegroundProperty, Brush("text")),
             new Setter(ContextMenu.BorderThicknessProperty, new Thickness(0)), new Setter(ContextMenu.CornerRadiusProperty, new CornerRadius(12)),
