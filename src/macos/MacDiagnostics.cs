@@ -160,7 +160,8 @@ internal static class MacDiagnostics
                         if (!text.IsVisible) continue; var position = text.TranslatePoint(new Point(), card);
                         Assert(position.HasValue && position.Value.Y >= -1 && position.Value.Y + text.Bounds.Height <= card.Bounds.Height + 1, "Card text is vertically clipped: " + text.Text);
                     }
-                    Assert(window.AccountScroll.Extent.Height <= window.AccountScroll.Viewport.Height + 1, "Four cards unexpectedly require scrolling.");
+                    Assert(window.AccountScroll.Extent.Height <= window.AccountScroll.Viewport.Height + 1,
+                        $"Four cards unexpectedly require scrolling: extent={window.AccountScroll.Extent.Height}, viewport={window.AccountScroll.Viewport.Height}.");
                     var menuBar = window.MenuBarProbe;
                     Assert(menuBar is { Visible: true, Template: true, MenuItems: 5 } && menuBar.Title.Trim() == "72.6%", "Native menu bar lost its symbol, percentage or actions after rebuilding the view.");
                     foreach (var button in window.GetVisualDescendants().OfType<Button>().Where(b => b.IsVisible))
@@ -173,9 +174,10 @@ internal static class MacDiagnostics
                     }
                     checks.Add(new { name, passed = true });
                 }
-                catch (Exception error) { failures++; checks.Add(new { name, passed = false, error = error.Message }); }
+                catch (Exception error) { failures++; checks.Add(new { name, passed = false, error = error.Message }); Console.Error.WriteLine("UI case " + name + ": " + error.Message); }
                 using var bitmap = new RenderTargetBitmap(new PixelSize((int)window.ClientSize.Width * 2, (int)window.ClientSize.Height * 2), new Vector(192, 192));
                 bitmap.Render(window); bitmap.Save(Path.Combine(directory, name + ".png"));
+                if (Program.NativeUiEvidence) await NativeUiCapture.SaveAsync(window, Path.Combine(directory, name + "-native.png"));
             }
             foreach (var count in new[] { 0, 1, 8 })
             {
@@ -191,7 +193,7 @@ internal static class MacDiagnostics
                     }
                     checks.Add(new { name = "account-count-" + count, passed = true });
                 }
-                catch (Exception error) { failures++; checks.Add(new { name = "account-count-" + count, passed = false, error = error.Message }); }
+                catch (Exception error) { failures++; checks.Add(new { name = "account-count-" + count, passed = false, error = error.Message }); Console.Error.WriteLine("UI account-count " + count + ": " + error.Message); }
                 using var bitmap = new RenderTargetBitmap(new PixelSize((int)window.ClientSize.Width * 2, (int)window.ClientSize.Height * 2), new Vector(192, 192));
                 bitmap.Render(window); bitmap.Save(Path.Combine(directory, "accounts-" + count + ".png"));
             }
@@ -207,10 +209,13 @@ internal static class MacDiagnostics
                 if (!passed) failures++; checks.Add(new { name = "menu-bar-" + name, passed });
             }
         }
-        catch (Exception error) { failures++; checks.Add(new { name = "render", passed = false, error = error.Message }); }
+        catch (Exception error) { failures++; checks.Add(new { name = "render", passed = false, error = error.Message }); Console.Error.WriteLine("Native UI verification failed: " + error.GetType().Name + ": " + error.Message); }
         finally
         {
-            File.WriteAllText(Path.Combine(directory, "render-report.json"), JsonSerializer.Serialize(new { version = "1.25.0", failures, checks,
+            File.WriteAllText(Path.Combine(directory, "render-report.json"), JsonSerializer.Serialize(new { schema = 1, version = typeof(Program).Assembly.GetName().Version!.ToString(3),
+                os = "macOS", architecture = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture.ToString(),
+                runtime = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription, nativeWindowCapture = Program.NativeUiEvidence,
+                rendering = Program.NativeUiEvidence ? "Software (CI native window)" : "Default", failures, checks,
                 scope = "Synthetic native Avalonia window renders; no account, Keychain, Codex home or network access." }, new JsonSerializerOptions { WriteIndented = true }));
             Program.DiagnosticExitCode = failures == 0 ? 0 : 1; await window.ExitAsync();
         }

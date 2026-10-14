@@ -12,7 +12,7 @@ Issues use type, area, priority and milestone; native GitHub open/closed state t
 
 ## Setup and checks
 
-Clone into any directory. The current SDK is **.NET 8.0.4xx**, with patch roll-forward in `global.json`. The [.NET 10 LTS migration](https://github.com/Gaebabi/codex-switch/issues/4) is follow-up work. Sources live in `src/`, shared visuals in `assets/` and `resources/`, catalogs in `localization/`, operational guides in `docs/development/`. [Build/install](docs/INSTALL.md)
+Clone into any directory. The current SDK is **.NET 10.0.4xx**, with patch roll-forward in `global.json`. The [.NET 10 LTS migration](https://github.com/Gaebabi/codex-switch/issues/4) uses reviewed runtime10.0.13; full published folders and native app-window evidence are checked before promotion. Sources live in `src/`, shared visuals in `assets/` and `resources/`, catalogs in `localization/`, operational guides in `docs/development/`. [Build/install](docs/INSTALL.md)
 
 Python 3.12 repository checks run on Windows, Mac and Linux:
 
@@ -43,7 +43,7 @@ Use UTF-8, `.editorconfig` and focused patches; avoid mass formatting. Preserve 
 
 UI catalogues are versioned JSON files in `localization/packs/`, indexed in `localization/index.json`, with stable English-based message IDs. Nine languages are bundled in source 1.28.0; partial local packs intentionally fall back to English. [Translator guide/schema/review policy](docs/LOCALIZATION.md). Run `python scripts/verify-localization.py` and the cross-platform localization test project before a translation PR. No Node or third-party translation service is needed to contribute.
 
-Windows `python scripts/render-demo.py` renders a fictional screenshot from current UI components, using .NET 8 and Python's standard library. It does not prove real switching. Inspect the result when UI changes.
+Windows `python scripts/render-demo.py` renders a fictional screenshot from current UI components, using .NET10 and Python's standard library. It does not prove real switching. Inspect the result when UI changes. Platform PRs additionally require the published-app native window evidence from `--verify-ui`, validated by CI before export; a Windows render cannot establish Mac/Linux execution.
 
 Temperature changes also run `dotnet run --project tests/temperatures/CodexSwitch.Temperatures.Tests.csproj -c Release --no-launch-profile -p:UseSharedCompilation=false`. [Sensor/presentation contracts and capture modes](docs/TEMPERATURES.md) distinguish fictional layout inputs from actual read-only hardware observations. Do not install a privileged driver or relabel another component's temperature to make an unavailable sensor appear supported.
 
