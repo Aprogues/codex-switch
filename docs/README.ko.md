@@ -1,4 +1,7 @@
-# Codex Switch
+<p align="center">
+  <img src="../macos/Assets/app-icon.png" width="88" height="88" alt="Codex Switch app icon" />
+</p>
+<h1 align="center">Codex Switch</h1>
 
 Codex 계정을 빠르게 전환하고, 다음 계정의 남은 사용량을 한눈에 확인하세요. **Windows와 macOS / 1.27.6**
 

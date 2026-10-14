@@ -1,4 +1,7 @@
-# Codex Switch
+<p align="center">
+  <img src="../macos/Assets/app-icon.png" width="88" height="88" alt="Codex Switch app icon" />
+</p>
+<h1 align="center">Codex Switch</h1>
 
 快速切换 Codex 账号，先看清下一个账号的剩余额度。**Windows / macOS / 1.27.6**
 

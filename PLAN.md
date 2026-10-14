@@ -1,5 +1,10 @@
 # Current plan
 
+## App identity header
+
+- [x] Reuse the installed app's white-filled icon in a centered 88px header on all four language READMEs.
+- [x] Verify source paths/rendered alignment and synchronize the private repository.
+
 ## Everyday demo revision
 
 - [x] Use four distinct balances and ordinary activity/resource readings, with independent stable resource fluctuations.

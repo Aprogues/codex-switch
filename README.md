@@ -1,4 +1,7 @@
-# Codex Switch
+<p align="center">
+  <img src="macos/Assets/app-icon.png" width="88" height="88" alt="Codex Switch app icon" />
+</p>
+<h1 align="center">Codex Switch</h1>
 
 Switch Codex accounts and see what is left before you choose the next one. **Windows and macOS / 1.27.6**
 

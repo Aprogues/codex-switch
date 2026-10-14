@@ -7,6 +7,7 @@
 - Previous codex-account-desk local/GitHub repositories were removed. Recovery material is described in [REPOSITORY.md](REPOSITORY.md).
 - Last product verification: Windows internal checks 93/93, disposable SQLite/WAL 23/23, Windows publish and Mac compilation. Native Mac/account acceptance remains in [BACKLOG.md](BACKLOG.md).
 - Documentation uses one fictional everyday static demo with the window's rounded frame, different balances, stable resource graphs and existing status colors. It is separate from live account/switching evidence. [Recipe](docs/media/README.md)
+- The four README brand headers reuse macos/Assets/app-icon.png at 88px with a centered title; keep the packaged app icon as the single source instead of adding documentation variants.
 
 ## Build and verify
 

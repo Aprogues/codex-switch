@@ -11,6 +11,7 @@ Updated 2026-10-14. Source/app version **1.27.6**.
 
 ## Documentation cleanup
 
+- All four READMEs share a centered 88px app icon and centered Codex Switch title, reusing macos/Assets/app-icon.png without generating another asset.
 - Four-language quick-start pages now share one static, labeled fictional demo; installation and developer details have separate focused pages.
 - The current demo shows everyday fictional usage: four different balances (62%, 86%, 37%, 14%), 5 running / 2 queued / 1 goal, and independently fluctuating resources (26%, 73%, 42%, 58%). The window's 8px rounded corners and thin gray edge are included in the PNG.
 - Existing blue/yellow/red states distinguish normal usage, low quota/memory caution and low drive free space. Forecasts use the actual predictor with synthetic history. The illustration is separate from live workload/account-switch evidence.

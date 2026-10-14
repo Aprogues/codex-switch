@@ -1,4 +1,7 @@
-# Codex Switch
+<p align="center">
+  <img src="../macos/Assets/app-icon.png" width="88" height="88" alt="Codex Switch app icon" />
+</p>
+<h1 align="center">Codex Switch</h1>
 
 Codex アカウントを切り替え、次に使うアカウントの残り利用枠を確認できます。**Windows / macOS / 1.27.6**
 
