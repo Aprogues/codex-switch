@@ -4,9 +4,9 @@ Switch Codex accounts and see what is left before you choose the next one. **Win
 
 [English](README.md) / [한국어](docs/README.ko.md) / [日本語](docs/README.ja.md) / [简体中文](docs/README.zh-CN.md)
 
-![Fictional demo: nearly empty and full quotas, credits, busy chats and resource warnings](docs/media/demo.png)
+![Fictional everyday demo: varied balances, stable resources and status colors](docs/media/demo.png)
 
-*Demo data: fictional accounts, 0–100% quota, 42 running chats, 128 queued messages and 97–100% resource load. These are simulated readings, rendered with the current Windows UI.*
+*Fictional everyday data: different account balances, gentle resource fluctuations and normal/caution states. Rendered with the current Windows UI and rounded window frame.*
 
 ## Get started
 

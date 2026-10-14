@@ -12,10 +12,10 @@ Updated 2026-10-14. Source/app version **1.27.6**.
 ## Documentation cleanup
 
 - Four-language quick-start pages now share one static, labeled fictional demo; installation and developer details have separate focused pages.
-- The demo is rendered from current Windows components with 1%, 0%, 100% quota,42 running / 128 queued / 9 goals, resource load 97–100% and an almost-full drive.
-- Its 12-minute quota forecast comes from the actual predictor using synthetic history. This is illustrative data, not real workload/account-switch evidence.
-- Replaced 18,183,140bytes of GIF/poster media with one 72,703-byte PNG. Removed 1,516obsolete local media/capture files totaling 212,937,189bytes; recovery archives/receipts and one current live reference remain.
-- Verified 22Markdown documents and 78local links, one 800×560 static PNG with only sRGB/gamma/DPI metadata, fictional identities and no live account/task inputs. Private verification/cleanup receipts stay ignored.
+- The current demo shows everyday fictional usage: four different balances (62%, 86%, 37%, 14%), 5 running / 2 queued / 1 goal, and independently fluctuating resources (26%, 73%, 42%, 58%). The window's 8px rounded corners and thin gray edge are included in the PNG.
+- Existing blue/yellow/red states distinguish normal usage, low quota/memory caution and low drive free space. Forecasts use the actual predictor with synthetic history. The illustration is separate from live workload/account-switch evidence.
+- Replaced 18,183,140 bytes of GIF/poster media with one 73,560-byte PNG. Removed 1,516 obsolete local media/capture files totaling 212,937,189 bytes; recovery archives/receipts and one current live reference remain.
+- Verified 22 Markdown documents and 78 local links, one 800×560 static PNG with only sRGB/gamma/DPI metadata, fictional identities and no live account/task inputs. Private verification/cleanup receipts stay ignored.
 - No product behavior or real account/native Codex state is changed by this documentation work.
 
 ## Still separate

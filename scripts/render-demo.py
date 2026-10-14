@@ -40,6 +40,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Shell;
 
 namespace CodexAccountDesk;
 internal static class DemoRenderer
@@ -56,28 +57,32 @@ internal static class DemoRenderer
         Loc.SetLanguage("en"); var now = DateTimeOffset.UtcNow;
         var vault = new AccountVault(Path.Combine(fixture, "data"));
         vault.Data.Language = "en"; vault.Data.Theme = "dark";
-        vault.Data.Accounts.Add(Profile("critical", "pro_lite", 99, 0, "0", 2, 1, now, false));
-        vault.Data.Accounts.Add(Profile("credits-only", "pro", 100, 0, "24800", 24, 72, now, false));
-        vault.Data.Accounts.Add(Profile("empty", "plus", 100, 0, "0", -24, 0.75, now, true));
-        vault.Data.Accounts.Add(Profile("reserve", "pro", 0, 5, "99900", 720, 168, now, false));
+        vault.Data.Accounts.Add(Profile("work", "pro", 38, 1, "25500", 432, 150, 4, now));
+        vault.Data.Accounts.Add(Profile("personal", "pro_lite", 63, 0, "8200", 288, 75, 2, now));
+        vault.Data.Accounts.Add(Profile("research", "plus", 86, 0, "0", 168, 105, 6, now));
+        vault.Data.Accounts.Add(Profile("backup", "pro", 14, 2, "12400", 624, 165, 0, now));
         var service = new AccountService(vault, Path.Combine(fixture, "home"));
-        typeof(AccountService).GetProperty(nameof(AccountService.CurrentKey))!.SetValue(service, "critical");
+        typeof(AccountService).GetProperty(nameof(AccountService.CurrentKey))!.SetValue(service, "work");
         var window = new MainWindow(service, new Program.Options { DataDirectory = vault.DirectoryPath,
             CodexHome = service.CodexHome, ReportPath = Path.Combine(fixture, "unused.json") }) { Width = 800, Height = 560 };
         typeof(MainWindow).GetField("_ready", Private)!.SetValue(window, true);
         Call(window, "RenderAccounts"); Call(window, "UpdateControls");
         var theme = new Burn0Theme(true);
-        Field<SessionUsagePanel>(window, "_sessionCount").Refresh(new SessionActivity(true, 42, 0, 42, Queued: 128, Goals: 9), theme);
+        Field<SessionUsagePanel>(window, "_sessionCount").Refresh(new SessionActivity(true, 5, 0, 5, Queued: 2, Goals: 1), theme);
         var history = Enumerable.Range(0, 61).Select(i =>
         {
-            var rise = Math.Pow(i / 60d, 3);
-            return new HardwareObservation(now.AddSeconds((i - 60) * 2), 8 + 90 * rise, 35 + 62 * rise, 4 + 96 * rise, 20 + 79 * rise);
+            var t = i - 60;
+            return new HardwareObservation(now.AddSeconds(t * 2),
+                26 + 4 * Math.Sin(t * 0.7) + 2 * Math.Sin(t * 1.3),
+                73 + 1.6 * Math.Sin(t * 0.22),
+                42 + 7 * Math.Sin(t * 0.39) + 3 * Math.Sin(t * 0.81),
+                58 + 1.4 * Math.Sin(t * 0.11));
         }).ToArray();
         Field<HardwareUsagePanel>(window, "_hardwarePanel").Refresh(new HardwareUsage(now,
-            new(98), new(97), new(100), new(99), Array.Empty<GpuResource>(), 0, history), theme);
+            new(26), new(73), new(42), new(58), Array.Empty<GpuResource>(), 0, history), theme);
         const long gib = 1073741824;
         Field<DriveUsagePanel>(window, "_drivePanel").Refresh(new[] {
-            new DriveReading("C:\\", "C:", gib / 10, 1000 * gib), new DriveReading("D:\\", "D:", 987 * gib, 1000 * gib) }, theme);
+            new DriveReading("C:\\", "C:", (long)(40.6 * gib), 512 * gib), new DriveReading("D:\\", "D:", 624 * gib, 1024 * gib) }, theme);
         var root = (Grid)window.Content;
         window.Content = null; root.Background = theme.Color("canvas"); root.Resources = window.Resources;
         System.Windows.Documents.TextElement.SetFontFamily(root, theme.Font);
@@ -88,30 +93,41 @@ internal static class DemoRenderer
         var size = new Size(800, 560);
         root.Measure(size); root.Arrange(new Rect(size)); root.UpdateLayout(); Call(window, "LayoutCards");
         root.Measure(size); root.Arrange(new Rect(size)); root.UpdateLayout();
-        var bitmap = new RenderTargetBitmap(800, 560, 96, 96, PixelFormats.Pbgra32); bitmap.Render(root);
+        var radius = WindowChrome.GetWindowChrome(window).CornerRadius.TopLeft;
+        var frame = new DrawingVisual();
+        using (var drawing = frame.RenderOpen())
+        {
+            drawing.PushClip(new RectangleGeometry(new Rect(size), radius, radius));
+            drawing.DrawRectangle(new VisualBrush(root), null, new Rect(size)); drawing.Pop();
+            var edge = new Pen(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#60656C")), 1);
+            drawing.DrawRoundedRectangle(null, edge, new Rect(0.5, 0.5, size.Width - 1, size.Height - 1), radius - 0.5, radius - 0.5);
+        }
+        var bitmap = new RenderTargetBitmap(800, 560, 96, 96, PixelFormats.Pbgra32); bitmap.Render(frame);
         var encoder = new PngBitmapEncoder(); encoder.Frames.Add(BitmapFrame.Create(bitmap));
         Directory.CreateDirectory(Path.GetDirectoryName(output)!);
         using (var stream = File.Create(output)) encoder.Save(stream);
         var receipt = new { kind = "fictional documentation demo", actualUiSource = "MainWindow and current resource/account components",
             renderedAtUtc = now, width = 800, height = 560, profiles = vault.Data.Accounts.Select(a => new { a.Email, a.Plan,
                 remaining = a.Usage!.LeastRemaining, credits = a.Usage.Buckets[0].CreditBalance, resets = a.Usage.AvailableResets }),
-            running = 42, queued = 128, goals = 9, cpu = 98, memory = 97, gpu = 100, vram = 99,
+            scene = "everyday mixed status", cornerRadius = radius, edgePixels = 1,
+            resourceHistory = "bounded independent fluctuations over two minutes",
+            running = 5, queued = 2, goals = 1, cpu = 26, memory = 73, gpu = 42, vram = 58,
             liveAccountAccess = false, nativeCodexStarted = false, liveTaskInjection = false };
         File.WriteAllText(Path.Combine(Path.GetDirectoryName(output)!, "demo.json"), JsonSerializer.Serialize(receipt, new JsonSerializerOptions { WriteIndented = true }));
         window.Close(); app.Shutdown(); return 0;
     }
     private static AccountProfile Profile(string id, string plan, double used, int resets, string credits,
-        double subscriptionHours, double resetHours, DateTimeOffset now, bool blocked)
+        double subscriptionHours, double resetHours, double ratePerHour, DateTimeOffset now)
     {
         var deadline = now.AddHours(resetHours).ToUnixTimeSeconds();
         var window = new UsageWindow { UsedPercent = used, Minutes = 10080, ResetsAt = deadline };
         var profile = new AccountProfile { Key = id, Email = id + "@example.invalid", AccountId = "demo-" + id, Plan = plan,
             SubscriptionActiveUntil = now.AddHours(subscriptionHours), Usage = new UsageSnapshot { CheckedAt = now,
-                AvailableResets = resets, OrdinaryUsageAllowed = !blocked, Buckets = new() {
+                AvailableResets = resets, OrdinaryUsageAllowed = true, Buckets = new() {
                     new UsageBucket { Id = "codex", Label = "Codex", Plan = plan, Secondary = window, CreditBalance = credits } } } };
         var track = new UsageTrack { BucketId = "codex", Slot = "secondary", Minutes = 10080 };
         for (var i = 0; i <= 60; i++) track.Points.Add(new(now.AddMinutes(i - 60),
-            id == "critical" ? used - (60 - i) / 12d : used, deadline, 0));
+            used - (60 - i) * ratePerHour / 60, deadline, 0));
         profile.History.Add(track); return profile;
     }
 }'''
