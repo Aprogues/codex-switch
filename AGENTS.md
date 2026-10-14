@@ -1,6 +1,6 @@
 # 작업 지침
 
-- 이 제품의 유일한 정본은 `D:\Git\codex-switch`, GitHub `Gaebabi/codex-switch`의 private `main`입니다. 이전 `codex-account-desk` 경로를 새 작업에 사용하지 않습니다.
+- 이 제품의 유일한 정본은 `D:\Git\codex-switch`, GitHub `Gaebabi/codex-switch`의 public `main`입니다. 이전 `codex-account-desk` 경로를 새 작업에 사용하지 않습니다.
 - 저장소 통합 상태와 이전 이력의 로컬 복구 방법은 `REPOSITORY.md`를 확인합니다. 과거 날짜의 작업 기록은 당시 경로를 보존한 기록입니다.
 - 먼저 `D:\Git\gaebabi-tools\codex-context\START_HERE.md`와 이 저장소의 `README.md`, `OPERATIONS.md`, `PLAN.md`, `STATUS.md`를 확인합니다.
 - 소스와 한국어 문서는 `apply_patch`로 수정합니다. PowerShell 문자열 치환/저장으로 코드를 수정하지 않습니다.

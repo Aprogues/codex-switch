@@ -27,8 +27,8 @@
 
 UI支持英语和韩语；日语和中文仅用于文档翻译。语言与浅色/深色主题可在标题栏切换。
 
-**切换会重启 Codex**并打开原来的本地聊天，也可能影响使用相同登录的 CLI/IDE。[切换详情](SWITCHING.md)
+切换前保存并验证带日期的本地主聊天名称，备份当前登录。**切换会重启 Codex**，重新打开相同聊天 ID、目录、模型和权限，并向符合条件的空闲聊天发送一次 **Continue**，自动继续未完成的工作。已运行或完成的工作不重复启动。中断的交接可用 **Resume chats** 恢复；发送结果不明确时不会自动重发。名称保存或正常退出失败会阻止登录变更，也可能影响使用相同登录的 CLI/IDE。[切换详情](SWITCHING.md)
 
 [Mac](MACOS.md) / [预测](FORECAST.md) / [安全](../SECURITY.md) / [开发](../CONTRIBUTING.md)
 
-仓库为private，公开分发已暂停。本项目不是OpenAI官方产品。认证信息在本地加密保存。[MIT](../LICENSE)
+公开开源。[Windows / Mac 执行包](https://github.com/Gaebabi/codex-switch/releases/tag/v1.27.6)无需源码构建或安装 .NET。Mac 包未公证。本项目不是OpenAI官方产品。认证信息在本地加密保存。[MIT](../LICENSE)

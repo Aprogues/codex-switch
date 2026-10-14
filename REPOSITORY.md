@@ -1,6 +1,6 @@
 # Repository
 
-Use **codex-switch** only: `D:/Git/codex-switch`, private [Gaebabi/codex-switch](https://github.com/Gaebabi/codex-switch), branch `main`.
+Use **codex-switch** only: `D:/Git/codex-switch`, public [Gaebabi/codex-switch](https://github.com/Gaebabi/codex-switch), branch `main`. Public distribution was resumed by the owner; current binary delivery is [v1.27.6](https://github.com/Gaebabi/codex-switch/releases/tag/v1.27.6).
 
 The old codex-account-desk local checkout and GitHub repository were removed on 2026-10-14 after consolidation. Current source, Windows/Mac assets and working documents are here. Detailed history remains in Git.
 

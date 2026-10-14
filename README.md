@@ -3,7 +3,7 @@
 </p>
 <h1 align="center">Codex Switch</h1>
 
-Switch Codex accounts and see what is left before you choose the next one. **Windows and macOS / 1.27.6**
+Switch Codex accounts, automatically resume eligible unfinished local chats, and see what is left before you choose the next account. **Windows and macOS / 1.27.6**
 
 [English](README.md) / [한국어](docs/README.ko.md) / [日本語](docs/README.ja.md) / [简体中文](docs/README.zh-CN.md)
 
@@ -12,6 +12,10 @@ Switch Codex accounts and see what is left before you choose the next one. **Win
 *Fictional everyday data: different account balances, gentle resource fluctuations and normal/caution states. Rendered with the current Windows UI and rounded window frame.*
 
 ## Get started
+
+**Download:** [Windows x64](https://github.com/Gaebabi/codex-switch/releases/download/v1.27.6/CodexSwitch-v1.27.6-win-x64.zip) / [Mac Apple Silicon](https://github.com/Gaebabi/codex-switch/releases/download/v1.27.6/CodexSwitch-v1.27.6-osx-arm64.zip) / [Mac Intel](https://github.com/Gaebabi/codex-switch/releases/download/v1.27.6/CodexSwitch-v1.27.6-osx-x64.zip)
+
+[Release notes and checksums](https://github.com/Gaebabi/codex-switch/releases/tag/v1.27.6). No source build or .NET installation is needed. Mac packages are not notarized; see [Mac setup](docs/MACOS.md).
 
 1. Use a complete Windows or Mac package. Windows: run `CodexSwitch.exe`. Mac: run `Install.command`, then open **Codex Switch.app**. [Build and install](docs/INSTALL.md)
 2. Select **+** in the title bar to add accounts. On Windows, right-click **↻** to import the current Codex login.
@@ -27,10 +31,16 @@ Keep the full package together. Packaged apps need no .NET installation; buildin
 
 The title bar has language and light/dark settings. The UI supports English and Korean; Japanese and Chinese are documentation translations.
 
-**Switching restarts Codex** and reopens the same local chats. It can also affect CLI/IDE clients sharing the login. [Switching details](docs/SWITCHING.md)
+## Switch and resume
+
+- **Back up before switching:** save active local chat names with a date prefix and verify them, then back up the current login before applying the selected account. Naming or normal-shutdown failures stop the login change.
+- **Automatically resume unfinished work:** restart Codex, reopen the same chat IDs with their existing folders/models/permissions, and send one **Continue** to eligible idle chats. Already running or completed work is left alone.
+- **Recover an interrupted handoff:** progress is checkpointed in the encrypted vault. Use **Resume chats** when a handoff remains pending; cancellation is available from the account menu/tray. Unclear sends are not automatically repeated.
+
+**Switching restarts Codex** and can also affect CLI/IDE clients sharing the login. [Switching details](docs/SWITCHING.md)
 
 ## More
 
 [Mac setup](docs/MACOS.md) / [Forecast](docs/FORECAST.md) / [Security](SECURITY.md) / [Development](CONTRIBUTING.md)
 
-The repository is private and public distribution is paused. This is independent software, not an official OpenAI product. Credentials stay in a local encrypted vault. [MIT](LICENSE) / [Asset notices](Burn0Assets.LICENSE.txt)
+This is independent open-source software, not an official OpenAI product. Credentials stay in a local encrypted vault. [MIT](LICENSE) / [Asset notices](Burn0Assets.LICENSE.txt)

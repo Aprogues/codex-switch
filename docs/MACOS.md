@@ -2,6 +2,8 @@
 
 Use macOS 12 or later with Codex desktop/CLI installed. [Build and install](INSTALL.md#mac)
 
+Download [Apple Silicon or Intel packages](https://github.com/Gaebabi/codex-switch/releases/tag/v1.27.6) without installing .NET or building source. Extract the complete ZIP, run `Install.command`, then open the installed app in `~/Applications` rather than the unsigned copy in the download folder. These packages are not Apple-notarized. If macOS blocks the installed app and you trust its source, use **System Settings → Privacy & Security → Open Anyway** for that app. [Apple's instructions](https://support.apple.com/en-us/102445)
+
 - **⌘R / F5:** refresh
 - **⌘W:** hide the window
 - **⌘Q:** quit

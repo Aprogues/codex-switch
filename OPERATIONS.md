@@ -2,8 +2,8 @@
 
 ## Current state
 
-- Canonical source: `D:/Git/codex-switch`, private `Gaebabi/codex-switch/main`.
-- Source/app version: **1.27.6**. Public distribution, automatic updates and CI release publication are paused.
+- Canonical source: `D:/Git/codex-switch`, public `Gaebabi/codex-switch/main`; the owner resumed public distribution.
+- Source/app version: **1.27.6**. Current delivery is manual GitHub Release ZIPs for Windows x64/Mac arm64/x64 plus SHA256SUMS.txt. Automatic updates and CI release publication are not configured.
 - Previous codex-account-desk local/GitHub repositories were removed. Recovery material is described in [REPOSITORY.md](REPOSITORY.md).
 - Last product verification: Windows internal checks 93/93, disposable SQLite/WAL 23/23, Windows publish and Mac compilation. Native Mac/account acceptance remains in [BACKLOG.md](BACKLOG.md).
 - Documentation uses one fictional everyday static demo with the window's rounded frame, different balances, stable resource graphs and existing status colors. It is separate from live account/switching evidence. [Recipe](docs/media/README.md)

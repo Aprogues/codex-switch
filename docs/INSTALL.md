@@ -34,4 +34,4 @@ The installer validates the new app and preserves the previous installation. Loc
 
 Select **+**, complete browser sign-in, compare the cards and choose **Switch**. In Windows, right-click **↻** to import the current Codex login.
 
-No automatic updater is configured. Public distribution is paused; old 1.27.0 Release links are not the current package.
+Download current [Windows x64, Mac Apple Silicon or Intel packages](https://github.com/Gaebabi/codex-switch/releases/tag/v1.27.6). They include the .NET runtime; keep the complete folder/bundle intact. SHA256SUMS.txt lists the ZIP checksums. No automatic updater is configured. Mac packages are not notarized; use the normal macOS first-launch approval flow described in [Mac setup](MACOS.md).

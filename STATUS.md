@@ -2,9 +2,16 @@
 
 Updated 2026-10-14. Source/app version **1.27.6**.
 
+## Current release refresh
+
+- The owner resumed public distribution and requested commit/push plus latest binary Release. Download instructions now target 1.27.6 for Windows x64/Mac arm64/x64, with no source build/.NET installation required.
+- Main READMEs now explicitly cover pre-switch chat/login backup, same chat ID/folder/model/permission restoration, one automatic Continue to eligible idle continuations, already-running/completed exclusion and encrypted pending-handoff recovery. These descriptions were checked against AccountSwitchCoordinator and DesktopSwitchBackend; no new switching behavior was introduced.
+- Fresh Windows build and extracted package pass 93 internal checks; independent SQLite/WAL checks pass23. Both Mac cross-publishes succeed; archive CPU architecture, version1.27.6, complete runtime and0755 app/installer modes match. All packages exclude auth/vault/private logs/captures and carry checksums/licenses.
+- Mac native acceptance/notarization remains separate. The current documentation image remains a labeled fictional demo, not live switch/resumption evidence. Signing credentials, private diagnostics and binary output are ignored.
+
 ## Ready
 
-- One canonical private repository: codex-switch. Previous local/GitHub codex-account-desk repositories are removed; verified recovery archives remain ignored.
+- One canonical public repository: codex-switch; public visibility verified through GitHub API on 2026-10-14 after the owner's resumed distribution. Previous local/GitHub codex-account-desk repositories are removed; verified recovery archives remain ignored.
 - Asynchronous accounts/usage, compact water cards, reset/subscription/credit values, centered activity counters, resource/drive graphs and themed menus/tooltips.
 - Windows package and shortcut retain the existing account data/home.
 - Last product validation: Windows 93/93 internal checks, SQLite/WAL 23/23 isolated checks, Windows publish and Mac source compilation. The consolidation commit 31c1c6d was pushed and local/remote main matched.
@@ -21,4 +28,4 @@ Updated 2026-10-14. Source/app version **1.27.6**.
 
 ## Still separate
 
-Native Mac login/switch/chat-resumption/Intel acceptance and credit-only forecasting remain in [BACKLOG.md](BACKLOG.md). Cloud sync is a proposal. Public Release/notarization requires a new request.
+Native Mac login/switch/chat-resumption/Intel acceptance and credit-only forecasting remain in [BACKLOG.md](BACKLOG.md). Cloud sync is a proposal. The owner authorized the current Release refresh; Apple notarization remains unverified.

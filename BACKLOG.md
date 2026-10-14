@@ -5,4 +5,4 @@
 - Credit-only depletion forecasting remains a separate pending implementation; the demo shows credit balance without claiming a credit ETA.
 - Multi-computer account synchronization is a proposal, not an implemented service. [Review](docs/ACCOUNT_SYNC_REVIEW.md)
 
-Public distribution is paused. Publication and notarization need explicit approval. Historical task details remain in Git history.
+The owner resumed public distribution and authorized the 1.27.6 Release refresh. Developer ID signing/notarization remains incomplete; historical task details remain in Git history.

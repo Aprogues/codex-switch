@@ -1,14 +1,11 @@
-# Package delivery
+# Binary releases
 
-The current repository is private. Public Release publication is paused; source version **1.27.6** is newer than the archived 1.27.0 packages. There is no automatic deployment or updater.
+Current version: **1.27.6**. [GitHub Release](https://github.com/Gaebabi/codex-switch/releases/tag/v1.27.6) contains self-contained Windows x64, Mac Apple Silicon and Mac Intel ZIPs plus SHA256SUMS.txt. Users do not need a source build or .NET installation; Codex desktop/CLI is required.
 
-For local delivery:
+Extract the entire Windows folder and run `CodexSwitch.exe`. On Mac, extract the complete ZIP, run `Install.command` and open the installed `Codex Switch.app`. Mac cross-published packages are unsigned; installation applies local ad-hoc signing. They are not Apple-notarized and can require app-specific first-launch approval. [Mac setup](MACOS.md)
 
-1. Build from the current source. [Build instructions](INSTALL.md)
-2. Copy the entire Windows publish folder, or the complete Mac app/installer ZIP.
-3. Include MIT and asset notices. Exclude credentials, vaults, diagnostics and personal captures.
-4. Verify extracted files, checksums and Mac executable modes. Native Mac acceptance is separate from cross-compilation.
+The release includes the latest responsive UI, white-filled scalable icon, compact titlebar account/refresh controls, centered activity counters, asynchronous quota/history/resource/drive displays and shared Windows/Mac account-switch core. Switching backs up the current login, restarts Codex and reopens the same local chats, automatically sending one **Continue** to eligible idle continuations. [Handoff details](SWITCHING.md)
 
-A new Release, tag, public push or notarization requires a new explicit request. `scripts/notarize-macos.sh` is available for an appropriately signed native Mac app; its presence is not proof of notarization.
+Windows isolated checks and disposable SQLite/WAL checks are distinct from actual account switching. Mac cross-publish/architecture/ZIP checks do not establish native login, switching/resumption or Intel-device acceptance. [Remaining acceptance](../BACKLOG.md)
 
-The sole documentation image is `docs/media/demo.png`. Do not package documentation-rendering fixtures or recovery archives.
+Packages include complete runtimes, MIT and asset notices; exclude credentials, vaults, private diagnostics, source fixtures and recovery archives. SHA256SUMS.txt covers the three ZIPs. Source commit/tag and uploaded GitHub digests must match the published build. Publication is manual; automatic updates and CI release publication are not configured.
