@@ -1,10 +1,10 @@
 # Operations
 
-Public `Gaebabi/codex-switch`, baseline `main`, is the canonical source. Clone into any directory. Source/app version is **1.30.3**; published binary version remains **1.27.6**. Binary delivery is manual GitHub Release ZIPs plus SHA256SUMS; no automatic updater or CI release publisher exists.
+Public `Gaebabi/codex-switch`, baseline `main`, is the canonical source. Clone into any directory. Source/app version is **1.31.0**; published binary version remains **1.27.6**. Binary delivery is manual GitHub Release ZIPs plus SHA256SUMS; no automatic updater or CI release publisher exists.
 
 ## Build and verify
 
-Run from the repository root with .NET10.0.4xx, currently SDK10.0.402/runtime10.0.13. `global.json` allows current patch updates. Use clean output folders for package candidates. .NET10's reviewed current Mac support baseline is macOS15+; the bundle minimum and app version match source1.30.3.
+Run from the repository root with .NET10.0.4xx, currently SDK10.0.402/runtime10.0.13. `global.json` allows current patch updates. Use clean output folders for package candidates. .NET10's reviewed current Mac support baseline is macOS15+; the bundle minimum and app version match source1.31.0.
 
 ```powershell
 .\scripts\build.ps1 -Verify
@@ -12,6 +12,7 @@ python scripts/verify-queues.py --executable artifacts/win-x64/CodexSwitch.exe
 python scripts/verify-localization.py
 dotnet run --project tests/localization/CodexSwitch.Localization.Tests.csproj -c Release --no-launch-profile -p:UseSharedCompilation=false
 dotnet run --project tests/temperatures/CodexSwitch.Temperatures.Tests.csproj -c Release --no-launch-profile -p:UseSharedCompilation=false
+dotnet run --project tests/platform-security/CodexSwitch.PlatformSecurity.Tests.csproj -c Release --no-launch-profile -p:UseSharedCompilation=false
 ```
 
 Equivalent direct commands:
@@ -21,7 +22,7 @@ dotnet publish src/windows/CodexSwitch.Windows.csproj -c Release -r win-x64 --se
 dotnet build src/macos/CodexSwitch.Mac.csproj -c Release --nologo -p:UseSharedCompilation=false
 ```
 
-[Contributor checks](../../CONTRIBUTING.md) / [Mac native/build guide](MACOS.md) / [CI boundaries](../CI.md). Cross-publish is not native account acceptance. Linux security/handoff and the .NET LTS migration are [planned](../PLATFORM_SUPPORT_PLAN.md).
+[Contributor checks](../../CONTRIBUTING.md) / [Mac native/build guide](MACOS.md) / [CI boundaries](../CI.md). Cross-publish is not native account acceptance. The .NET LTS migration is complete; Linux security/handoff and remaining service boundaries follow [the platform roadmap](../PLATFORM_SUPPORT_PLAN.md).
 
 Windows normal-shutdown regression uses disposable parent/child processes and the production shutdown/coordinator; no Codex installation or real account is involved:
 
