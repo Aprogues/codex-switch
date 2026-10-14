@@ -1,27 +1,8 @@
-# 확인 대기
+# Remaining work
 
-## Codex Switch 1.26 공개 이후
+- Native Mac acceptance: installation, Keychain reload, real login/switch/chat resumption and Intel-device checks.
+- Current Codex observer/schema compatibility: running, queue and goal changes/recovery on each platform.
+- Credit-only depletion forecasting remains a separate pending implementation; the demo shows credit balance without claiming a credit ETA.
+- Multi-computer account synchronization is a proposal, not an implemented service. [Review](docs/ACCOUNT_SYNC_REVIEW.md)
 
-- [ ] Mac에서 새 이름의 앱 설치/실행, Keychain 접근, 타이틀바와 `>_<` template 메뉴 심볼 실제 렌더
-- [ ] 실제 계정 전환/같은 채팅 ID 재개 수용 영상은 별도의 사용자 직접 전환으로 검증; 이번 GIF는 실사용 dashboard만 촬영
-- [ ] 사용자가 대상 커뮤니티를 정해 요청하면 `docs/REDDIT.md`의 초안과 정제된 GIF로 공유; 이번에는 Reddit에 게시하지 않음
-
-## macOS 실제 계정과 기기 수용
-
-아래 항목은 코드 미구현 목록이 아니라 실제 계정/기기에서 확인할 수용 항목입니다. 1.24에서 Apple Silicon의 Keychain/POSIX/Unix 소켓, OS 자원·루트 볼륨, 합성 언어/테마/카드/스크롤 검사를 통과했습니다. 이 근거를 실제 계정 전환이나 Intel 기기 테스트로 바꾸지 않습니다.
-
-- [ ] Intel 기기의 설치/실행, Keychain와 저장소 재로드
-- [ ] 실제 계정 로그인/사용량 조회와 진행 채팅 백업/전환/재개
-- [ ] 실제 IPC 실행/큐/목표 수와 조회 실패/복구
-- [ ] 실제 계정 상태의 History/메뉴/Dock/물결 동작
-- [ ] 장치별 CPU/MEM/GPU/전용 VRAM 지원과 mounted volume 잔량
-
-자세한 절차는 [macOS 안내](./macos/README.md)의 사용자 확인 항목을 따릅니다.
-
-## 이전 후속 요청
-
-- [ ] Windows 아이콘/설치/작업 표시줄 등록의 실제 적용
-- [ ] 미사용 계정의 floating weekly reset을 고정 7일 카운트다운과 구분
-- [ ] 일반 한도 소진 후 크레딧 잔액 이력을 기반으로 예상 소진 표시 전환
-
-이 항목들은 읽기 전용 환경에서 적용하지 못했던 요청이며 이번 macOS 이식의 완료 근거에 포함하지 않습니다.
+Public distribution is paused. Publication and notarization need explicit approval. Historical task details remain in Git history.

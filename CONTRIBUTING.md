@@ -1,15 +1,26 @@
-# Contributing to Codex Switch
+# Development
 
-Build from source using the commands in [README](README.md). Keep changes focused and describe the behavior they fix. Use UTF-8 and preserve existing language choices.
+Build from the repository root. [Installation](docs/INSTALL.md) / [Architecture](docs/ARCHITECTURE.md)
 
-- Windows: `./scripts/build.ps1 -Verify` runs local internal checks.
-- Queue/WAL checks: `python scripts/verify-queues.py --executable artifacts/win-x64/CodexSwitch.exe` uses disposable databases.
-- macOS: `bash scripts/verify-macos.sh` on a Mac; cross-compilation does not prove native behavior.
+```powershell
+.\scripts\build.ps1 -Verify
+python scripts/verify-queues.py --executable artifacts/win-x64/CodexSwitch.exe
+```
 
-Never include `auth.json`, account vaults, tokens, private logs, personal captures, build output or local Codex databases in a pull request. Use synthetic accounts for tests. Do not stop a contributor's running Codex or switch their real account as a test.
+Mac native checks: `bash scripts/verify-macos.sh`. Use isolated accounts/storage/databases for tests. Do not stop the user's Codex or switch a real account to validate source changes.
 
-UI translations live in `Strings.en.json` and `Strings.ko.json`. The current catalog uses Korean source strings as stable keys. Add both translations together; `node scripts/regenerate-ko.cjs` regenerates the Korean key catalog. Node is optional for normal builds.
+## Editing
 
-The application uses Codex app-server and local desktop protocols. Keep unavailable data distinct from zero, preserve read-only observation, and document protocol compatibility limitations. Tests of isolated switching are separate from real account handoff acceptance.
+Use UTF-8 and focused patches. Fix underlying causes, preserve unavailable-versus-zero behavior and keep existing user settings.
 
-Code contributions use the [MIT license](LICENSE); third-party notices remain in [Burn0Assets.LICENSE.txt](Burn0Assets.LICENSE.txt).
+UI translations use Korean keys in `Strings.en.json` and `Strings.ko.json`. Add both translations together; `node scripts/regenerate-ko.cjs` rebuilds the Korean catalog. Node is optional for normal builds.
+
+## Documentation image
+
+On Windows, run `python scripts/render-demo.py`. It requires the .NET 8 SDK and renders one fictional PNG using the current components. Python's standard library is sufficient. Inspect the image and update documentation when UI behavior changes.
+
+## Before a commit
+
+Check `git diff --check` and relevant links/builds. Never include authentication files, vaults, local databases, raw personal captures, private reports or build output. Respect explicit commit/push/publication scope in AGENTS.md.
+
+MIT licensed. Preserve [asset notices](Burn0Assets.LICENSE.txt) and review [security](SECURITY.md).

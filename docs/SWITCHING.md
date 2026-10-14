@@ -1,14 +1,13 @@
-# How account switching works
+# Account switching
 
-1. Register an account with browser sign-in, or import the current Codex login using the account icon next to **Add account**.
-2. Compare each account's reported remaining quota, reset deadline and plan. The active account is labeled **In use**.
-3. Select **Switch** on another account. The utility first saves the active local root-chat names with a `[yyMMdd]` suffix based on the Korean calendar, replacing an earlier suffix.
-4. After verifying the saved names, it requests a normal shutdown of the installed Codex desktop. A failed shutdown stops the account change. If Codex refuses the normal request, exit Codex through its own menu and retry.
-5. Once all desktop processes have exited, it backs up the previous login, atomically applies the selected account and reopens Codex.
-6. It reopens the same chat IDs with their existing folders, models and permissions. Already running or finished work is left alone; eligible idle continuations receive one **Continue**. Unclear send outcomes are not automatically repeated.
+1. Add an account through **+**, or import the current login from the Windows **↻** right-click menu.
+2. Compare the cards and select **Switch**.
+3. The button shows **Backing up** while active local chat names are saved with an updated date.
+4. After name verification, Codex exits normally, the old login is backed up and the selected login is applied.
+5. Codex reopens the same chat IDs with their folders, models and permissions. Eligible idle continuations receive one **Continue**.
 
-Progress is checkpointed in the encrypted vault. A pending handoff can be continued from the selected account's **Resume chats** action. Cancellation is available from the account menu and tray. No new chat is created to stand in for an existing chat.
+If chat naming or normal shutdown fails, the login change stops. Unclear message-send results are not automatically repeated. A pending handoff can continue through **Resume chats**; cancellation is available from the account menu/tray.
 
-This affects the shared Codex login: separate CLI/IDE tools using that same home can see the new account. Local desktop activity counts are machine-wide, not attributed to individual accounts. Remote/cloud work and separate CLI turns are outside those counts.
+Switching intentionally restarts Codex and affects other clients sharing the same login. Activity counts cover this machine's local desktop root chats, not individual accounts, remote/cloud work or standalone CLI turns.
 
-Local tests check encryption, identity isolation and the switching state machine. Public GIFs show the live account dashboard, refresh and responsive layout; they do not demonstrate a real account switch or prove successful chat resumption. A real end-to-end switch needs the user's accounts and intentionally restarts Codex.
+The documentation image is a fictional dashboard demo. It is not proof of a live account switch or successful chat resumption.

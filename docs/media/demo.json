@@ -1,0 +1,48 @@
+{
+  "kind": "fictional documentation demo",
+  "actualUiSource": "MainWindow and current resource/account components",
+  "renderedAtUtc": "2026-10-14T00:03:01.3461821+00:00",
+  "width": 800,
+  "height": 560,
+  "profiles": [
+    {
+      "Email": "critical@example.invalid",
+      "Plan": "pro_lite",
+      "remaining": 1,
+      "credits": "0",
+      "resets": 0
+    },
+    {
+      "Email": "credits-only@example.invalid",
+      "Plan": "pro",
+      "remaining": 0,
+      "credits": "24800",
+      "resets": 0
+    },
+    {
+      "Email": "empty@example.invalid",
+      "Plan": "plus",
+      "remaining": 0,
+      "credits": "0",
+      "resets": 0
+    },
+    {
+      "Email": "reserve@example.invalid",
+      "Plan": "pro",
+      "remaining": 100,
+      "credits": "99900",
+      "resets": 5
+    }
+  ],
+  "running": 42,
+  "queued": 128,
+  "goals": 9,
+  "cpu": 98,
+  "memory": 97,
+  "gpu": 100,
+  "vram": 99,
+  "liveAccountAccess": false,
+  "nativeCodexStarted": false,
+  "liveTaskInjection": false,
+  "sourceVersion": "1.27.6"
+}
