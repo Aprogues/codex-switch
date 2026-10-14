@@ -2,6 +2,8 @@
 
 Tracking [#1](https://github.com/Gaebabi/codex-switch/issues/1). Updated 2026-10-15. Resumed checkpoints and reviewed native evidence are tracked in [PR27](https://github.com/Gaebabi/codex-switch/pull/27). Account switching and safe automatic continuation are the core product; a window that launches is not evidence of either capability.
 
+Runtime issue4 is completed by merged PR27: source1.30.0/.NET10.0.13, native Windows x64 and macOS15 arm64/Intel app-window evidence, complete runtime/package inspection and four-job reviewed-head CI. Core issue3 starts with a shared UI-neutral project in source1.30.1; native integration-provider boundaries and Linux5/6/7 remain open. Public binaries remain1.27.6 until separately released.
+
 ## Current support
 
 | Environment | Package | Evidence boundary |
@@ -26,20 +28,21 @@ English stays the shared default. Published 1.27.6 UI supports English/Korean. S
 
 Runtime work can proceed alongside extraction. Linux credential/client trust precedes desktop handoff. Package prototypes may come earlier; stable support claims require native evidence. No delivery date is promised before feasibility gates.
 
-Source1.30.0 targets .NET10 LTS, SDK10.0.402/runtime10.0.13; published1.27.6 packages remain .NET8 until separately released. .NET8 support ends **2026-11-10**; .NET10 LTS is supported through **2028-11-14**. The reviewed current macOS baseline is15+, matching native runners and the bundle minimum. [Microsoft policy](https://dotnet.microsoft.com/en-us/platform/support/policy), [current .NET10 release](https://dotnet.microsoft.com/en-us/download/dotnet/10.0), [supported OS versions](https://github.com/dotnet/core/blob/main/release-notes/10.0/supported-os.md).
+Source1.30.1 targets .NET10 LTS, SDK10.0.402/runtime10.0.13; published1.27.6 packages remain .NET8 until separately released. .NET8 support ends **2026-11-10**; .NET10 LTS is supported through **2028-11-14**. The reviewed current macOS baseline is15+, matching native runners and the bundle minimum. [Microsoft policy](https://dotnet.microsoft.com/en-us/platform/support/policy), [current .NET10 release](https://dotnet.microsoft.com/en-us/download/dotnet/10.0), [supported OS versions](https://github.com/dotnet/core/blob/main/release-notes/10.0/supported-os.md).
 
 ## Project organization
 
-The foundation moves existing files into the following structure while keeping executable/namespace/data/key identities and source behavior intact:
+The foundation and focused core extraction use the following structure while keeping executable/namespace/data/key identities and existing Windows/Mac behavior intact:
 
 ```text
 src/windows/         Windows WPF application and diagnostics
 src/macos/           Mac Avalonia application and native UI integration
-src/shared/          linked account/usage/refresh/handoff domain and services
+src/core/            single UI-neutral domain/presentation/catalogue project
+src/shared/          linked integration services and existing platform adapters
 src/platforms/macos/ Mac native platform helpers
 assets/              canonical brand and Mac icons
 resources/           shared visual tokens/icons
-localization/        English/Korean UI catalogs
+localization/        nine UI catalogues, schema and translator guide
 licenses/            third-party asset notices
 scripts/             build, verify, render and package entry points
 docs/development/    plan, status, operations and contributor evidence conventions

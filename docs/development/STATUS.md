@@ -1,6 +1,14 @@
 # Current status
 
-Updated 2026-10-15. Source version **1.30.0**; published binaries **1.27.6**.
+Updated 2026-10-15. Source version **1.30.1**; published binaries **1.27.6**.
+
+Runtime issue4 is complete: PR27 merged to main de66231 after all four complete-head jobs in run38623109273 and an author self-review. Issue4 and its superseded dependency PR20 are closed. Native app/window evidence below retains its original1.30.0 checkpoint.
+
+Core issue3 first part is in progress: one UI-neutral `CodexSwitch.Core` assembly owns eleven domain/presentation/catalogue files, with explicit error/private-language-write adapters and platform vault defaults retained outside it. Local Windows93, SQLite23, language/core41, temperature29 and both app builds pass; native after-extraction images/CI/review are the promotion gate. Linux and the remaining key/client/IPC/SQLite/resource-provider boundaries remain open.
+
+The first extraction is [PR28](https://github.com/Gaebabi/codex-switch/pull/28), checkpoint75a8330. Historical privacy remnants are separately tracked in [issue29](https://github.com/Gaebabi/codex-switch/issues/29): current source/media pass, but older user-directory references remain in published text history. No history rewrite/force-push has been performed; exact private values are omitted from public reports.
+
+P5: [after-extraction native evidence](../evidence/shared-core/README.md) is inspected and attached. Run38626725906 at9433b79 passes Windows, repository and both native Mac jobs; all32 after screenshots have metadata stripped and exact-source receipts. Eight hosted Windows comparison PNGs are byte-identical. Core/language41(native)/42(Ubuntu), temperature29, Windows93/SQLite23/handoff5 and each Mac SQLite23/UI19 pass. First-window Intel capture preparation is corrected with own-window activation/native visibility/pending-view display; capture failures still stop verification. Final complete-head CI/review/merge remain required.
 
 Native Mac CI also found a real minimum-window layout defect: two126px account rows plus4px vertical grid margin required256px inside a254px viewport at500×360. The grid now reserves2px vertical margin and calculates its height from that actual margin; card minimum height and overflow assertions remain unchanged. Both Mac architectures must pass this correction before promotion.
 
