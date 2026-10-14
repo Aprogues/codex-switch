@@ -1,0 +1,94 @@
+name: Verify
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+  DOTNET_NOLOGO: '1'
+
+jobs:
+  repository:
+    name: Repository checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements-dev.txt
+      - run: python scripts/verify-repository.py
+      - run: python scripts/test-audit-public.py
+      - run: python scripts/audit-public.py --tree-only
+      - run: git diff --check
+
+  windows:
+    name: Windows isolated checks
+    runs-on: windows-2022
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          dotnet-version: '8.0.4xx'
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12'
+      - name: Set up CLI prerequisite runtime
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+      - name: Install pinned official CLI prerequisite
+        shell: pwsh
+        working-directory: tools/ci-codex
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { throw 'Codex CLI install failed' }
+          $taskCli = (Resolve-Path 'node_modules/@openai/codex-win32-x64/vendor/x86_64-pc-windows-msvc/bin/codex.exe').Path
+          "CODEX_ACCOUNT_DESK_CLI=$taskCli" >> $env:GITHUB_ENV
+          & $taskCli --version
+          if ($LASTEXITCODE -ne 0) { throw 'Pinned CLI did not launch' }
+      - name: Publish and run disposable internal checks
+        shell: pwsh
+        run: ./scripts/build.ps1 -Verify
+      - name: Verify read-only SQLite and WAL
+        run: python scripts/verify-queues.py --executable artifacts/win-x64/CodexSwitch.exe
+
+  macos:
+    name: Mac compilation (${{ matrix.rid }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            rid: osx-arm64
+          - runner: macos-15-intel
+            rid: osx-x64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          dotnet-version: '8.0.4xx'
+      - name: Compile full application for the runner architecture
+        run: dotnet publish src/macos/CodexSwitch.Mac.csproj -c Release -r ${{ matrix.rid }} --self-contained true -p:UseSharedCompilation=false -o artifacts/macos-ci/${{ matrix.rid }}
+      - name: Run disposable read-only queue checks
+        run: python3 scripts/verify-queues.py --executable artifacts/macos-ci/${{ matrix.rid }}/CodexSwitch
