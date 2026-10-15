@@ -4,7 +4,7 @@
 
 - [x] Review the repository and show native English application baseline plus an isolated design prototype before repository changes; owner approved the design.
 - [x] Implement the shared Avalonia history layout with a selected range, quota picker, explicit reset-first explanation and correctly oriented/date-labeled used-quota chart. Preserve forecast/data/key/IPC identities.
-- [ ] Verify native English dark/light overview, minimum scrolling, empty/single-point/unavailable history and quota/range actions; inspect and export metadata-free before/after PNGs.
+- [x] Verify native English dark/light overview, minimum scrolling, empty/single-point/unavailable history and quota/range actions; inspect and export fourteen metadata-free after PNGs and both actual before captures. Native Mac ARM64 history66/main UI21/localization42/composition9/SQLite23 pass.
 - [ ] Pass scoped repository/localization/privacy and relevant native checks, open the issue-linked PR, inspect exact-head CI and record author review. A binary release remains separate.
 
 ## Multiplatform delivery goal — resumed2026-10-15
