@@ -13,7 +13,7 @@ internal sealed class DesktopSwitchBackend : IAccountSwitchBackend
     private readonly DesktopSessionMonitor _sessions;
     private CodexRpc? _metadata;
     public DesktopSwitchBackend(AccountService service, DesktopSessionMonitor sessions) { _service = service; _sessions = sessions; }
-    public Task<string?> CurrentAccountAsync(CancellationToken cancellation) => Task.Run(() =>
+    public Task<string?> CurrentAccountAsync(CancellationToken cancellation) => OperatingSystem.IsLinux() ? _service.CurrentAccountKeyAsync(cancellation) : Task.Run(() =>
         File.Exists(_service.AuthPath) ? AuthDocument.Parse(File.ReadAllText(_service.AuthPath)).Key : null, cancellation);
     public async Task<SwitchChat[]> CaptureAsync(CancellationToken cancellation)
     {
@@ -32,6 +32,8 @@ internal sealed class DesktopSwitchBackend : IAccountSwitchBackend
     }
     private async Task<CodexRpc> MetadataAsync(CancellationToken cancellation)
     {
+        if (!OperatingSystem.IsWindows() && !OperatingSystem.IsMacOS())
+            throw new PlatformNotSupportedException("Desktop metadata actions require a verified desktop lifecycle and peer provider.");
         if (_metadata == null)
         {
             _metadata = new CodexRpc(_service.Installation.CliPath, _service.CodexHome, true);
