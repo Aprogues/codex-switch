@@ -1,6 +1,6 @@
 # Build and install
 
-Use an existing complete package, or build from this repository. Codex desktop/CLI must already be installed. Current source1.32.0 requires .NET10.0.4xx SDK and packages runtime10.0.13; published1.27.6 binaries remain unchanged.
+Use an existing complete package, or build from this repository. Codex desktop/CLI must already be installed. Current source1.33.0 requires .NET10.0.4xx SDK and packages runtime10.0.13; published1.27.6 binaries remain unchanged.
 
 ## Windows
 
@@ -31,6 +31,8 @@ The output is beneath `artifacts/macos/<rid>/`.
 The installer validates the new app and preserves the previous installation. Local builds use ad-hoc signing unless a Developer ID identity is configured. macOS may require its normal opening or Keychain authorization flow. [Mac details](MACOS.md)
 
 ## First use
+
+Linux contributors can run `bash scripts/build-linux.sh` on native x64/ARM64 after installing the declared X11/font/libsecret dependencies. This is a source storage/UI preview with account/client/handoff actions disabled, not a supported Linux binary release. [Native environment and pending gates](development/LINUX.md).
 
 Select **+**, complete browser sign-in, compare the cards and choose **Switch**. In Windows, right-click **↻** to import the current Codex login.
 

@@ -32,7 +32,16 @@ Check("Both app policies and catalogues live in one UI-neutral assembly", () =>
     Assert(!core.GetTypes().SelectMany(t => t.GetMethods(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic |
         System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Instance)).Any(m => m.IsDefined(typeof(System.Runtime.InteropServices.DllImportAttribute), false)));
 });
-if (!OperatingSystem.IsWindows() && !OperatingSystem.IsMacOS())
+if (OperatingSystem.IsLinux())
+    Check("Linux vault defaults use a POSIX root while unverified client discovery refuses", () =>
+    {
+        var data = new VaultData(); Assert(data.Drives.Count == 1 && data.Drives[0].Root == "/" && data.Drives[0].Label == "/");
+        var rejected = false;
+        try { RuntimeLocator.FindAsync(System.Threading.CancellationToken.None).GetAwaiter().GetResult(); }
+        catch (PlatformNotSupportedException) { rejected = true; }
+        Assert(rejected);
+    });
+else if (!OperatingSystem.IsWindows() && !OperatingSystem.IsMacOS())
     Check("Unsupported vault/discovery cannot take a Windows fallback", () =>
     {
         var vaultRejected = false; var discoveryRejected = false;
@@ -45,6 +54,17 @@ var basis = LanguagePack.Parse(englishBytes, null, false);
 byte[] Mutate(Action<JsonObject> action)
 { var json = JsonNode.Parse(englishBytes)!.AsObject(); action(json); return Encoding.UTF8.GetBytes(json.ToJsonString()); }
 Check("Nine complete built-in packs preserve English/Korean source aliases", () => { Loc.ValidateCatalogs(); Assert(Loc.Languages.Count == 9); Loc.SetLanguage("ko"); Assert(Loc.T("계정 추가") == "계정 추가"); Loc.SetLanguage("en"); Assert(Loc.T("계정 추가") == "Add account"); });
+Check("Linux preview and key failures resolve through every bundled catalogue", () =>
+{
+    foreach (var info in Loc.Languages)
+    {
+        Loc.SetLanguage(info.Code);
+        Assert(Loc.Error(new LinuxVaultException(LinuxKeyFailure.Locked).Message) == Loc.T("msg.linux_keyring_locked"));
+        Assert(Loc.Error(new LinuxVaultException(LinuxKeyFailure.Missing).Message) == Loc.T("msg.linux_keyring_missing"));
+        Assert(!Loc.T("msg.linux_preview_accounts_unavailable").StartsWith("msg.", StringComparison.Ordinal));
+    }
+    Loc.SetLanguage("en");
+});
 foreach (var info in Loc.Languages)
 {
     Check(info.Code + " messages/culture/calendar/formats", () =>

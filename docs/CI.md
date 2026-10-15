@@ -2,6 +2,10 @@
 
 [Verify](../.github/workflows/verify.yml) runs on PRs, pushes to `main` and manual dispatch. It uses read-only contents permission, SHA-pinned official actions, non-persistent checkout credentials and disposable hosted runners. No account/signing secrets, privileged fork events or release publication.
 
+[Linux native](../.github/workflows/linux-native.yml) separately declares actual Ubuntu24.04 x64/arm64 GNOME Keyring runs with a private D-Bus/XDG environment. Source1.33.0 storage promotion requires both native jobs at the exact reviewed head in addition to all four Verify jobs. [Native commands, isolation and incomplete support gates](development/LINUX.md). A portable Ubuntu pass is not a native keyring or application acceptance result; KDE/KWallet and Linux client/handoff/packages remain separate.
+
+The Linux jobs also publish the source preview for the actual runner, inspect the complete runtime, run its synthetic own-window mode on X11/Xvfb and export12 lossless native PNGs per architecture. XID-only capture cannot fall back to desktop capture or managed rendering. Common export removes metadata and binds the PR head revision; checkout explicitly selects that head. Source account/client/handoff actions remain disabled. These screenshots complement the separate18-check provider suite and do not certify real account/handoff, native Wayland or full desktop-session support.
+
 | Check | Host | Evidence |
 | --- | --- | --- |
 | Repository checks | Ubuntu 24.04 | UTF-8/local links/YAML, audit rejection tests, targeted tracked-tree scan and whitespace |
@@ -9,7 +13,7 @@
 | Windows shutdown regression | Windows 2022 x64, same job | Production Restart Manager/coordinator with disposable GUI parent/child: delayed exit, cancellation, deadline and refusal; synthetic account/launch/resume endpoints |
 | Native app UI and queues | macOS 15 arm64 and Intel | Architecture publish, own-window screenshots, strict layout/menu assertions and disposable SQLite/WAL checks |
 
-These do not prove live login/switch/resume, Mac Keychain, Metal rendering, notarization or Linux application support. Ubuntu runs repository tooling and portable production contract tests only. The workflow uploads no binaries or raw diagnostics. [Current native UI screenshots](media/README.md#native-platform-gallery) and [feature verification index](evidence/README.md) distinguish the latest UI from historical runtime checkpoints.
+These do not prove live installed-account login/switch/resume, Metal rendering, notarization, native Wayland or full desktop-session acceptance. Native protection suites separately exercise actual disposable Windows DPAPI/Mac Keychain/Linux Secret Service primitives. The Verify Ubuntu job runs portable contracts; Linux native separately exercises its real provider and source preview. Workflows upload no binaries, key material or raw diagnostics. [Current native UI screenshots](media/README.md#native-platform-gallery) and [feature verification index](evidence/README.md) distinguish capability evidence from historical runtime checkpoints.
 
 Source1.30.0 CI also runs the actual published Windows/Mac app in an isolated evidence mode and captures only its own native window with fictional profiles. Sanitized PNGs/runtime/architecture manifests are retained as14-day artifacts after validation; no raw desktop, user home, account secret or binary Release is published. Mac evidence mode explicitly selects software rendering on virtual runners; it does not prove Metal/GPU coverage. Complete package inspection checks .NET10.0.13 included runtimes and RID. Native window execution is distinct from real login/switch/resume and Linux acceptance.
 
