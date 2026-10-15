@@ -112,6 +112,21 @@ def capture(window, pid, name):
         image.save(file)
         images.append({'file': file.name, 'width': image.width, 'height': image.height, 'sha256': hashlib.sha256(file.read_bytes()).hexdigest(), 'capture': 'Actual ordinary installed application own XID; no --verify-ui or synthetic account injection'})
 
+
+def wait_for_initialized_ui(window):
+    def observed():
+        native = root / 'initialization-private.xwd'
+        png = root / 'initialization-private.png'
+        run(['xwd', '-silent', '-id', window, '-out', str(native)], stdout=private_log, stderr=private_log)
+        run(['convert', str(native), str(png)], stdout=private_log, stderr=private_log)
+        with Image.open(png) as frame:
+            frame = frame.convert('RGB')
+            background = frame.getpixel((5, frame.height - 65))
+            def ink(box):
+                return max(max(abs(pixel[channel] - background[channel]) for channel in range(3)) for pixel in frame.crop(box).getdata())
+            return ink((9, frame.height - 24, 140, frame.height - 5)) > 20 and ink((frame.width - 149, frame.height - 24, frame.width - 9, frame.height - 5)) > 30
+    wait_for(observed, 40)
+
 daemon = keyring()
 desktop = subprocess.Popen(['xfce4-session'], stdout=private_log, stderr=private_log)
 try:
@@ -143,6 +158,14 @@ try:
     daemon = keyring()
     phase('read-after-restart')
     check('Provider restart preserves original ciphertext bytes', hashlib.sha256(original_vault.read_bytes()).hexdigest() == original_hash)
+    handoff = json.loads(run(['/contracts/handoff/CodexSwitch.LinuxHandoff.Tests', str(root / 'codex-linux-handoff-test-integration')], capture_output=True, timeout=200).stdout)
+    check('Production Linux account/coordinator/metadata/managed desktop integration passes offline', handoff['failed'] == 0 and handoff['passed'] == 8)
+    phases.append(handoff)
+    ordinary_home = root / 'ordinary-codex'
+    ordinary_home.mkdir(mode=0o700)
+    (ordinary_home / 'config.toml').write_text('cli_auth_credentials_store = "file"\nanalytics.enabled = false\n')
+    (ordinary_home / 'config.toml').chmod(0o600)
+    os.environ['CODEX_HOME'] = str(ordinary_home)
     app = '/opt/codex-switch/CodexSwitch'
     info = json.loads(run([app, '--package-info'], capture_output=True).stdout)
     check('Installed candidate version/architecture/runtime match', info['version'] == expected['candidateVersion'] and info['architecture'] == 'X64' and info['runtime'] == '.NET 10.0.13')
@@ -163,11 +186,32 @@ try:
         return None
     pid, window = wait_for(find_app, 30)
     check('Ordinary desktop entry launches the actual per-user installed program', Path('/proc/' + str(pid) + '/exe').resolve() == executable)
+    wait_for_initialized_ui(window)
+    check('Ordinary account initialization visibly completes with configured volume and capability status', (root / 'share/CodexAccountDesk/accounts.vault').read_bytes().startswith(b'CADL1') and not (ordinary_home / 'auth.json').exists())
     run(['xdotool', 'windowactivate', '--sync', window])
     for width, height in ((500, 360), (600, 420), (800, 600)):
         run(['xdotool', 'windowsize', '--sync', window, str(width), str(height)])
         time.sleep(0.6)
         capture(window, pid, f'ordinary-dark-{width}x{height}')
+    run(['xdotool', 'mousemove', '--window', window, '631', '17', 'click', '1'])
+    def managed_client():
+        for process in Path('/proc').glob('[0-9]*'):
+            try:
+                if (process / 'exe').resolve() != Path('/usr/lib/chatgpt/ChatGPT'):
+                    continue
+                parent = re.search(r'^PPid:\s+(\d+)$', (process / 'status').read_text(), re.MULTILINE)
+                if parent and int(parent[1]) == pid and windows(int(process.name)):
+                    return int(process.name), windows(int(process.name))[0]
+            except (FileNotFoundError, PermissionError):
+                continue
+        return None
+    client_pid, client_window = wait_for(managed_client, 40)
+    check('Ordinary Start Codex button launches its own actual approved desktop child', Path('/proc/' + str(client_pid) + '/exe').resolve() == Path('/usr/lib/chatgpt/ChatGPT'))
+    run(['xdotool', 'windowactivate', '--sync', client_window])
+    run(['xdotool', 'key', '--window', client_window, 'ctrl+q'])
+    wait_for(lambda: not Path('/proc/' + str(client_pid)).exists(), 40)
+    check('Ordinary managed start keeps authentication empty and allows normal application Quit', not (ordinary_home / 'auth.json').exists())
+    run(['xdotool', 'windowactivate', '--sync', window])
     run(['xdotool', 'mousemove', '--window', window, '758', '17', 'click', '1'])
     run(['xdotool', 'mousemove', '--window', window, '20', '80'])
     time.sleep(0.5)
@@ -181,11 +225,27 @@ try:
     check('Ordinary trayless close exits the installed process', not Path('/proc/' + str(pid)).exists())
     run(['gio', 'launch', str(entry)], stdout=private_log, stderr=private_log)
     pid, window = wait_for(find_app, 30)
-    time.sleep(0.6)
+    wait_for_initialized_ui(window)
     capture(window, pid, 'ordinary-reopened')
     run(['xdotool', 'windowactivate', '--sync', window])
     run(['xdotool', 'key', '--window', window, 'ctrl+w'])
     wait_for(lambda: not Path('/proc/' + str(pid)).exists())
+    cli_home = root / 'ordinary-cli-only'
+    cli_home.mkdir(mode=0o700)
+    (cli_home / 'config.toml').write_text('cli_auth_credentials_store = "file"\nanalytics.enabled = false\n')
+    (cli_home / 'config.toml').chmod(0o600)
+    cli = Path('/usr/lib/chatgpt/resources/codex')
+    cli_ui = subprocess.Popen([str(executable), '--codex-home', str(cli_home), '--codex-cli', str(cli), '--codex-cli-sha256', hashlib.sha256(cli.read_bytes()).hexdigest()], stdout=private_log, stderr=private_log)
+    pid, window = wait_for(find_app, 30)
+    wait_for_initialized_ui(window)
+    check('Ordinary checksum-selected CLI-only UI launches without a desktop or authentication', pid == cli_ui.pid and not (cli_home / 'auth.json').exists())
+    run(['xdotool', 'windowsize', '--sync', window, '800', '600'])
+    time.sleep(1)
+    capture(window, pid, 'ordinary-cli-only-800x600')
+    run(['xdotool', 'windowactivate', '--sync', window])
+    run(['xdotool', 'key', '--window', window, 'ctrl+w'])
+    cli_ui.wait(timeout=30)
+    check('Ordinary CLI-only trayless close preserves its empty auth home', cli_ui.returncode == 0 and not (cli_home / 'auth.json').exists())
     removed = json.loads(run([str(executable), '--uninstall-package'], capture_output=True).stdout)
     check('Fresh installed self-uninstall returns successful JSON through redirected output', removed['uninstalled'] is True)
     check('Per-user uninstall removes only owned menu/current integration', not entry.exists() and not (root / 'share/codex-switch/current').exists())
@@ -252,7 +312,7 @@ try:
     phase('read-after-restart')
     check('Original native-key ciphertext survives desktop/UI/client lifecycle', hashlib.sha256(original_vault.read_bytes()).hexdigest() == original_hash)
     packages = run(['dpkg-query', '-W', '-f=${Package} ${Version}\n', 'xfce4-session', 'xfwm4', 'xfce4-panel', 'gnome-keyring', 'chatgpt', 'codex-switch'], capture_output=True, text=True).stdout.splitlines()
-    result = {'schema': 1, 'expected': expected, 'passed': len(checks), 'failed': 0, 'checks': checks, 'nativePhases': phases, 'images': images, 'packages': packages, 'kernel': platform.release(), 'ordinaryUi': True, 'accountsUsed': False, 'display': 'X11/Xvfb with actual Xfce session/xfwm4/panel', 'scope': 'Actual normal-user containerized desktop userspace, ordinary installed app/menu/resize/refresh/close/reopen, actual GNOME encrypted storage and sandboxed official-client IPC/normal close/relaunch. No authenticated account switch/Continue, login manager/PAM, booted VM, native GPU, GNOME/KDE/Wayland, ARM64 or supported Release acceptance.'}
+    result = {'schema': 1, 'expected': expected, 'passed': len(checks), 'failed': 0, 'checks': checks, 'nativePhases': phases, 'images': images, 'packages': packages, 'kernel': platform.release(), 'ordinaryUi': True, 'accountsUsed': False, 'fictionalCredentialsInContracts': True, 'display': 'X11/Xvfb with actual Xfce session/xfwm4/panel', 'scope': 'Actual normal-user containerized desktop userspace; ordinary installed account/CLI-only UI, resize/refresh/close/reopen, GNOME encrypted storage, fictional local auth/coordinator/recovery/context policy, actual offline CLI metadata and managed desktop discovery/thread-open/normal close/relaunch. No authenticated account switch/Continue, login manager/PAM, booted VM, native GPU, GNOME/KDE/Wayland, ARM64 desktop or supported Release acceptance.'}
     (results / 'session.json').write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps({'passed': len(checks), 'failed': 0, 'images': len(images)}), flush=True)
 finally:
