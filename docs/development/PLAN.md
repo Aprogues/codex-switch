@@ -34,7 +34,15 @@ First Linux target remains Ubuntu LTS x64/GNOME X11 or XWayland; wider KDE/distr
 - [x] Extract RPC/desktop IPC/session/queue projection into `CodexSwitch.Protocol` and native read-only SQLite into `CodexSwitch.Sqlite`. Both apps/tests/rendering consume one implementation. Shared version preserves RPC client version; no UI/circular dependency.
 - [x] Preserve supported algorithms/protocol versions/IDs/filtering/read-only flags/cancellation, and reject unsupported IPC start/SQLite construction before unauthenticated Unix/Windows-library fallback. Local boundary/refusal/corrupt-byte5, Windows93/SQLite23 and both app builds pass. Source1.31.2.
 - [x] Verify native supported-OS and Ubuntu contracts and [actual native Windows/Mac before/after](../evidence/protocol-sqlite/README.md). Source5520523/run38658393998 passes all four jobs; protocol5 eachOS, Windows93/SQLite23/handoff5 and native Mac SQLite/UI pass. Six selected after PNGs are inspected and metadata/hash checked; Windows dark comparison is byte-identical.
-- [ ] Finish latest-head CI/author review and PR42 promotion before resource separation. Linux5/6/7 remain open.
+- [x] Complete latest-head4fe70d5 CI/run38658971849, author self-review and PR42 merge to main0d0419a3. Linux5/6/7 remain open.
+
+### P7.3 resource boundary — issue43
+
+- [x] Move Windows/Mac sampling, temperatures and drive monitoring into one `CodexSwitch.Hardware` project, consumed by both apps/rendering/tests. Move only the unchanged serializable DrivePreference model into core; vault defaults/format stay in integration. Source1.31.3.
+- [x] Preserve supported sampling, sensor selection/unknown states and non-elevated APIs; refuse wrong-OS native entry points before library/port acquisition or background tasks. Local native Windows hardware8 pass.
+- [x] Complete existing temperature29/native app regressions and native Mac hardware checks. Source2e7f8f0/run38660081487 passes all four jobs, including hardware8Windows/9eachMac/10Ubuntu and Windows93/SQLite23/handoff5, both native Mac SQLite/UI and existing language/security/client/protocol checks. Full-package omission of Hardware.dll is rejected and the owned folder restored.
+- [x] Inspect six exact-source [actual Windows/Mac before/after](../evidence/hardware-services/README.md) with privacy/metadata/hash receipts. Same-host Windows dark PNGs are byte-identical.
+- [ ] Finish final-head CI, author review and PR44 promotion. Shared desktop composition and Linux5/6/7 remain open.
 
 ## Tooltip style lifetime — issue35
 
