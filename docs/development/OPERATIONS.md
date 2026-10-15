@@ -1,10 +1,10 @@
 # Operations
 
-Public `Gaebabi/codex-switch`, baseline `main`, is the canonical source. Clone into any directory. Source/app version is **1.37.0**; published binary version remains **1.27.6**. Binary delivery is manual GitHub Release ZIPs plus SHA256SUMS; no automatic updater or CI release publisher exists.
+Public `Gaebabi/codex-switch`, baseline `main`, is the canonical source. Clone into any directory. Source/app version is **1.37.1**; published binary version remains **1.27.6**. Binary delivery is manual GitHub Release ZIPs plus SHA256SUMS; no automatic updater or CI release publisher exists.
 
 ## Build and verify
 
-Run from the repository root with .NET10.0.4xx, currently SDK10.0.402/runtime10.0.13. `global.json` allows current patch updates. Use clean output folders for package candidates. .NET10's reviewed current Mac support baseline is macOS15+; the bundle minimum and app version match source1.37.0. [KDE6 provider contracts and native gates](KDE_SECRET_SERVICE.md) describe explicit package/checksum support; runtime providers are not installed or altered by the app.
+Run from the repository root with .NET10.0.4xx, currently SDK10.0.402/runtime10.0.13. `global.json` allows current patch updates. Use clean output folders for package candidates. .NET10's reviewed current Mac support baseline is macOS15+; the bundle minimum and app version match source1.37.1. [KDE6 provider contracts and native gates](KDE_SECRET_SERVICE.md) describe explicit package/checksum support; runtime providers are not installed or altered by the app.
 
 ```powershell
 .\scripts\build.ps1 -Verify
@@ -56,6 +56,8 @@ Resource/disk temperatures use supported Windows read-only WDDM/storage APIs and
 Application integration now builds once in `src/application`; Avalonia UI builds once in `src/desktop`. No consumer compiles the former `src/shared` sources. Desktop native probes add `--native-ui` to the composition test command on a declared Windows/Mac runner; this displays the actual shared UI with synthetic profiles/pending resources, verifies ordinary trayless close/disposal and never creates a data/home directory. Initialize Avalonia before creating themed controls/brushes in a native probe; an earlier unbound dispatcher cannot run its native event loop. Production Mac still supplies its native tray, appearance and diagnostic/capture adapters. Linux now composes the shared source preview host, with account/client/handoff actions disabled pending their native gates. Its explicit-home `--verify-queues` path reads only queue metadata before GUI/vault/client initialization; `verify-queues.py` uses owned disposable fixtures.
 
 ## Git and publication
+
+Source 1.37.1 adds `--verify-history <raw-directory>` to the Mac app. It exercises the production history window with English fictional profiles, normal range saves to a disposable encrypted vault and a diagnostic Keychain key that is removed afterwards. It captures only its own history windows/quota popups. `python scripts/verify-history-evidence.py <raw-directory> <public-directory> --revision <40-character-source-sha>` checks all fourteen declared exports, successful native interactions and image metadata before publication. Raw reports and temporary vaults stay ignored. [History evidence and verification scope](../evidence/usage-history/README.md).
 
 Use issues and scoped PRs with screenshot evidence. The owner authorized the ongoing open-source issue/commit/push/PR, review and merge workflow. A push/merge is not a binary Release. CI runs on PR/main/manual dispatch with read-only permissions; no signing/account secrets or privileged fork events. [Issue conventions](ISSUES.md)
 

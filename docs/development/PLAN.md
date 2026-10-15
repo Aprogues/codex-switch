@@ -1,5 +1,12 @@
 # Current plan
 
+## Usage history presentation — issue64
+
+- [x] Review the repository and show native English application baseline plus an isolated design prototype before repository changes; owner approved the design.
+- [x] Implement the shared Avalonia history layout with a selected range, quota picker, explicit reset-first explanation and correctly oriented/date-labeled used-quota chart. Preserve forecast/data/key/IPC identities.
+- [ ] Verify native English dark/light overview, minimum scrolling, empty/single-point/unavailable history and quota/range actions; inspect and export metadata-free before/after PNGs.
+- [ ] Pass scoped repository/localization/privacy and relevant native checks, open the issue-linked PR, inspect exact-head CI and record author review. A binary release remains separate.
+
 ## Multiplatform delivery goal — resumed2026-10-15
 
 The owner requests implementation through verified completion of the remaining roadmap, with issue-linked checkpoint commits/pushes, actual private-data-free program images, exact-head CI, author review and authorized merges. Binary Release/signing remains a separate gate. A build or screenshot alone cannot close native account/handoff criteria.

@@ -2,7 +2,9 @@
 
 ## Current source evidence
 
-Source 1.36.0 is the current app; published downloads remain 1.27.6. The dashboard layout gallery retains its original1.30.2 checkpoint. Choose the evidence for the capability being reviewed:
+Source 1.37.1 is the current app; published downloads remain 1.27.6. The dashboard layout gallery retains its original1.30.2 checkpoint. Choose the evidence for the capability being reviewed:
+
+- [Usage history layout and chart direction](usage-history/README.md): English native Mac baseline and implementation verification for the shared Avalonia view; forecast/storage/client identities are preserved.
 
 - [Positive KWallet5 storage and five-target program confirmation](linux-kwallet-storage/README.md): source1.36.0; actual native x64/ARM64 KWallet31/GNOME29,1024 independent encrypted key sessions, legacy ciphertext/original-key preservation and exact-source C vectors. Ten inspected own-window after PNGs; full KDE/Wayland/authenticated handoff/packages stay separate.
 
