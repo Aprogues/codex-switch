@@ -2,11 +2,13 @@
 
 ## Main parts
 
-`src/core/CodexSwitch.Core.csproj` builds one UI-neutral .NET10 assembly consumed by both desktop apps and contract tests. It owns account/quota/authentication models, usage/resource presentation, refresh scheduling, checkpointed switch policy and language catalogues. It references no WPF, Avalonia, native P/Invoke or platform-service project. The existing `src/shared` integration sources and `src/platforms/macos` remain linked by the apps while platform providers are extracted in later focused parts of [issue3](https://github.com/Gaebabi/codex-switch/issues/3).
+`src/core/CodexSwitch.Core.csproj` builds one UI-neutral .NET10 assembly consumed by both desktop apps and contract tests. It owns account/quota/authentication models, usage/resource presentation, refresh scheduling, checkpointed switch policy and language catalogues. It references no WPF, Avalonia, native P/Invoke or platform-service project. The remaining `src/shared` integration sources stay linked by the apps while provider boundaries are completed in focused parts of [issue3](https://github.com/Gaebabi/codex-switch/issues/3).
 
 The coordinator accepts its platform error formatter explicitly; its `IAccountSwitchBackend` still owns actual client/storage/IPC actions. Language installation accepts an `ILanguagePackWriter`; the existing private-directory/atomic-write adapter preserves file protection before publishing the new in-memory catalogue. Vault configuration/default drives remain in the integration layer. Unsupported vault defaults/discovery now fail before taking a Windows path. `Directory.Build.props` owns the managed version; Mac bundle metadata must match it.
 
 Source1.31.0 adds `src/platforms/security/CodexSwitch.PlatformSecurity.csproj`, independent of the UI and domain core. Both apps and contract tests reference its single internal native implementation. It owns `VaultProtection`, Windows DPAPI, Mac Keychain/CoreFoundation helpers and `SecureFiles` (permissions/atomic writes/owned-runtime cleanup). Existing native algorithm bytes, paths, Keychain service/account hashing, DPAPI description and CADM1 envelope are preserved. `AccountVault`/`VaultData` serialization and refresh/credential revisions remain in integration code. Linux vault protection still rejects explicitly. Other native service projects remain in #3.
+
+Source1.31.1 adds `src/platforms/client/CodexSwitch.DesktopClient.csproj` for existing RuntimeLocator/CodexInstallation, normal desktop shutdown, owned-child lifetime and Mac app discovery/lifecycle/peer verification. It references native security helpers, without a UI or core dependency. RuntimeHome stays in integration code. Supported native algorithms/identities remain unchanged; unsupported discovery/running/launch/thread-open/shutdown rejects before any Windows fallback. Both apps/tests/rendering use the same assembly; no sources remain linked from the former `src/platforms/macos` folder. IPC observation, SQLite and resource-provider extraction are still follow-ups.
 
 | Part | Responsibility |
 | --- | --- |
@@ -14,10 +16,11 @@ Source1.31.0 adds `src/platforms/security/CodexSwitch.PlatformSecurity.csproj`, 
 | `AccountSwitchCoordinator`, desktop automation | Checkpointed chat naming, normal shutdown, login application and chat resumption |
 | `src/core` | UI-neutral models, quota/forecast, refresh/coordinator policy, language/resource presentation |
 | `src/platforms/security` | UI/domain-independent native key/protection/private-file assembly; no credential migration |
+| `src/platforms/client` | Native client discovery/lifecycle, normal shutdown and Mac peer-identity helper assembly |
 | `DesktopSessionMonitor`, queue stores | Read-only local desktop activity and saved/SQLite queue observations |
 | `HardwareSampler`, `DriveMonitor` | Independent machine-resource and volume collection |
 | `MainWindow`, account/resource panels | Windows WPF UI and shared Burn0 theme |
-| `src/macos/`, `src/platforms/macos/` | Avalonia UI, Keychain/POSIX/Unix IPC and native Mac integrations |
+| `src/macos/`, native service projects | Avalonia UI plus shared security/client services and remaining Mac resource/menu integrations |
 
 ## Important contracts
 

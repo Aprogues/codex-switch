@@ -20,7 +20,14 @@ First Linux target remains Ubuntu LTS x64/GNOME X11 or XWayland; wider KDE/distr
 - [x] Extract native protection/Keychain/secure-file primitives byte-preserving into `CodexSwitch.PlatformSecurity`; keep account serialization in the integration layer. Both apps/tests/rendering reference one assembly; complete packages require it.
 - [x] Local Windows native protection/file10, existing core/language41, publish/runtime and own-window UI pass. Add Linux refusal/POSIX and native Mac Keychain tests to read-only CI; native Mac confirmation remains required.
 - [x] Inspect exact-revision native Windows/Mac before/after: [native security evidence](../evidence/platform-security/README.md), eight selected PNGs with metadata/hash receipts; source12d73d0/run38655891808 passes all four jobs. Mac security16 each and Windows10 pass; same-scale Windows dark PNGs are byte-identical.
-- [ ] Record final complete-head CI/review and owner-authorized PR38 merge for #37. No personal storage/client action or new Release.
+- [x] Record final complete-head22279bd CI/run38656395280, author self-review and PR38 merge to main878c479a for #37. No personal storage/client action or new Release.
+
+### P7.1 client/lifecycle boundary
+
+- [x] Move RuntimeLocator/CodexInstallation, normal shutdown, owned-child lifetime and Mac desktop/peer verification into one `CodexSwitch.DesktopClient` project. RuntimeHome remains integration code; no UI/domain project dependency. Source1.31.1.
+- [x] Keep supported-OS algorithm bodies and identities; explicitly reject unsupported desktop running/launch/thread-open/shutdown before a Windows fallback. Local Windows refusal/assembly5 pass.
+- [x] Complete existing native handoff/security/SQLite/app checks and [native Windows/Mac before/after](../evidence/desktop-client/README.md). Source903fdc0/run38657071888 passes all four jobs; client5Windows/4Mac/7Ubuntu and six selected native PNGs are checked. Same-scale Windows dark images are byte-identical.
+- [ ] Complete latest-head CI/author review and PR40 merge. Remaining IPC/SQLite/resource separation and all Linux5/6/7 acceptance stay open.
 
 ## Tooltip style lifetime — issue35
 
