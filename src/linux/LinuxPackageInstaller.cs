@@ -77,7 +77,7 @@ internal static class LinuxPackageInstaller
         var quoted = path.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("`", "\\`").Replace("$", "\\$").Replace("%", "%%");
         return "\"" + quoted.Replace("\\", "\\\\") + "\"";
     }
-    public static int Execute(bool uninstall)
+    public static int Execute(bool uninstall, TextWriter reportWriter)
     {
         if (geteuid() == 0 || getuid() != geteuid()) throw new IOException("Run per-user installation as your normal desktop user, without sudo.");
         var selectedData = Environment.GetEnvironmentVariable("XDG_DATA_HOME");
@@ -120,6 +120,11 @@ internal static class LinuxPackageInstaller
                 var directory = Path.Combine(versions, version); if (!Directory.Exists(directory)) continue;
                 VerifyPath(directory, true); packages.Add((directory, Manifest(directory)));
             }
+            using var resultBytes = new MemoryStream();
+            using var result = new Utf8JsonWriter(resultBytes);
+            result.WriteStartObject(); result.WriteBoolean("uninstalled", true);
+            result.WriteString("scope", "Only recorded package files; account/vault/home/keyring data is never opened or removed.");
+            result.WritePropertyName("retainedUnmanagedItems");
             foreach (var (path, expected) in new[] { (desktop, state.DesktopSha256), (icon, state.IconSha256) })
                 if (Exists(path)) { if (Sha(path) == expected) File.Delete(path); else retained++; }
             if (link != null) File.Delete(current);
@@ -138,7 +143,8 @@ internal static class LinuxPackageInstaller
                 if (!Directory.EnumerateFileSystemEntries(directory).Any()) Directory.Delete(directory); else retained++;
             }
             File.Delete(statePath);
-            Console.WriteLine(JsonSerializer.Serialize(new { uninstalled = true, retainedUnmanagedItems = retained, scope = "Only recorded package files; account/vault/home/keyring data is never opened or removed." })); return 0;
+            result.WriteNumberValue(retained); result.WriteEndObject(); result.Flush();
+            reportWriter.WriteLine(Encoding.UTF8.GetString(resultBytes.GetBuffer(), 0, checked((int)resultBytes.Length))); return 0;
         }
         var source = Full(AppContext.BaseDirectory); var package = Manifest(source);
         if (package.Version != typeof(LinuxPackageInstaller).Assembly.GetName().Version!.ToString(3)) throw Refused();
@@ -165,7 +171,7 @@ internal static class LinuxPackageInstaller
         Atomic(statePath, JsonSerializer.SerializeToUtf8Bytes(next)); Atomic(desktop, desktopBytes); Atomic(icon, iconBytes);
         var pending = Path.Combine(prefix, ".current-" + Guid.NewGuid().ToString("N")); File.CreateSymbolicLink(pending, "versions/" + package.Version);
         if (rename(pending, current) != 0) throw new IOException("The package activation link could not be atomically replaced (errno " + Marshal.GetLastPInvokeError() + ").");
-        Console.WriteLine(JsonSerializer.Serialize(new { installed = true, version = package.Version, package.Rid, scope = "Per-user package/menu/icon files only; account/vault/home/keyring data is never opened or migrated." })); return 0;
+        reportWriter.WriteLine(JsonSerializer.Serialize(new { installed = true, version = package.Version, package.Rid, scope = "Per-user package/menu/icon files only; account/vault/home/keyring data is never opened or migrated." })); return 0;
     }
     [DllImport("libc", SetLastError = true)] private static extern int statx(int directory, [MarshalAs(UnmanagedType.LPUTF8Str)] string path, int flags, uint mask, out Stat value);
     [DllImport("libc")] private static extern uint getuid();

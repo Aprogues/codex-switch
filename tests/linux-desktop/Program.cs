@@ -102,7 +102,7 @@ else
     try { Environment.SetEnvironmentVariable("NODE_OPTIONS", "--require=" + injected); owned = LinuxDesktopLaunch.Start(root, deadline.Token); }
     finally { Environment.SetEnvironmentVariable("NODE_OPTIONS", originalOptions); }
     using var launch = owned;
-    while (!File.Exists(Path.Combine(root, "ipc/ipc.sock"))) await Task.Delay(100, deadline.Token);
+    await launch.WaitForReadyAsync(deadline.Token);
     await using var stream = await LinuxDesktopConnection.ConnectAsync(root, deadline.Token);
     var id = Guid.NewGuid().ToString();
     var body = JsonSerializer.SerializeToUtf8Bytes(new { type = "request", requestId = id, method = "initialize", version = 0, timeoutMs = 5000, @params = new { clientType = "codex-account-desk" } });
@@ -121,7 +121,7 @@ else
     if (args[0] == "--lifecycle")
     {
         await launch.CloseAsync(deadline.Token);
-        Check("The original verified native client exits normally through WM_DELETE and its captured children exit without force", () => Assert(launch.ExitedNormally));
+        Check("The original verified native client exits normally through its native Quit command and its captured children exit without force", () => Assert(launch.ExitedNormally));
         Check("An independently running real pinned Codex CLI is preserved by intended-client shutdown", () => Assert(otherClient != null && otherClient.Running));
     }
     else launch.WaitForExit(deadline.Token);
@@ -129,7 +129,7 @@ else
         Refused(() => stream.WriteAsync(frame, deadline.Token).GetAwaiter().GetResult()));
 }
 Console.WriteLine(JsonSerializer.Serialize(new { schema = 1, passed = checks.Count, failed = 0, architecture = RuntimeInformation.ProcessArchitecture.ToString(), checks,
-    scope = args[0] == "--lifecycle" ? "Actual sandboxed official desktop with controlled normal X11 close, captured child exits and a preserved independent real Codex CLI. No accounts, credentials, inference, chat mutation or authenticated handoff acceptance." : "Owned native sockets and the actual approved sandboxed desktop, without accounts, credentials, inference, normal client shutdown, chat mutation or authenticated handoff acceptance." }));
+    scope = args[0] == "--lifecycle" ? "Actual sandboxed official desktop with controlled normal X11 application Quit, captured child exits and a preserved independent real Codex CLI. No accounts, credentials, inference, chat mutation or authenticated handoff acceptance." : "Owned native sockets and the actual approved sandboxed desktop, without accounts, credentials, inference, normal client shutdown, chat mutation or authenticated handoff acceptance." }));
 
 internal static class NativeSocket
 {
