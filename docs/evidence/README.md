@@ -2,7 +2,9 @@
 
 ## Current source evidence
 
-Source 1.35.1 is the current app; published downloads remain 1.27.6. The dashboard layout gallery retains its original1.30.2 checkpoint. Choose the evidence for the capability being reviewed:
+Source 1.36.0 is the current app; published downloads remain 1.27.6. The dashboard layout gallery retains its original1.30.2 checkpoint. Choose the evidence for the capability being reviewed:
+
+- [Positive KWallet5 storage and five-target program confirmation](linux-kwallet-storage/README.md): source1.36.0; actual native x64/ARM64 KWallet31/GNOME29,1024 independent encrypted key sessions, legacy ciphertext/original-key preservation and exact-source C vectors. Ten inspected own-window after PNGs; full KDE/Wayland/authenticated handoff/packages stay separate.
 
 - [KDE incompatibility refusal and five-target program comparison](linux-kwallet/README.md): source1.35.1; native x64/ARM64 GNOME28 positive contracts and KWallet19 explicit-refusal contracts. Ten inspected native after PNGs and sanitized counts/versions; usable KWallet storage stays pending in issue55.
 

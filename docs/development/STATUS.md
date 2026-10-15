@@ -1,6 +1,8 @@
 # Current status
 
-Updated 2026-10-15. Source version **1.35.1**; published binaries **1.27.6**.
+Updated 2026-10-15. Source version **1.36.0**; published binaries **1.27.6**.
+
+P8.4b/issue55/PR59 restores positive KWallet5 encrypted storage through the pinned app-private LGPL libsecret0.21.8.2 repair. Codeb2f5b25 passes Verify38689110229 (four jobs) and Linux native38689110385 (actual x64/ARM64): each native target passes KWallet31/15 phases and GNOME29/13 phases,1024 independent encrypted key sessions, legacy-format/original-key preservation and native C vectors/public-key encodings. Existing client120/SQLite26/protocol10/app12 and Windows/Mac regressions pass. [Ten inspected actual own-window after images and native receipts](../evidence/linux-kwallet-storage/README.md) bind exact source/runtime/dimensions/hash/privacy; Windows same-host dark is byte-identical. No system provider/library or existing data identity is changed. Final proof-head six-job CI/review/promotion remains required by PR59; issue55 closure follows that audit. KWallet6/KSecrets, full KDE/Wayland/authenticated GUI/peer/handoff6 and clean packages7 remain separate.
 
 Provider/composition extraction #3 is complete in PR47/mainaee22785. P8.1/issue50 is complete in PR51/main3b67458b after exact-head0b075e0 passed all four Verify38670348861 and both Linux native38670348951 jobs plus author self-review. Actual GNOME Keyring18 checks/12 phases and actual source-app12 X11 images pass per Linux x64/ARM64 architecture; the final root fix also verifies nonblocking FIFO refusal and pipe preservation. [Ten inspected native Linux confirmations and supported-OS comparisons](../evidence/linux-vault/README.md) retain their exact source/hash/runtime/privacy boundaries; Windows same-scale dark is byte-identical. Source preview account/client/handoff stays disabled and resources unknown.
 
