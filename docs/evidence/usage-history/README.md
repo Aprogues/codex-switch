@@ -39,6 +39,6 @@ The native probe exercises normal range callbacks and encrypted vault saves on a
 - Existing published app `--verify-ui`: 21 native layout/menu/history checks passed. Existing queue/WAL fixture verification: 23 passed.
 - Localization production API: 42 passed; all nine packs validate 372 messages. Native shared composition: 9 passed, including the new percent-axis/reset-gap regressions and ordinary trayless close.
 - Document-link tests: 7 passed. Privacy-audit rejection tests: 5 passed. Tracked-tree privacy, UTF-8/local links/YAML and whitespace checks passed before each push.
-- Exact-head CI, including native Intel and Linux source-preview regression checks, is pending when these local images are recorded. The PR records final CI results and author review; local ARM64 checks do not establish those other native targets.
+- [PR #65](https://github.com/Gaebabi/codex-switch/pull/65) records exact-head CI, target-runner artifact inspection and author review. Both native Mac jobs export fourteen English history images and their receipts; both Linux source-preview jobs and existing Windows checks remain required. Local ARM64 checks do not establish those other native targets.
 
 Only app-owned NSWindows are captured. Images contain fictional input from inception and have no ancillary PNG metadata. No personal desktop, credential, home path, account switching or chat resumption is involved. Public downloads remain 1.27.6.
