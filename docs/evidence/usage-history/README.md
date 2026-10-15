@@ -1,6 +1,6 @@
 # Usage history design evidence
 
-Tracks [issue #64](https://github.com/Gaebabi/codex-switch/issues/64). The approved design improves the shared Avalonia history window used by macOS and the Linux source preview. Windows WPF has a separate history view. The forecast model, quota/reset segment selection, data/key/IPC identities and supported-platform gates are unchanged.
+Tracks [issue #64](https://github.com/Gaebabi/codex-switch/issues/64) and [PR #65](https://github.com/Gaebabi/codex-switch/pull/65). The approved design improves the shared Avalonia history window used by macOS and the Linux source preview. Windows WPF has a separate history view. The forecast model, quota/reset segment selection, data/key/IPC identities and supported-platform gates are unchanged.
 
 ## Actual application before and after
 
@@ -14,7 +14,7 @@ Tracks [issue #64](https://github.com/Gaebabi/codex-switch/issues/64). The appro
 
 Source `ec26e9fa9ee008b880ec8717a1e5b04f23781fe5`, app 1.37.0, native macOS ARM64. The history window and chart sources are unchanged in an external source archive; capture-only host instrumentation supplies a fictional Demo account and the same synthetic usage pattern in both themes. Increasing measured usage is drawn downward, chart axes are absent, and the selected range is indistinguishable from other buttons. [Baseline image hashes and capture scope](before/evidence.json).
 
-After: source `ba6a7575b6179223b061e18bd45f9ebf545b7250`, app 1.37.1, self-contained .NET 10.0.13 on native macOS ARM64, software rendering. The actual published-folder executable runs `--verify-history`; this is the implemented production history window, rather than the earlier design prototype. Before and after use the same machine, 2× capture scale and synthetic 4–27.4% growth pattern. Capture times differ. The default content size grows from 640×380 to 640×440; the existing 500×300 minimum remains scrollable. [All fourteen after PNGs, 66 interaction checks and source/runtime/hash receipt](mac-arm64/evidence.json).
+After: source `fe6c3e4ef7396c90719f48bdd7127c0e2ad10703`, app 1.38.1, self-contained .NET 10.0.13 on native macOS ARM64, software rendering. The actual published-folder executable runs `--verify-history`; this is the implemented production history window, rather than the earlier design prototype. Before and after use the same machine, 2× capture scale and synthetic 4–27.4% growth pattern. Capture times differ. The default content size grows from 640×380 to 640×440; the existing 500×300 minimum remains scrollable. [All fourteen after PNGs, 66 interaction checks and source/runtime/hash receipt](mac-arm64/evidence.json).
 
 The used-quota chart now rises with increasing usage, shows percent/date/time axes and the last measured value, and retains reset/gap discontinuities. Quota and range controls are distinct. Range controls use accessible toggle semantics with the existing neutral Button theme, avoiding the framework's bright checked fill. Remaining quota is visually separate from used quota; reset-first/collecting/exhausted/stale states are explained. A one-second window timer updates countdowns/forecast states without replacing focused controls; closing the window stops it.
 

@@ -1,10 +1,10 @@
 {
   "schema": 1,
-  "revision": "ba6a7575b6179223b061e18bd45f9ebf545b7250",
+  "revision": "fe6c3e4ef7396c90719f48bdd7127c0e2ad10703",
   "os": "macOS",
   "architecture": "Arm64",
   "runtime": ".NET 10.0.13",
-  "appVersion": "1.37.1",
+  "appVersion": "1.38.1",
   "language": "en",
   "rendering": "Software (native window)",
   "checks": [
@@ -80,28 +80,28 @@
       "file": "en-dark-history-empty-native.png",
       "width": 1284,
       "height": 936,
-      "sha256": "e684c04c086c0ff89c8545dc62dde3bdbd857fe6dd483941b6a5bcb25e21ced3",
+      "sha256": "e85bd8f339ca01f5951aed12bb88804baa5d7d171c7ef0e1b8ac63edace9fa9f",
       "capture": "Native own window or popup"
     },
     {
       "file": "en-dark-history-minimum-native.png",
       "width": 1000,
       "height": 656,
-      "sha256": "ba3f7baf3ede4ba158c1f15e514938486ee345d6b1c65e45daa142553429613e",
+      "sha256": "66332ff887b88824e1b261eb2ec246dc270a907f4e96dd4f78147ef0fb1b1530",
       "capture": "Native own window or popup"
     },
     {
       "file": "en-dark-history-multiple-native.png",
       "width": 1280,
       "height": 936,
-      "sha256": "1e58897b83a0c34550f27538142161dc4d38d33a2b87088d48f2e68691087c91",
+      "sha256": "90ec75b8c0840e89149ec6c3d5f22ae4e66a5533f318c4c172cc53ae280b4577",
       "capture": "Native own window or popup"
     },
     {
       "file": "en-dark-history-overview-native.png",
       "width": 1280,
       "height": 936,
-      "sha256": "cdaeffefc6854cd8da4521c5d309004e20f6b45dfef766b5c84124d63e9e663d",
+      "sha256": "ab98c2b2c668714c0611c89f1a1c060fc10bf596b92457d973a42cc9f2340e13",
       "capture": "Native own window or popup"
     },
     {
@@ -115,42 +115,42 @@
       "file": "en-dark-history-single-native.png",
       "width": 1284,
       "height": 936,
-      "sha256": "022f420cbba42cca51ba5ce783f01920017060c517f82f254bb97aaee640c0f9",
+      "sha256": "481e9ce307866952fb473dd91cb8787bcbebe99cd1786e8483d10d8fed9ab1ec",
       "capture": "Native own window or popup"
     },
     {
       "file": "en-dark-history-unavailable-native.png",
-      "width": 1284,
+      "width": 1280,
       "height": 936,
-      "sha256": "8d8c811e675535a9c7069554658d8b0aba91af59fceec6b09d903890a339feb2",
+      "sha256": "345c09b39bdc216a8dbedf134acfd0204eda92ad0b01e801f97098b1f98794cc",
       "capture": "Native own window or popup"
     },
     {
       "file": "en-light-history-empty-native.png",
-      "width": 1284,
+      "width": 1280,
       "height": 936,
-      "sha256": "838de28ba4992064c8102cb35a796a96bfacedbcfa064a9ff556618c005ec52b",
+      "sha256": "ad819e6c4fe630a3447b6133ab0b482b3fd79f48e8fd4456cea10a93c6aa441f",
       "capture": "Native own window or popup"
     },
     {
       "file": "en-light-history-minimum-native.png",
       "width": 1000,
       "height": 656,
-      "sha256": "82bda63fe4d66432a900c77680efc45dfe31cac488feb03adff4b88d279520b0",
+      "sha256": "68e919a726a7716b48285e433d3577aef3ed0a1cdbf674e2a7c5c532d7ae4656",
       "capture": "Native own window or popup"
     },
     {
       "file": "en-light-history-multiple-native.png",
       "width": 1280,
       "height": 936,
-      "sha256": "a48db9bf187657b9b89f8980049ff91f32280cb900ab0e1fde4b1ef0c213d193",
+      "sha256": "3a81135245f00753c7e885708549eaa5aa02ba5148c817e5e6ffd74f7b85b11a",
       "capture": "Native own window or popup"
     },
     {
       "file": "en-light-history-overview-native.png",
       "width": 1280,
       "height": 936,
-      "sha256": "fecb2410e4841cdd95146ed47f967c65b0996a791fdedead062c31d8767b890e",
+      "sha256": "95827b7c98442aa44672474d68e256f6bac36f8f8c2ae4adf0bb595633e6806e",
       "capture": "Native own window or popup"
     },
     {
@@ -162,16 +162,16 @@
     },
     {
       "file": "en-light-history-single-native.png",
-      "width": 1284,
+      "width": 1280,
       "height": 936,
-      "sha256": "ed1b5426cc3390e4f345bc777f7b71e59da2385c601a9e705c031deab9bc084b",
+      "sha256": "fa2f79aae5d0b35624a63d370722ad12d2780970c09ab20f6857f7f72180cbd7",
       "capture": "Native own window or popup"
     },
     {
       "file": "en-light-history-unavailable-native.png",
-      "width": 1284,
+      "width": 1280,
       "height": 936,
-      "sha256": "eee585b2bff29a9dd08d96c45640df75dc4186ae7b4726f853e059126b1515c9",
+      "sha256": "460030a149ab18cde5b8e26b1fa42d9e0991562058329549ae4240068e018dad",
       "capture": "Native own window or popup"
     }
   ],
