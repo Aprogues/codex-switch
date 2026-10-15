@@ -67,7 +67,16 @@ First Linux target remains Ubuntu LTS x64/GNOME X11 or XWayland; wider KDE/distr
 - [x] Expose the existing headless queue diagnostic through the Linux source host, requiring an explicit home and reporting missing native libraries as unavailable. Never initialize a vault/keyring/client or GUI for this diagnostic.
 - [x] Pass actual x64/ARM64 SQLite/WAL fixtures: committed visibility, uncommitted isolation, dedup/filtering/removal/unknown, absent/corrupt/write refusal, read-only permission acceptance and unchanged database/WAL presence/bytes. SHM coordination is a separate SQLite behavior; no immutable shortcut.
 - [x] Inspect source-bound actual native Linux/Windows/Mac app comparison, privacy/metadata/hash receipts and complete packages. Program images establish UI regression separately from native database tests.
-- [ ] Pass all six exact-head CI jobs, author review and focused PR promotion. Client/backend/KWallet, full handoff and clean packages remain required parent gates.
+- [x] Pass exact proof2e0bed03 Verify38672205215 (four jobs) and Linux native38672205233 (two jobs), author self-review and PR53 merge to mainf4080bf with identical source trees. Issue52 is closed. Client/backend/KWallet, full handoff and clean packages remain required parent gates.
+
+### P8.3 trusted Linux client and effective credential policy — issue54
+
+- [x] Inspect the actual official Linux desktop package and embedded CLI, record architecture/version/origin/checksum and native RPC/config requirements behavior. Actual x64/ARM64 approved package/standalone CLI checks pass in sourceb01be7c/Linux38676489811. Private raw package inspection stays outside the source tree.
+- [x] Add native executable/path/owner/mode/architecture verification and approved OS package provenance. Explicit checksum CLI-only discovery, retained-descriptor native process launch and14 trust checks pass on each native architecture; no shell/PATH trust or execution fallback.
+- [ ] Read effective configuration and managed requirements through the trusted native app-server without forcing a credential backend/provider. Verify file/keyring/auto/ephemeral, profiles/layers and forced login/workspace policy; refuse unknown/incompatible states before account operations. Preserve all input/config/auth bytes in disposable tests.
+- [x] Keep CLI-only capability reporting distinct from full desktop/IPC/resumption. Native client94 includes actual managed-policy/backend cases with unchanged config/empty-auth inputs; normal Linux account/client/handoff actions remain gated. Runtime profiles are not provided by this app-server contract and deprecated profile config refuses.
+- [x] Pass sourceb01be7c client94/GNOME18/SQLite26/protocol10/app12 per native Linux architecture plus all four Verify38676489809 jobs. Inspect ten source-bound own-window after PNGs, hashes/metadata/privacy and complete packages; same-host Windows dark is byte-identical. These certify the read-only selected-home inspection, not authenticated/context-aware account integration.
+- [ ] Complete checkpoint pushes, six exact-head CI jobs, author self-review and expected-SHA PR merge. Independent KWallet55, full handoff6 and clean packages7 remain open.
 
 ## Tooltip style lifetime — issue35
 
