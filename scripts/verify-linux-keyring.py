@@ -1,6 +1,7 @@
 """Exercise an actual declared Secret Service on a private file-socket D-Bus."""
 import argparse
 import ctypes
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -19,13 +20,20 @@ p=argparse.ArgumentParser(description=__doc__)
 p.add_argument('--assembly',type=Path,required=True)
 p.add_argument('--architecture',choices=['X64','Arm64'],required=True)
 p.add_argument('--report',type=Path,required=True)
-p.add_argument('--provider',choices=['gnome','kwallet5'],default='gnome')
+p.add_argument('--provider',choices=['gnome','kwallet5','kwallet6','ksecrets','ksecrets-current'],default='gnome')
+p.add_argument('--owned-xvfb',action='store_true',help=argparse.SUPPRESS)
 p.add_argument('--storage-only',action='store_true',help='Exclude the separate installed-client account-policy contracts')
 p.add_argument('--inside',action='store_true')
 a=p.parse_args()
 if sys.platform!='linux':raise SystemExit('Native Linux is required')
 assembly=a.assembly.resolve();report=a.report.resolve()
 if not assembly.is_file():raise SystemExit('Build the native test assembly first')
+
+if a.provider=='ksecrets-current' and not a.inside and not a.owned_xvfb:
+    env=dict(os.environ)
+    for key in ('DISPLAY','XAUTHORITY','WAYLAND_DISPLAY'):env.pop(key,None)
+    subprocess.run(['xvfb-run','-a','-s','-screen 0 1280x800x24 -nolisten tcp',sys.executable,str(Path(__file__).resolve()),*sys.argv[1:],'--owned-xvfb'],env=env,check=True,timeout=280)
+    raise SystemExit(0)
 
 if not a.inside:
     root=Path(tempfile.mkdtemp(prefix='codex-linux-keyring-test-')).resolve()
@@ -38,12 +46,15 @@ if not a.inside:
             XDG_RUNTIME_DIR=str(root/'runtime'),GNOME_KEYRING_CONTROL=str(root/'control'))
         for folder in ('home','share','config','runtime','control','cache'):(root/folder).mkdir(mode=0o700)
         (root/'share/keyrings').mkdir(mode=0o700)
-        if a.provider=='kwallet5':
-            env['QT_QPA_PLATFORM']='offscreen'
-            env['KDE_SESSION_VERSION']='5'
+        if a.provider!='gnome':
+            env['QT_QPA_PLATFORM']='xcb' if a.provider=='ksecrets-current' else 'offscreen'
+            env['KDE_SESSION_VERSION']='5' if a.provider=='kwallet5' else '6'
             settings=root/'config/kwalletrc'
             settings.write_text('[Wallet]\nEnabled=true\nFirst Use=false\nLaunch Manager=false\nClose When Idle=false\nClose on Screensaver=false\nLeave Open=true\nUse One Wallet=true\nDefault Wallet=codex-switch-native-test\nLocal Wallet=codex-switch-native-test\napiEnabled=true\n[org.freedesktop.secrets]\napiEnabled=true\n',encoding='utf-8')
             settings.chmod(0o600)
+            if a.provider=='ksecrets-current':
+                wallet=root/'share/kwalletd';wallet.mkdir(mode=0o700)
+                salt=wallet/'codex-switch-native-test.salt';salt.write_bytes(secrets.token_bytes(56));salt.chmod(0o600)
         for key in ('G_DBUS_DEBUG','G_MESSAGES_DEBUG','GNOME_KEYRING_DEBUG','GNOME_KEYRING_TEST_PATH','LIBSECRET_DEBUG'):env.pop(key,None)
         command=['dbus-run-session','--config-file',str(config),'--',sys.executable,str(Path(__file__).resolve()),'--inside','--assembly',str(assembly),'--architecture',a.architecture,'--report',str(report),'--provider',a.provider]
         if a.storage_only:command.append('--storage-only')
@@ -62,6 +73,11 @@ if not dotnet:raise SystemExit('The reviewed .NET SDK/runtime is required')
 results=[];daemon=None;password=secrets.token_urlsafe(32).encode()
 kwallet_hash=bytearray(secrets.token_bytes(56))
 private_log=(root/'keyring-private.log').open('wb')
+kwallet_path={'kwallet5':'/modules/kwalletd5','kwallet6':'/modules/kwalletd6','ksecrets':'/ksecretd'}.get(a.provider)
+kwallet_command={'kwallet5':'kwalletd5','kwallet6':'kwalletd6','ksecrets':'ksecretd','ksecrets-current':'ksecretd'}.get(a.provider)
+if a.provider=='ksecrets-current':
+    spec=importlib.util.spec_from_file_location('ksecrets_control',Path(__file__).with_name('ksecrets-test-control.py'))
+    current_control=importlib.util.module_from_spec(spec);spec.loader.exec_module(current_control)
 def redact(value):
     return value.replace(str(root),'<isolated-test-root>').replace(str(Path.cwd()),'<repository>')[-6000:]
 def phase(name,secret_input=None):
@@ -92,7 +108,13 @@ def verify_owner():
     if not value or daemon is None or int(value[1])!=daemon.pid:raise RuntimeError('Secret Service is not the owned foreground process')
     return match[1]
 
-def unlock_kwallet():
+def unlock_kwallet(require_dialog=False):
+    if a.provider=='ksecrets-current':
+        verify_owner()
+        used=current_control.unlock_dialog(daemon.pid,password,phase,require_dialog)
+        results[-1]['ownedPasswordDialog']=used
+        verify_owner()
+        return
     # Test-only KDE PAM control. No key is passed on argv or exported to a receipt.
     owner=verify_owner().encode('ascii')
     gio=ctypes.CDLL('libgio-2.0.so.0');glib=ctypes.CDLL('libglib-2.0.so.0');objects=ctypes.CDLL('libgobject-2.0.so.0')
@@ -110,14 +132,14 @@ def unlock_kwallet():
         parameters=glib.g_variant_parse(None,encoded,None,None,ctypes.byref(error))
         if error.value or not parameters:raise RuntimeError('Owned KDE test control arguments invalid')
         parameters=glib.g_variant_take_ref(parameters)
-        reply=gio.g_dbus_connection_call_sync(connection,owner,b'/modules/kwalletd5',b'org.kde.KWallet',b'pamOpen',parameters,None,0,10000,None,ctypes.byref(error))
+        reply=gio.g_dbus_connection_call_sync(connection,owner,kwallet_path.encode('ascii'),b'org.kde.KWallet',b'pamOpen',parameters,None,0,10000,None,ctypes.byref(error))
         if error.value or not reply:raise RuntimeError('Owned KDE PAM test control failed')
     finally:
         if reply:glib.g_variant_unref(reply)
         if parameters:glib.g_variant_unref(parameters)
         if connection:objects.g_object_unref(connection)
         if error.value:glib.g_error_free(error)
-    opened=dbus(owner.decode('ascii'),'/modules/kwalletd5','org.kde.KWallet.isOpen','codex-switch-native-test').stdout
+    opened=dbus(owner.decode('ascii'),kwallet_path,'org.kde.KWallet.isOpen','codex-switch-native-test').stdout
     if opened.strip()!='(true,)':raise RuntimeError('The owned KDE wallet did not open')
     phase('kwallet-unlock')
     verify_owner()
@@ -126,8 +148,13 @@ def start():
     if a.provider=='gnome':
         daemon=subprocess.Popen(['gnome-keyring-daemon','--foreground','--unlock','--components=secrets','--control-directory',str(root/'control')],stdin=subprocess.PIPE,stdout=private_log,stderr=private_log)
         daemon.stdin.write(password);daemon.stdin.close();ready(True);verify_owner()
+    elif a.provider=='ksecrets-current':
+        with current_control.pam_login(root,password) as (arguments,descriptors,deliver):
+            daemon=subprocess.Popen([kwallet_command,*arguments],pass_fds=descriptors,env=dict(os.environ,PAM_KWALLET5_LOGIN='1'),stdin=subprocess.DEVNULL,stdout=private_log,stderr=private_log)
+            deliver()
+        ready(True);verify_owner();unlock_kwallet()
     else:
-        daemon=subprocess.Popen(['kwalletd5'],stdin=subprocess.DEVNULL,stdout=private_log,stderr=private_log)
+        daemon=subprocess.Popen([kwallet_command],stdin=subprocess.DEVNULL,stdout=private_log,stderr=private_log)
         ready(True);verify_owner();unlock_kwallet()
     if daemon.poll() is not None:raise RuntimeError('The owned foreground provider is no longer live')
 def stop(persist=True):
@@ -135,9 +162,15 @@ def stop(persist=True):
     if daemon is not None:
         if daemon.poll() is None:
             try:
-                if persist and a.provider=='kwallet5':
+                if persist and a.provider=='ksecrets-current':
                     owner=verify_owner()
-                    closed=dbus(owner,'/modules/kwalletd5','org.kde.KWallet.close','codex-switch-native-test','true').stdout
+                    alias=dbus(owner,'/org/freedesktop/secrets','org.freedesktop.Secret.Service.ReadAlias','default').stdout
+                    match=re.search(r"objectpath '(/org/freedesktop/secrets/collection/[^']+)'",alias)
+                    if not match:raise RuntimeError('Owned KSecrets collection is unavailable during persistence')
+                    dbus(owner,'/org/freedesktop/secrets','org.freedesktop.Secret.Service.Lock',"['"+match[1]+"']")
+                elif persist and a.provider!='gnome':
+                    owner=verify_owner()
+                    closed=dbus(owner,kwallet_path,'org.kde.KWallet.close','codex-switch-native-test','true').stdout
                     if closed.strip()!='(0,)':raise RuntimeError('The owned KDE wallet did not persist and close')
             finally:
                 daemon.terminate()
@@ -148,6 +181,17 @@ def stop(persist=True):
 def run_contracts():
     phase('no-service');start();phase('roundtrip');phase('concurrent')
     if not a.storage_only:phase('account-policy')
+    if a.provider in ('kwallet6','ksecrets','ksecrets-current'):
+        phase('provider-identity')
+        owner=verify_owner()
+        version=dbus(owner,'/MainApplication','org.freedesktop.DBus.Properties.Get','org.qtproject.Qt.QCoreApplication','applicationVersion').stdout
+        expected={'kwallet6':'6.13.0','ksecrets':'6.26.0','ksecrets-current':'6.30.0'}[a.provider]
+        if version.strip()!="(<'"+expected+"'>,)":raise RuntimeError('Unexpected actual provider version')
+        try:
+            dbus(owner,'/MainApplication','org.freedesktop.DBus.Properties.Set','org.qtproject.Qt.QCoreApplication','applicationVersion',"<'0.0.0'>")
+            phase('provider-refused')
+        finally:dbus(owner,'/MainApplication','org.freedesktop.DBus.Properties.Set','org.qtproject.Qt.QCoreApplication','applicationVersion',"<'"+expected+"'>")
+        verify_owner();phase('read-after-provider-check')
     foreign=root/'data/linux-self-test-protector/foreign.txt';foreign.write_bytes(b'Synthetic ownership fixture');foreign.chmod(0o600)
     change=['chown',str(65534 if os.geteuid()!=65534 else 0),str(foreign)]
     subprocess.run(change if os.geteuid()==0 else ['sudo','-n',*change],check=True,capture_output=True)
@@ -158,7 +202,7 @@ def run_contracts():
     dbus('org.freedesktop.secrets','/org/freedesktop/secrets','org.freedesktop.Secret.Service.Lock',"['"+match[1]+"']")
     phase('locked')
     if a.provider=='gnome':phase('unlock',password)
-    else:unlock_kwallet()
+    else:unlock_kwallet(require_dialog=a.provider=='ksecrets-current')
     verify_owner()
     phase('read-after-unlock');stop();start();phase('read-after-restart')
     os.kill(daemon.pid,signal.SIGSTOP)
@@ -167,10 +211,15 @@ def run_contracts():
     phase('read-after-timeout');phase('missing');stop();phase('offline')
 try:
     run_contracts()
-    package='gnome-keyring' if a.provider=='gnome' else 'libkf5wallet-bin'
+    package='gnome-keyring' if a.provider=='gnome' else 'libkf5wallet-bin' if a.provider=='kwallet5' else 'kwallet6'
     provider_version=subprocess.run(['dpkg-query','-W','-f=${Version}',package],capture_output=True,text=True,check=True,timeout=10).stdout.strip()
-    value={'schema':1,'provider':a.provider,'providerVersion':provider_version,'providerCompatibility':'verified-storage','architecture':a.architecture,'passed':sum(v['passed'] for v in results),'failed':0,'phases':results,
-        'scope':'Actual declared Secret Service/Linux private-file contracts on a disposable file-socket D-Bus/XDG session. KDE uses offscreen Qt, not a full KDE/Wayland desktop. No personal bus, accounts, Codex, key material or private paths exported.'}
+    environment={}
+    if a.provider in ('kwallet6','ksecrets','ksecrets-current'):
+        versions=subprocess.run(['dpkg-query','-W','-f=${binary:Package} ${Version}\n','libqt6core6t64','libqca-qt6-2','libglib2.0-0t64','libgcrypt20'],capture_output=True,text=True,check=True,timeout=10).stdout
+        environment=dict(line.split(' ',1) for line in versions.strip().splitlines())
+    value={'schema':1,'provider':a.provider,'providerVersion':provider_version,'providerCompatibility':'verified-storage','architecture':a.architecture,'passed':sum(v['passed'] for v in results),'failed':0,'phases':results,'nativePackages':environment,'accountPolicyIncluded':not a.storage_only,
+        'display':'Qt/X11 on owned Xvfb; actual password dialog' if a.provider=='ksecrets-current' else 'Qt offscreen' if a.provider!='gnome' else 'Headless GNOME Keyring',
+        'scope':'Actual declared Secret Service/Linux private-file contracts on a disposable file-socket D-Bus/HOME/XDG session; no full KDE/Wayland or authenticated Codex handoff acceptance. No personal bus, accounts, Codex, key material or private paths exported.'}
     report.parent.mkdir(parents=True,exist_ok=True);report.write_text(json.dumps(value,indent=2)+'\n',encoding='utf-8')
     print(json.dumps({key:value[key] for key in ('provider','providerVersion','providerCompatibility','architecture','passed','failed')} | {'phaseCount':len(results)}),flush=True)
 finally:
