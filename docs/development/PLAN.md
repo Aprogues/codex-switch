@@ -1,5 +1,7 @@
 # Current plan
 
+Release1.40.1 is now explicitly authorized by the owner: current native Windows/Mac binaries, experimental Linux packages, checksums, actual Windows/Linux window-frame screenshots and refreshed download links. Follow [the scoped release checkpoint](RELEASE_1_40_1.md). This publication request supersedes earlier statements that no new binary Release is authorized; pending account/full-desktop acceptance remains open.
+
 ## Multiplatform delivery goal — resumed2026-10-15
 
 The owner requests implementation through verified completion of the remaining roadmap, with issue-linked checkpoint commits/pushes, actual private-data-free program images, exact-head CI, author review and authorized merges. Binary Release/signing remains a separate gate. A build or screenshot alone cannot close native account/handoff criteria.

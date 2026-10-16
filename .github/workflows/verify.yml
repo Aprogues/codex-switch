@@ -120,6 +120,17 @@ jobs:
           path: artifacts/native-ui/windows/public
           if-no-files-found: error
           retention-days: 14
+      - name: Package the same verified native Windows application
+        run: python scripts/package-desktop.py --app artifacts/win-x64 --rid win-x64 --output artifacts/release-candidate/win-x64
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-candidate-win-x64
+          path: |
+            artifacts/release-candidate/win-x64/*.zip
+            artifacts/release-candidate/win-x64/*.json
+            artifacts/release-candidate/win-x64/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 14
 
   macos:
     name: Mac compilation (${{ matrix.rid }})
@@ -175,5 +186,20 @@ jobs:
         with:
           name: native-ui-${{ matrix.rid }}
           path: artifacts/native-ui/${{ matrix.rid }}/public
+          if-no-files-found: error
+          retention-days: 14
+      - name: Package and verify native ad-hoc signatures
+        run: python3 scripts/package-desktop.py --app artifacts/macos-ci/${{ matrix.rid }} --rid ${{ matrix.rid }} --output artifacts/release-candidate/${{ matrix.rid }}
+      - name: Verify ZIP extraction, staged installation and existing-app preservation
+        shell: bash
+        run: |
+          python3 scripts/verify-macos-install.py artifacts/release-candidate/${{ matrix.rid }}/*.zip > artifacts/release-candidate/${{ matrix.rid }}/INSTALLATION.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-candidate-${{ matrix.rid }}
+          path: |
+            artifacts/release-candidate/${{ matrix.rid }}/*.zip
+            artifacts/release-candidate/${{ matrix.rid }}/*.json
+            artifacts/release-candidate/${{ matrix.rid }}/SHA256SUMS
           if-no-files-found: error
           retention-days: 14
