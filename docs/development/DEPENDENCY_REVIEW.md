@@ -1,0 +1,33 @@
+# Dependency review — issue83
+
+Baseline main `083e283609242aa6b071e7f64e126e5de8668bf4`, source1.40.3. The integrated source1.40.4 preserves the eight original bot heads and upgrades both Avalonia packages together. Publication remains1.40.2; no personal installation or owner Linux environment is changed. Existing data/key/bundle/IPC identities, forecast math, account/credential/client policy and Windows WPF code are retained.
+
+| PR | Target | Review focus |
+| --- | --- | --- |
+| #9 | checkout7.0.1 | Official tag/SHA/signature; safer privileged-event checkout defaults; existing workflows use ordinary PR/push and persist-credentials:false |
+| #10 | Pillow12.3.0 | Official security fixes, pinned Python3.12 CI support and lossless metadata-free PNG pipeline |
+| #11 | setup-dotnet6.0.0 | Official tag/SHA/signature, Node24 ESM implementation; SDK10.0.4xx remains explicit |
+| #12 | setup-node7.1.0 | Official tag/SHA/signature, Node24 ESM implementation; explicit tool Node24 and locked npm install without lifecycle scripts retained |
+| #13 | setup-python7.0.0 | Official tag/SHA/signature, Node24 ESM implementation; Python3.12 remains explicit |
+| #46 | upload-artifact7.0.2 | Official tag/SHA/signature, default ZIP archives, unique names, explicit sanitized paths/error-on-missing/14-day retention; no hidden files |
+| #48/#49 | Avalonia.Desktop / Themes.Fluent12.1.4 | Atomic framework/theme alignment; removed public API migration, native layout/menu/titlebar/tooltip/history and existing platform/security/package regressions |
+
+All five Actions commits match their official released tags and verified GitHub signatures; action metadata declares Node24. No token persistence, new write permission, unsafe privileged fork checkout, owner/signing secrets or publisher is added. [Checkout](https://github.com/actions/checkout/releases/tag/v7.0.1), [setup-dotnet](https://github.com/actions/setup-dotnet/releases/tag/v6.0.0), [setup-node](https://github.com/actions/setup-node/releases/tag/v7.1.0), [setup-python](https://github.com/actions/setup-python/releases/tag/v7.0.0), [artifact](https://github.com/actions/upload-artifact/releases/tag/v7.0.2).
+
+The setup-python release removes its former pip-install input; these workflows already use explicit pip commands. The setup-node release documents NODE_AUTH_TOKEN handling changes; these workflows use the public locked registry with no private registry token or registry-url input. Hosted runners execute the Node24 actions directly; no self-hosted runner compatibility is assumed. Artifact7's optional unarchived single-file mode is not enabled, so existing archive/digest consumers retain their ZIP contract.
+
+[Pillow12.3 security notes](https://pillow.readthedocs.io/en/stable/releasenotes/12.3.0.html) include parser/decompression, bounds and Windows viewer command fixes. Project scripts export lossless PNGs explicitly rather than invoking a viewer shell. The pinned requirements have no dependency edges; the scoped pip-audit scan reports no known vulnerabilities. NuGet direct/transitive scans and full native checks remain required. These feed-based scans have a point-in-time scope and cannot guarantee absence of unknown vulnerabilities.
+
+## Framework migration
+
+[Avalonia12 migration guidance](https://docs.avaloniaui.net/docs/avalonia12-breaking-changes) requires matching package versions, WindowDecorations and public TopLevel lookup. The former internal IPopupHostProvider can no longer be consumed. Tooltip animation follows the public `:open` state used by the framework's own theme; a queued fade runs only while actually open. Cached popup trees can retain effectively-visible child controls after closing, so visual-tree attachment and child visibility are not popup-open signals. The custom tooltip remains the same instance across reopening, resets its surface, checks reduced motion on every state change and closes on owner detach. Native verification repeatedly opens/closes the real resource tooltip through the ordinary ToolTip API in both themes and captures its actual native popup. This is a synthetic native lifecycle test, not a physical pointer or owner-account acceptance claim.
+
+WindowDecorations.Full replaces the removed system-chrome hint while retaining the existing platform extension policy and native Linux caption. PlaceholderText, public TopLevel.GetTopLevel and typed lossless PNG encoder options replace deprecated/removed APIs. No exception swallowing, compatibility fallback or disabled feature is introduced. Future bot updates group Avalonia packages together. Native Wayland remains a separate unverified gate despite the upgraded framework.
+
+## Evidence and promotion gates
+
+The native Mac workers first build and execute the unmodified baseline archive with its original diagnostic/export code, then verify the upgraded published app. Only fictional app-owned windows/popups are captured. Receipts distinguish original application source from the tested integration revision; no desktop, account, authentication or personal paths enter exported images. Windows and native Linux verification remain separate. Actual before/after exports and immutable links are attached to issue83 and every dependency PR after artifact/hash/privacy inspection.
+
+Require all six exact-head jobs, native artifact inspection, author self-review and an expected-head merge commit. Preserve every original dependency head as an ancestor; verify GitHub recognizes all eight as merged and reviewed/merged trees match. Original isolated PR checks are not relabeled as integrated acceptance. Existing owner-authenticated active-chat/full-desktop and historical privacy criteria stay open.
+
+Main protection requires PRs, resolved conversations and the six named checks from GitHub Actions with an up-to-date branch, including admins; force pushes/deletion are disabled. Required approval count is0 for this single-maintainer workflow. Author review is documented but is not independent approval. This protection does not authorize public-history rewriting for #29; any future coordinated history operation needs explicit owner authorization and a protection/recovery plan.

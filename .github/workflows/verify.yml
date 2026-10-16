@@ -23,11 +23,11 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.12'
       - run: python -m pip install -r requirements-dev.txt
@@ -36,7 +36,7 @@ jobs:
       - run: python scripts/test-audit-public.py
       - run: python scripts/test-linux-keyring-harness.py
       - run: python scripts/verify-localization.py
-      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
           dotnet-version: '10.0.4xx'
       - run: dotnet run --project tests/localization/CodexSwitch.Localization.Tests.csproj -c Release --no-launch-profile -p:UseSharedCompilation=false
@@ -54,18 +54,18 @@ jobs:
     runs-on: windows-2022
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
           dotnet-version: '10.0.4xx'
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.12'
       - name: Set up CLI prerequisite runtime
-        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '24'
       - name: Install pinned official CLI prerequisite
@@ -114,7 +114,7 @@ jobs:
         env:
           EVIDENCE_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
         run: python scripts/verify-ui-evidence.py artifacts/native-ui/windows/raw artifacts/native-ui/windows/public --os Windows --revision "${{ env.EVIDENCE_REVISION }}"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: native-ui-windows
           path: artifacts/native-ui/windows/public
@@ -128,14 +128,14 @@ jobs:
         env:
           EVIDENCE_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
         run: python scripts/verify-startup-evidence.py artifacts/startup-recovery/raw artifacts/startup-recovery/public --revision "${{ env.EVIDENCE_REVISION }}"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: startup-recovery-windows
           path: artifacts/startup-recovery/public
           if-no-files-found: error
           retention-days: 14
       - name: Upload the verified native Windows package
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: release-candidate-win-x64
           path: |
@@ -158,11 +158,11 @@ jobs:
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
           dotnet-version: '10.0.4xx'
       - name: Compile full application for the runner architecture
@@ -185,7 +185,7 @@ jobs:
         run: dotnet run --project tests/hardware/CodexSwitch.Hardware.Tests.csproj -c Release --no-launch-profile -p:UseSharedCompilation=false
       - name: Verify shared composition and actual native trayless close
         run: dotnet run --project tests/composition/CodexSwitch.Composition.Tests.csproj -c Release --no-launch-profile -p:UseSharedCompilation=false -- --native-ui
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.12'
       - run: python -m pip install -r requirements-dev.txt
@@ -195,17 +195,27 @@ jobs:
         env:
           EVIDENCE_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
         run: python scripts/verify-ui-evidence.py artifacts/native-ui/${{ matrix.rid }}/raw artifacts/native-ui/${{ matrix.rid }}/public --os macOS --revision "$EVIDENCE_REVISION"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: native-ui-${{ matrix.rid }}
           path: artifacts/native-ui/${{ matrix.rid }}/public
           if-no-files-found: error
           retention-days: 14
-      - name: Capture latest-main history baseline on the same native worker
+      - name: Capture unmodified pre-upgrade UI on the same native worker
+        # Dependency upgrades also compare the unmodified current-main app on this worker.
+        # All inputs are fictional; only app-owned windows are captured.
+        run: python scripts/capture-ui-baseline.py --revision 083e283609242aa6b071e7f64e126e5de8668bf4 --rid ${{ matrix.rid }} --output artifacts/dependency-baseline/${{ matrix.rid }}
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dependency-before-${{ matrix.rid }}
+          path: artifacts/dependency-baseline/${{ matrix.rid }}/public
+          if-no-files-found: error
+          retention-days: 14
+      - name: Capture original history baseline on the same native worker
         # History comparison uses the unchanged latest-main renderer on this same worker.
         # The external baseline adds diagnostic hosting only, never account credentials.
         run: python3 scripts/capture-history-baseline.py --revision 2bc551f9d36d5ec4e23f56af43237fecca47ac6c --rid ${{ matrix.rid }} --output artifacts/history-baseline/${{ matrix.rid }}
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: history-before-${{ matrix.rid }}
           path: artifacts/history-baseline/${{ matrix.rid }}/public
@@ -217,7 +227,7 @@ jobs:
         env:
           EVIDENCE_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
         run: python scripts/verify-history-evidence.py artifacts/native-history/${{ matrix.rid }}/raw artifacts/native-history/${{ matrix.rid }}/public --revision "$EVIDENCE_REVISION"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: native-history-${{ matrix.rid }}
           path: artifacts/native-history/${{ matrix.rid }}/public
@@ -229,7 +239,7 @@ jobs:
         shell: bash
         run: |
           python3 scripts/verify-macos-install.py artifacts/release-candidate/${{ matrix.rid }}/*.zip > artifacts/release-candidate/${{ matrix.rid }}/INSTALLATION.json
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: release-candidate-${{ matrix.rid }}
           path: |

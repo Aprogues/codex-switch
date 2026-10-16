@@ -88,7 +88,7 @@ The upstream Linux ChatGPT desktop preview includes Codex and uses a `chatgpt` l
 | Community | Current Arch and other distributions/window managers | Sanitized reproducible reports with declared limits |
 | Separate experiments | Native Wayland, WSL/headless/CLI-only, AppImage/Flatpak | Focus/deep-link/keyring/host-client boundaries and distinct capabilities |
 
-Current Avalonia is **11.3.22**. Begin with X11/XWayland. Avalonia 12.1's native Wayland backend is experimental and needs explicit setup; upgrade/regression is a separate gate. Do not call XWayland evidence native Wayland acceptance. [Avalonia release details](https://avaloniaui.net/blog/release-12-1)
+Source1.40.4 upgrades Avalonia.Desktop/Fluent together to **12.1.4**, subject to issue83's native regression gates. Begin with X11/XWayland. The native Wayland backend remains experimental and needs explicit setup and separate acceptance; the package upgrade alone does not enable or certify it. Do not call XWayland evidence native Wayland acceptance. [Avalonia release details](https://avaloniaui.net/blog/release-12-1)
 
 CLI-only mode advertises verified account/usage operations; it must not claim desktop chat restoration or automatically resume existing CLI processes. Shared login affects CLI/IDE clients, so ownership/quiescence must be checked before changes.
 

@@ -57,7 +57,7 @@ internal sealed class DeskWindow : Window
         _statusMessage = host.AccountUnavailableReason == null ? "" : Loc.T(host.AccountUnavailableReason);
         _preview = preview;
         Title = host.WindowTitle; Icon = new WindowIcon(Avalonia.Platform.AssetLoader.Open(new Uri("avares://CodexSwitch.Desktop/Assets/app-icon.png"))); Width = 600; Height = 420; MinWidth = 500; MinHeight = 360;
-        ExtendClientAreaToDecorationsHint = !OperatingSystem.IsLinux(); ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.PreferSystemChrome;
+        ExtendClientAreaToDecorationsHint = !OperatingSystem.IsLinux(); WindowDecorations = WindowDecorations.Full;
         ExtendClientAreaTitleBarHeightHint = 34; WindowStartupLocation = WindowStartupLocation.CenterScreen;
         Build(); UpdateTray();
         Opened += async (_, _) =>

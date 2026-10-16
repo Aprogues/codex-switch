@@ -34,17 +34,17 @@ jobs:
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 35
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
           dotnet-version: '10.0.4xx'
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.12'
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '24'
       - name: Install the locked official standalone CLI without lifecycle scripts
@@ -109,7 +109,7 @@ jobs:
       - name: Verify ordinary installed UI and native lifecycles in a real isolated desktop session
         if: matrix.rid == 'linux-x64'
         run: python scripts/run-local-linux-desktop.py --packages artifacts/linux-native/${{ matrix.rid }}/packages --upstream-package artifacts/linux-native/${{ matrix.rid }}/upstream-client.deb --output artifacts/linux-native/${{ matrix.rid }}/desktop-session
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: matrix.rid == 'linux-x64'
         with:
           name: desktop-session-linux-x64
@@ -118,7 +118,7 @@ jobs:
             artifacts/linux-native/${{ matrix.rid }}/desktop-session/results/session.json
           if-no-files-found: error
           retention-days: 14
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: linux-preview-candidates-${{ matrix.rid }}
           path: |
@@ -129,37 +129,37 @@ jobs:
             artifacts/linux-native/${{ matrix.rid }}/packages/SHA256SUMS
           if-no-files-found: error
           retention-days: 14
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: installed-app-ui-${{ matrix.rid }}
           path: artifacts/linux-native/${{ matrix.rid }}/fresh-packages/public
           if-no-files-found: error
           retention-days: 14
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: desktop-peer-${{ matrix.rid }}
           path: artifacts/linux-native/${{ matrix.rid }}/kde6/kwallet6/results/desktop
           if-no-files-found: error
           retention-days: 14
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: native-ui-${{ matrix.rid }}
           path: artifacts/linux-native/${{ matrix.rid }}/public
           if-no-files-found: error
           retention-days: 14
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: kwallet6-ui-${{ matrix.rid }}
           path: artifacts/linux-native/${{ matrix.rid }}/kde6/kwallet6/results/public
           if-no-files-found: error
           retention-days: 14
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ksecrets-ui-${{ matrix.rid }}
           path: artifacts/linux-native/${{ matrix.rid }}/kde6/ksecrets/results/public
           if-no-files-found: error
           retention-days: 14
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ksecrets-current-ui-${{ matrix.rid }}
           path: artifacts/linux-native/${{ matrix.rid }}/kde6/ksecrets-current/results/public
