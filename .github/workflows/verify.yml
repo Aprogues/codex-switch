@@ -201,7 +201,7 @@ jobs:
           path: artifacts/native-ui/${{ matrix.rid }}/public
           if-no-files-found: error
           retention-days: 14
-      - name: Capture latest-main history baseline on the same native worker
+      - name: Capture unmodified pre-upgrade UI on the same native worker
         # Dependency upgrades also compare the unmodified current-main app on this worker.
         # All inputs are fictional; only app-owned windows are captured.
         run: python scripts/capture-ui-baseline.py --revision 083e283609242aa6b071e7f64e126e5de8668bf4 --rid ${{ matrix.rid }} --output artifacts/dependency-baseline/${{ matrix.rid }}

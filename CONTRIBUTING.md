@@ -6,6 +6,8 @@ Start with [the support roadmap](docs/PLATFORM_SUPPORT_PLAN.md), [architecture](
 
 ## A focused contribution
 
+`main` requires a PR, resolved review conversations and the six named repository/Windows/Mac ARM64/Intel/Linux x64/ARM64 GitHub Actions checks against an up-to-date branch, including administrators. Force pushes and deletion are disabled. This single-maintainer repository requires zero independent approvals; recorded author review must never be described as independent approval. Coupled dependency updates preserve original PR ancestry in one fully tested integration merge. [Dependency review and promotion gates](docs/development/DEPENDENCY_REVIEW.md).
+
 Branch from `main` and reference an issue. Discuss switching/storage/platform changes before implementation; small docs fixes may go directly to a PR. Keep source moves, behavior changes and runtime upgrades reviewable separately. `Closes #...` means all that issue's acceptance criteria are satisfied.
 
 Issues use type, area, priority and milestone; native GitHub open/closed state tracks status. [Issue and evidence conventions](docs/development/ISSUES.md). Include before/after screenshots for a change, or a confirmation screenshot for a new feature, plus commands/results and unrun checks. A planned issue shows the current baseline and labels post-implementation confirmation pending. Never represent a mockup as native acceptance. Respectful review is expected regardless of language, identity or desktop/distro preference.
