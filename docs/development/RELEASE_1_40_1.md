@@ -9,3 +9,9 @@ The owner explicitly authorizes publishing current Windows/Mac packages and Linu
 5. Create a draft Release against the merged tree/tag, upload only verified packages, SHA256SUMS and sanitized verification receipts, then verify GitHub digests before publishing. Update all README language download links and current installation/release guides. Source/package differences in provenance must be limited to documented release/evidence files, never application/build inputs.
 
 CI remains read-only with no release/account/signing secrets; the authorized owner publishes manually through a local authenticated GitHub request. Linux is an integration preview and the Mac bundles are ad-hoc signed; both limitations must be visible beside the downloads.
+
+## Reproducible native package inputs
+
+The official Linux `latest` download advanced to26.1013.31256 during release verification. CI now downloads approved26.1007.71326 from the vendor's versioned Debian pool. Both complete downloads match the existing reviewed x64/ARM64 SHA256 values exactly; installed-version, executable, ASAR and CLI trust checks remain unchanged. Newer client versions require their own compatibility review and are not silently accepted by this preview.
+
+The Mac bundle's `Contents/MacOS` directory contains managed runtime assemblies as well as Mach-O libraries. Apple's bundle signing requires sealing these nested code objects too; signing only Mach-O files fails on an unsigned managed DLL. Packaging follows the existing native build/installer signing order for every published file, then the outer bundle, and requires strict verification before and after ZIP extraction. No signature verification is bypassed.

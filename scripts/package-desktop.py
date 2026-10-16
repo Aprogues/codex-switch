@@ -70,14 +70,10 @@ else:
     architecture = subprocess.check_output(['lipo', '-archs', str(binary / 'CodexSwitch')], text=True).strip()
     if architecture != ('arm64' if a.rid == 'osx-arm64' else 'x86_64'):
         raise SystemExit('Unexpected Mach-O entry-point architecture')
-    macho = {b'\xcf\xfa\xed\xfe', b'\xfe\xed\xfa\xcf', b'\xca\xfe\xba\xbe', b'\xbe\xba\xfe\xca'}
     for file in sorted(binary.iterdir()):
         if file.is_file() and file.name != 'CodexSwitch':
-            with file.open('rb') as stream:
-                native = stream.read(4) in macho
-            if native:
-                subprocess.run(['codesign', '--force', '--sign', '-', '--timestamp=none', '--options', 'runtime',
-                                '--entitlements', str(resources / 'entitlements.plist'), str(file)], check=True)
+            subprocess.run(['codesign', '--force', '--sign', '-', '--timestamp=none', '--options', 'runtime',
+                            '--entitlements', str(resources / 'entitlements.plist'), str(file)], check=True)
     subprocess.run(['codesign', '--force', '--sign', '-', '--timestamp=none', '--options', 'runtime',
                     '--entitlements', str(resources / 'entitlements.plist'), str(app)], check=True)
     subprocess.run(['codesign', '--verify', '--deep', '--strict', str(app)], check=True)
