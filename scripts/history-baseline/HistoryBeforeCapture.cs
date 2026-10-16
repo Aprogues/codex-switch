@@ -34,7 +34,7 @@ internal static class HistoryBeforeCapture
                     {
                         history.Show(owner); await Task.Delay(150);
                         await Dispatcher.UIThread.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
-                        if (!history.IsVisible || Loc.Language != "en" || history.Title != "Demo · Usage history")
+                        if (!history.IsVisible || Loc.Language != "en" || history.Title != Loc.T("추이 보기"))
                             throw new InvalidOperationException("The original English history window did not open.");
                         checks.Add(theme + "/actual original history window");
                         await NativeUiCapture.SaveAsync(history, Path.Combine(directory, "en-" + theme + "-history-native.png"));
@@ -52,7 +52,7 @@ internal static class HistoryBeforeCapture
         }
         catch (Exception error)
         {
-            failures++; Console.Error.WriteLine("Original history capture failed: " + error.GetType().Name);
+            failures++; Console.Error.WriteLine("Original history capture failed: " + error.GetType().Name + ": " + error.Message);
         }
         finally
         {
