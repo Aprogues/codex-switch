@@ -84,7 +84,7 @@ internal static class HistoryDiagnostics
                                 var menu = quota.ContextMenu ?? throw new InvalidOperationException("Quota menu did not open.");
                                 var items = menu.ItemsSource!.Cast<MenuItem>().ToArray();
                                 Check(theme + "/multiple/selected quota menu", menu.IsOpen && items.Length == 2 && items.Count(item => item.IsChecked) == 1);
-                                await NativeUiCapture.SaveAsync(menu.GetVisualRoot() as TopLevel ?? throw new InvalidOperationException("Quota popup has no native root."),
+                                await NativeUiCapture.SaveAsync(TopLevel.GetTopLevel(menu) ?? throw new InvalidOperationException("Quota popup has no native root."),
                                     Path.Combine(directory, "en-" + theme + "-history-quota-native.png"));
                                 items[0].RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent)); await Ready();
                                 Check(theme + "/multiple/quota selection updates chart", history.GetVisualDescendants().OfType<TextBlock>().Any(t => t.Text == "Codex · Weekly ▾") &&

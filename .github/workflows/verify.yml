@@ -202,6 +202,16 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - name: Capture latest-main history baseline on the same native worker
+        # Dependency upgrades also compare the unmodified current-main app on this worker.
+        # All inputs are fictional; only app-owned windows are captured.
+        run: python scripts/capture-ui-baseline.py --revision 083e283609242aa6b071e7f64e126e5de8668bf4 --rid ${{ matrix.rid }} --output artifacts/dependency-baseline/${{ matrix.rid }}
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dependency-before-${{ matrix.rid }}
+          path: artifacts/dependency-baseline/${{ matrix.rid }}/public
+          if-no-files-found: error
+          retention-days: 14
+      - name: Capture original history baseline on the same native worker
         # History comparison uses the unchanged latest-main renderer on this same worker.
         # The external baseline adds diagnostic hosting only, never account credentials.
         run: python3 scripts/capture-history-baseline.py --revision 2bc551f9d36d5ec4e23f56af43237fecca47ac6c --rid ${{ matrix.rid }} --output artifacts/history-baseline/${{ matrix.rid }}

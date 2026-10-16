@@ -176,7 +176,7 @@ internal static class MacDiagnostics
                 }
                 catch (Exception error) { failures++; checks.Add(new { name, passed = false, error = error.Message }); Console.Error.WriteLine("UI case " + name + ": " + error.Message); }
                 using var bitmap = new RenderTargetBitmap(new PixelSize((int)window.ClientSize.Width * 2, (int)window.ClientSize.Height * 2), new Vector(192, 192));
-                bitmap.Render(window); bitmap.Save(Path.Combine(directory, name + ".png"));
+                bitmap.Render(window); bitmap.Save(Path.Combine(directory, name + ".png"), PngBitmapEncoderOptions.Default);
                 if (Program.NativeUiEvidence) await NativeUiCapture.SaveAsync(window, Path.Combine(directory, name + "-native.png"));
             }
             foreach (var dark in new[] { true, false })
@@ -184,6 +184,19 @@ internal static class MacDiagnostics
                 var name = "en-" + (dark ? "dark" : "light");
                 var palette = new DeskTheme(dark, window.Appearance); var profiles = Profiles(4);
                 window.Width = 600; window.Height = 420; window.Preview("en", dark, profiles); await Task.Delay(120);
+                var resource = window.GetVisualDescendants().OfType<Control>().First(c => ToolTip.GetTip(c) is MacResourceToolTip);
+                var resourceTip = (MacResourceToolTip)ToolTip.GetTip(resource)!;
+                for (var cycle = 0; cycle < 3; cycle++)
+                {
+                    ToolTip.SetIsOpen(resource, true); await Task.Delay(240);
+                    var surface = resourceTip.GetVisualDescendants().OfType<Border>().Single(b => b.Name == "tipSurface");
+                    Assert(resourceTip.IsEffectivelyVisible && surface.Opacity == 1 && ReferenceEquals(ToolTip.GetTip(resource), resourceTip), "Resource tooltip did not reopen with its custom visible theme");
+                    if (cycle == 2 && Program.NativeUiEvidence)
+                        await NativeUiCapture.SaveAsync(TopLevel.GetTopLevel(resourceTip) ?? throw new InvalidOperationException("Tooltip has no native root"), Path.Combine(directory, name + "-tooltip-native.png"));
+                    ToolTip.SetIsOpen(resource, false); await Task.Delay(80);
+                    Assert(!resourceTip.IsEffectivelyVisible, "Resource tooltip stayed visible after closing");
+                }
+                checks.Add(new { name = name + "-resource-tooltip-reopen", passed = true });
                 var owner = window.GetVisualDescendants().OfType<Button>().Single(b => b.Name == "LanguageButton");
                 var menu = window.OpenLanguageMenu(owner);
                 try
@@ -197,7 +210,7 @@ internal static class MacDiagnostics
                     scroll.Offset = default; await Task.Delay(80);
                     if (Program.NativeUiEvidence)
                     {
-                        var popup = menu.GetVisualRoot() as TopLevel ?? throw new InvalidOperationException("Native menu root unavailable");
+                        var popup = TopLevel.GetTopLevel(menu) ?? throw new InvalidOperationException("Native menu root unavailable");
                         await NativeUiCapture.SaveAsync(popup, Path.Combine(directory, name + "-language-native.png"));
                     }
                 }
@@ -240,7 +253,7 @@ internal static class MacDiagnostics
                 }
                 catch (Exception error) { failures++; checks.Add(new { name = "account-count-" + count, passed = false, error = error.Message }); Console.Error.WriteLine("UI account-count " + count + ": " + error.Message); }
                 using var bitmap = new RenderTargetBitmap(new PixelSize((int)window.ClientSize.Width * 2, (int)window.ClientSize.Height * 2), new Vector(192, 192));
-                bitmap.Render(window); bitmap.Save(Path.Combine(directory, "accounts-" + count + ".png"));
+                bitmap.Render(window); bitmap.Save(Path.Combine(directory, "accounts-" + count + ".png"), PngBitmapEncoderOptions.Default);
             }
             foreach (var (name, used, current, expected) in new[] {
                 ("empty", (double?)100, true, "0%"), ("full", (double?)0, true, "100%"),
