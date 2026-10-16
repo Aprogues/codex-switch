@@ -7,7 +7,6 @@ import platform
 import plistlib
 import re
 import shutil
-import stat
 import subprocess
 import sys
 import zipfile
@@ -78,14 +77,15 @@ else:
                 native = stream.read(4) in macho
             if native:
                 subprocess.run(['codesign', '--force', '--sign', '-', '--timestamp=none', '--options', 'runtime',
-                                '--entitlements', str(resources / 'entitlements.plist'), str(file)], check=True, capture_output=True)
+                                '--entitlements', str(resources / 'entitlements.plist'), str(file)], check=True)
     subprocess.run(['codesign', '--force', '--sign', '-', '--timestamp=none', '--options', 'runtime',
-                    '--entitlements', str(resources / 'entitlements.plist'), str(app)], check=True, capture_output=True)
-    subprocess.run(['codesign', '--verify', '--deep', '--strict', str(app)], check=True, capture_output=True)
+                    '--entitlements', str(resources / 'entitlements.plist'), str(app)], check=True)
+    subprocess.run(['codesign', '--verify', '--deep', '--strict', str(app)], check=True)
     subprocess.run(['ditto', '-c', '-k', '--sequesterRsrc', '--keepParent', str(app), str(archive)], check=True)
     subprocess.run(['/usr/bin/zip', '-q', str(archive), 'Install.command'], cwd=stage, check=True)
     signing = 'Native ad-hoc signature verified; no Developer ID or Apple notarization'
-digest = hashlib.file_digest(archive.open('rb'), 'sha256').hexdigest()
+with archive.open('rb') as stream:
+    digest = hashlib.file_digest(stream, 'sha256').hexdigest()
 receipt = {'schema': 1, 'sourceRevision': head, 'version': version, 'rid': a.rid,
            'nativeOs': platform.system(), 'nativeArchitecture': platform.machine(), 'signing': signing,
            'artifact': {'file': archive.name, 'bytes': archive.stat().st_size, 'sha256': digest},
