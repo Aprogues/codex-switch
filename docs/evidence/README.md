@@ -2,6 +2,8 @@
 
 ## Current source evidence
 
+- [Usage history axes and layout, source1.40.3](usage-history/README.md):32 fresh actual Mac ARM64/Intel own-window images compare current main1.40.2 with the corrected renderer on each native worker. Both themes and all declared states are inspected;66 corrected native checks per architecture. Original renderer/fixture/source and PNG hashes are recorded. Current binaries remain1.40.2; authenticated Linux continuation and the owner MacBook gallery remain separate.
+
 Source1.40.2 includes automatic startup recovery; [binary release status and verification](../RELEASES.md) is separate from historical capture versions. Each entry retains its capture-time scope; earlier pending states are historical. Declared storage/client/peer and ordinary integration have separate native evidence; authenticated active-chat continuation/full desktop acceptance remains in5/6/7. Choose the evidence for the capability being reviewed:
 
 - [Automatic initialization after native keyring unlock](automatic-startup-recovery/README.md): actual locked/unlocked ordinary Linux windows, old85-second failure and same-window60-second recovery without app input. Three inspected native program frames contain no accounts. Separate identifier-free15/16-check owner receipt confirms automatic loading of both preserved accounts and a single-click real account change/managed launch; no active-chat continuation claim.
