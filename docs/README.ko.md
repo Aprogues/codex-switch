@@ -1,15 +1,15 @@
 <p align="center"><img src="../assets/macos/app-icon.png" width="88" height="88" alt="Codex Switch app icon" /></p>
 <h1 align="center">Codex Switch</h1>
 
-Codex 계정을 수동으로 전환하고, 재개 가능한 미완료 로컬 작업을 자동으로 이어가세요. 다음 계정의 남은 사용량도 확인합니다. **1.40.1 — Windows·macOS·Linux 미리보기.**
+Codex 계정을 수동으로 전환하고, 재개 가능한 미완료 로컬 작업을 자동으로 이어가세요. 다음 계정의 남은 사용량도 확인합니다. **1.40.2 — Windows·macOS·Linux 미리보기.**
 
 [English](../README.md) / 한국어 / [日本語](README.ja.md) / [简体中文](README.zh-CN.md)
 
 ## 다운로드
 
-- [Windows x64 ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.1/CodexSwitch-v1.40.1-win-x64.zip)
-- macOS15+: [Apple Silicon ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.1/CodexSwitch-v1.40.1-osx-arm64.zip) / [Intel ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.1/CodexSwitch-v1.40.1-osx-x64.zip)
-- Linux **미리보기** x64·ARM64: [DEB·RPM·tar.gz 및 SHA256](https://github.com/Gaebabi/codex-switch/releases/tag/v1.40.1)
+- [Windows x64 ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-win-x64.zip)
+- macOS15+: [Apple Silicon ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-osx-arm64.zip) / [Intel ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-osx-x64.zip)
+- Linux **미리보기** x64·ARM64: [DEB·RPM·tar.gz 및 SHA256](https://github.com/Gaebabi/codex-switch/releases/tag/v1.40.2)
 
 전체 실행 패키지에 .NET 런타임이 포함되어 소스 빌드나 .NET 설치가 필요 없습니다. 폴더·앱 번들 전체를 유지하세요. Windows·Linux는 미서명이며 Mac은 임시 서명으로 **Apple 공증은 없습니다**. [설치](INSTALL.md) / [Mac 최초 실행](MACOS.md)
 
@@ -25,20 +25,20 @@ Linux는 통합 미리보기입니다. 키 모음·설치 UI·패키지 검증�
 - **중단 복구:** 암호화한 진행 상태를 **Resume chats**로 이어갑니다. 전송 결과가 불확실하면 자동 재전송하지 않으며 이름 저장·정상 종료 실패 시 로그인 변경을 중단합니다. Windows 자식 프로세스 종료까지 기다려 한 번의 Switch로 진행합니다. [전환 원리](SWITCHING.md)
 - **사용량·기록:** 잔량, 리셋, 요금제, 만료일, 초기화권, 크레딧과 사용 추이 예측. **... → History**에서 기록을 확인합니다. 날짜는 사용자 현지 시간대로 표시하며 만료72시간·리셋48시간 이내에는 경고색을 적용합니다.
 - **로컬 상태·자원:** 실행·큐·목표 수, 자원 추이와 디스크 잔량. Windows는 제공되는 자원·디스크 온도에 독립된 색상을 적용하고 값이 없으면 알 수 없음으로 표시합니다. Linux 자원 측정은 아직 미지원입니다. [온도 지원 범위](TEMPERATURES.md)
-- **항상 60초 자동 조회**, **↻·F5** 즉시 조회.
+- **항상 60초 자동 조회**, **↻·F5** 즉시 조회. 처음 키 모음이 잠겨 있거나 클라이언트를 사용할 수 없으면, 잠금 해제·설치 후 같은 주기로 초기화를 자동 재시도합니다.
 - **9개 UI 언어와 JSON 언어팩:** 영어·한국어·일본어·중국어 간체/번체·스페인어·프랑스어·독일어·브라질 포르투갈어. 누락 번역은 영어를 사용합니다. 아이콘 테마 버튼, 다크·라이트와 공통 스크롤바를 제공합니다. [번역 기여](LOCALIZATION.md)
 
 전환은 Codex를 재시작하며 같은 로그인을 공유하는 CLI·IDE에도 영향을 줄 수 있습니다. Linux 실제 계정 전환·재개 및 다양한 데스크톱·접근성 지원의 남은 기준은 지원 계획에서 관리합니다.
 
 ## 실제 앱 화면
 
-[Windows·Linux 최신 화면과 검증 범위](media/release-1.40.1/README.md). 실제 제목 표시줄을 보존하고 단색 배경을 사용합니다. 가상 UI 입력과 실제 계정 검증은 별도로 명시합니다.
+[Windows·Linux 최신 화면과 검증 범위](media/release-1.40.2/README.md). 실제 제목 표시줄을 보존하고 단색 배경을 사용합니다. 가상 UI 입력과 실제 계정 검증은 별도로 명시합니다.
 
-![Windows 실행 화면](media/release-1.40.1/windows.png)
-![Linux Xfce 실행 화면](media/release-1.40.1/linux.png)
+![Windows 실행 화면](media/release-1.40.2/windows.png)
+![Linux Xfce 실행 화면](media/release-1.40.2/linux.png)
 
 **MacBook 실기기 스크린샷 추가 예정.**
-<!-- MacBook screenshot slot: media/release-1.40.1/macbook.png; privacy/provenance review required. -->
+<!-- MacBook screenshot slot: media/release-1.40.2/macbook.png; privacy/provenance review required. -->
 
 [개발·기여](../CONTRIBUTING.md) / [보안](../SECURITY.md) / [검증 자료](evidence/README.md) / [예측 방식](FORECAST.md)
 

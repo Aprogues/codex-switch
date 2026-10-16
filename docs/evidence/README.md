@@ -2,7 +2,9 @@
 
 ## Current source evidence
 
-Source1.40.0 is the current app; published downloads remain1.27.6. Each entry retains its capture-time scope; earlier pending states are historical. Declared storage/client/peer and ordinary integration have separate native evidence; authenticated Linux handoff/full desktop acceptance remains in5/6/7. The dashboard layout gallery retains its original1.30.2 checkpoint. Choose the evidence for the capability being reviewed:
+Source1.40.2 includes automatic startup recovery; [binary release status and verification](../RELEASES.md) is separate from historical capture versions. Each entry retains its capture-time scope; earlier pending states are historical. Declared storage/client/peer and ordinary integration have separate native evidence; authenticated active-chat continuation/full desktop acceptance remains in5/6/7. Choose the evidence for the capability being reviewed:
+
+- [Automatic initialization after native keyring unlock](automatic-startup-recovery/README.md): actual locked/unlocked ordinary Linux windows, old85-second failure and same-window60-second recovery without app input. Three inspected native program frames contain no accounts. Separate identifier-free15/16-check owner receipt confirms automatic loading of both preserved accounts and a single-click real account change/managed launch; no active-chat continuation claim.
 
 - [Ordinary Linux account and managed desktop integration](linux-account-handoff/README.md): source1.40.0, actual installed account/CLI-only UI and Start Codex input,42 local checks/36 overlapping native assertions including eight production contracts. Eight inspected actual program images and before/after receipts; fictional local credentials/offline native client are distinct from pending real authenticated Switch/Continue.
 

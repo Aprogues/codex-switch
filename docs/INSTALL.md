@@ -1,6 +1,6 @@
 # Build and install
 
-Download complete [1.40.1 Windows/Mac packages and Linux previews](https://github.com/Gaebabi/codex-switch/releases/tag/v1.40.1), or build from this repository. Packages include .NET10.0.13; a global .NET installation is unnecessary. Building requires .NET10.0.4xx SDK. Codex desktop/CLI must be installed separately.
+Download complete [1.40.2 Windows/Mac packages and Linux previews](https://github.com/Gaebabi/codex-switch/releases/tag/v1.40.2), or build from this repository. Packages include .NET10.0.13; a global .NET installation is unnecessary. Building requires .NET10.0.4xx SDK. Codex desktop/CLI must be installed separately.
 
 ## Windows
 
@@ -32,7 +32,7 @@ The installer validates the new app and preserves the previous installation. Loc
 
 ## Linux preview
 
-Release1.40.1 includes complete unsigned x64/ARM64 tar.gz/deb/rpm integration previews. [Download/use/build/native verification](development/LINUX_PACKAGES.md). DEB/RPM install system dependencies through the package manager; tar packages include a per-user installer. An existing supported Secret Service provider is required and is never replaced automatically. Full desktop/authenticated handoff acceptance remains separate from UI/package checks. [Requirements and pending gates](development/LINUX.md)
+Release1.40.2 includes complete unsigned x64/ARM64 tar.gz/deb/rpm integration previews. [Download/use/build/native verification](development/LINUX_PACKAGES.md). DEB/RPM install system dependencies through the package manager; tar packages include a per-user installer. An existing supported Secret Service provider is required and is never replaced automatically. Full desktop/authenticated handoff acceptance remains separate from UI/package checks. [Requirements and pending gates](development/LINUX.md)
 
 Desktop integration pins official OpenAI Linux client26.1007.71326; newer versions require compatibility review. The selected context must already use file credentials. Start Codex through the utility before working. Explicit-checksum CLI-only mode provides account/usage actions without desktop resumption. [Local desktop-session scope](development/LINUX_DESKTOP_SESSION.md)
 
