@@ -190,11 +190,11 @@ internal static class MacDiagnostics
                 {
                     ToolTip.SetIsOpen(resource, true); await Task.Delay(240);
                     var surface = resourceTip.GetVisualDescendants().OfType<Border>().Single(b => b.Name == "tipSurface");
-                    Assert(resourceTip.IsEffectivelyVisible && surface.Opacity == 1 && ReferenceEquals(ToolTip.GetTip(resource), resourceTip), "Resource tooltip did not reopen with its custom visible theme");
+                    Assert(resourceTip.Classes.Contains(":open") && surface.Opacity == 1 && ReferenceEquals(ToolTip.GetTip(resource), resourceTip), "Resource tooltip did not reopen with its custom visible theme");
                     if (cycle == 2 && Program.NativeUiEvidence)
                         await NativeUiCapture.SaveAsync(TopLevel.GetTopLevel(resourceTip) ?? throw new InvalidOperationException("Tooltip has no native root"), Path.Combine(directory, name + "-tooltip-native.png"));
                     ToolTip.SetIsOpen(resource, false); await Task.Delay(80);
-                    Assert(!resourceTip.IsEffectivelyVisible, "Resource tooltip stayed visible after closing");
+                    Assert(!ToolTip.GetIsOpen(resource) && !resourceTip.Classes.Contains(":open") && surface.Opacity == (palette.Appearance.ReducedMotion() ? 1 : 0), "Resource tooltip did not close and reset its custom surface");
                 }
                 checks.Add(new { name = name + "-resource-tooltip-reopen", passed = true });
                 var owner = window.GetVisualDescendants().OfType<Button>().Single(b => b.Name == "LanguageButton");
