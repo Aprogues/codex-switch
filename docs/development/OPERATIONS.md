@@ -2,7 +2,7 @@
 
 Release1.40.1 uses [the release checklist](RELEASE_1_40_1.md): native Windows/Mac build/test/package artifacts, Linux three-format previews, exact-source receipt/checksum review, inspected actual app images, author review/expected-SHA merge and manually verified draft-to-public upload. CI remains read-only and receives no owner credentials. MacBook real-device screenshot remains an owner-provided follow-up; reserve its gallery slot and mention this explicitly in the documentation commit message.
 
-Public `Gaebabi/codex-switch`, baseline `main`, is the canonical source. Clone into any directory. Source/app version is **1.40.1**; published binary version remains **1.27.6**. Binary delivery is manual GitHub Release ZIPs plus SHA256SUMS; no automatic updater or CI release publisher exists. [Linux candidate packaging](LINUX_PACKAGES.md) is separate unsigned PR/CI preview delivery, not a supported account-switching Release.
+Public `Gaebabi/codex-switch`, baseline `main`, is the canonical source. Clone into any directory. Source/app and published binary version are **1.40.1**. [Release1.40.1](https://github.com/Gaebabi/codex-switch/releases/tag/v1.40.1) delivers complete Windows/macOS ZIPs, unsigned Linux preview DEB/RPM/tar.gz packages, `SHA256SUMS.txt` and source-bound `VERIFICATION.json`. No automatic updater or CI release publisher exists. [Linux packaging](LINUX_PACKAGES.md) remains an integration preview with `supportedAccountHandoff: false`; publication does not complete authenticated desktop/continuation acceptance.
 
 ## Build and verify
 

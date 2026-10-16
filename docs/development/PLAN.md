@@ -2,6 +2,8 @@
 
 Release1.40.1 is now explicitly authorized by the owner: current native Windows/Mac binaries, experimental Linux packages, checksums, actual Windows/Linux window-frame screenshots and refreshed download links. Follow [the scoped release checkpoint](RELEASE_1_40_1.md). This publication request supersedes earlier statements that no new binary Release is authorized; pending account/full-desktop acceptance remains open.
 
+Publication checkpoint completed2026-10-17: [PR79](https://github.com/Gaebabi/codex-switch/pull/79) merged the exact six-job verified source/tree, and [Release1.40.1](https://github.com/Gaebabi/codex-switch/releases/tag/v1.40.1) published nine native packages plus verification/checksum receipts after all GitHub asset digests matched. Current Windows/Linux galleries and download links are included. The owner's MacBook screenshot and remaining #5/#6/#7/#76 authenticated/full-desktop acceptance stay open.
+
 The release also includes issue80's Windows initialization recovery, reproduced on the actual WPF window before the fix and checked through both manual refresh and the existing timer afterward. Account mutation remains disabled until initialization succeeds. The owner has now logged in two Linux accounts;11 read-only native checks pass. Real desktop cross-account/continuation evidence remains distinct and pending; current quota is exhausted. Reserve the MacBook image slot for the owner's later real-device screenshot and state this requirement in the documentation commit message.
 
 ## Multiplatform delivery goal — resumed2026-10-15

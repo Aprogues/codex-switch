@@ -1,5 +1,13 @@
 # Release1.40.1 checkpoint
 
+## Publication receipt —2026-10-17
+
+[PR79](https://github.com/Gaebabi/codex-switch/pull/79) was author-reviewed and merged as8707885e1a0dbbb6e7572f691c57f6d047b998e5, with the identical Git tree as tested source120d61c74148fc5e1492aff21b1e8b12102aa4b7. Final [Verify38920800632](https://github.com/Gaebabi/codex-switch/actions/runs/38920800632) passes all four jobs and [Linux native38920800571](https://github.com/Gaebabi/codex-switch/actions/runs/38920800571) passes native x64/ARM64. The nine packages passed exact-source/runtime/archive/hash checks; all eleven uploaded assets matched GitHub SHA256/size before [Release1.40.1](https://github.com/Gaebabi/codex-switch/releases/tag/v1.40.1) became public/latest. No existing Release was removed.
+
+The current gallery/downloads are published. MacBook real-device evidence remains reserved for the owner. Two real Linux accounts pass11 read-only checks after native keyring unlock, preserving canonical login bytes; actual cross-account desktop acceptance is pending a reported remote-screen/interaction problem, and exhausted quota prevents an authenticated inference/Continue claim. #5/#6/#7/#76 remain open. This receipt changes documentation only; the released application/build inputs remain those of PR79.
+
+## Authorized scope
+
 The owner explicitly authorizes publishing current Windows/Mac packages and Linux preview packages to GitHub Release, refreshing README download links and adding actual Windows/Linux app-window images on a plain background. Keep the previous releases available. This authorizes release publication; it does not complete pending real two-account Linux handoff or broaden desktop acceptance.
 
 1. Build complete Windows x64 and macOS15 arm64/x64 packages on native CI workers from the same reviewed source. Preserve existing Windows/Mac native tests and actual app-window captures. Verify native ad-hoc Mac signatures, ZIP extraction and staged install/update/preservation. No Developer ID/notarization claim.
