@@ -38,7 +38,7 @@ internal sealed class DeskWindow : Window
     private ScrollViewer _accountScroll = new();
     private StackPanel _sessionValues = new(), _volumes = new();
     private TextBlock _status = new();
-    private Button _add = new(), _cancel = new(), _refresh = new(), _settingsButton = new();
+    private Button _add = new(), _cancel = new(), _refresh = new(), _settingsButton = new(), _startCodex = new();
     private IDesktopMenuBar? _tray;
     private readonly Dictionary<string, NativeMenuItem> _nativeItems = new();
     private CancellationTokenSource? _login, _switch;
@@ -57,13 +57,13 @@ internal sealed class DeskWindow : Window
         _statusMessage = host.AccountUnavailableReason == null ? "" : Loc.T(host.AccountUnavailableReason);
         _preview = preview;
         Title = host.WindowTitle; Icon = new WindowIcon(Avalonia.Platform.AssetLoader.Open(new Uri("avares://CodexSwitch.Desktop/Assets/app-icon.png"))); Width = 600; Height = 420; MinWidth = 500; MinHeight = 360;
-        ExtendClientAreaToDecorationsHint = true; ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.PreferSystemChrome;
+        ExtendClientAreaToDecorationsHint = !OperatingSystem.IsLinux(); ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.PreferSystemChrome;
         ExtendClientAreaTitleBarHeightHint = 34; WindowStartupLocation = WindowStartupLocation.CenterScreen;
         Build(); UpdateTray();
         Opened += async (_, _) =>
         {
             if (diagnostic != null) await diagnostic(this);
-            else if (_preview == null) await RunAsync(InitializeAsync);
+            else if (_preview == null) { _clock.Start(); await RunAsync(InitializeAsync); }
         };
         Closing += (_, args) => { if (!Exiting) { args.Cancel = true; CloseOrHide(); } };
         KeyDown += async (_, args) =>
@@ -80,7 +80,7 @@ internal sealed class DeskWindow : Window
         {
             if (Exiting) return;
             foreach (var card in _cards) card.Update(DateTimeOffset.UtcNow);
-            if (++_ticks % 60 == 0 && _ready) await RunAsync(token => _service!.RefreshAllAsync(null, token));
+            if (++_ticks % 60 == 0) await RefreshAsync();
         };
     }
     private void OnUi(Action action) => Dispatcher.UIThread.Post(() => { if (!Exiting) action(); });
@@ -94,14 +94,15 @@ internal sealed class DeskWindow : Window
             if (_service == null)
             {
                 var vault = await Task.Run(() => { var result = new AccountVault(_host.DataDirectory); result.Save(); return result; }, token);
-                _service = new(vault, _host.CodexHome); _service.Changed += () => OnUi(RenderAccounts);
+                _service = _host.CreateAccountService?.Invoke(vault) ?? new(vault, _host.CodexHome); _service.Changed += () => OnUi(RenderAccounts);
                 var languageProblems = Loc.LoadInstalled(Path.Combine(vault.DirectoryPath, "languages"));
                 if (!Loc.RestoreLanguage(vault.Data.Language)) _statusMessage = Loc.T("Saved language pack unavailable. Showing English.");
                 else if (languageProblems.Count > 0) _statusMessage = Loc.F("pack.invalid_local_packs", languageProblems.Count);
                 _theme = new(vault.Data.Theme == "dark", _host.Appearance); Build();
             }
             await _service.InitializeAsync(token); _ready = true;
-            _sessions.Start(); _resources.Start(); _drives.Configure(_service.Vault.Data.Drives.ToArray()); _drives.Start(); _clock.Start();
+            if (OperatingSystem.IsLinux()) _statusMessage = Loc.T(_service.HasLinuxDesktop ? "msg.linux_desktop_ready" : "msg.linux_cli_only");
+            _sessions.Start(); _resources.Start(); _drives.Configure(_service.Vault.Data.Drives.ToArray()); _drives.Start();
             UpdateTray(); RenderAccounts();
             await _service.RefreshAllAsync(null, token);
         }
@@ -113,8 +114,9 @@ internal sealed class DeskWindow : Window
         if (_host.AccountUnavailableReason != null) _statusMessage = Loc.T(_host.AccountUnavailableReason);
         _theme.Apply(this);
         FlowDirection = Loc.RightToLeft ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
-        var shell = new Grid { RowDefinitions = new RowDefinitions("34,22,*,50") };
-        var titlebar = new Grid { Background = _theme.Brush("chrome"), ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto,Auto,Auto,Auto"), Margin = new Thickness(0) };
+        var nativeTitle = OperatingSystem.IsLinux();
+        var shell = new Grid { RowDefinitions = new RowDefinitions(nativeTitle ? "34,0,*,50" : "34,22,*,50") };
+        var titlebar = new Grid { Background = _theme.Brush("chrome"), ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto,Auto,Auto,Auto,Auto"), Margin = new Thickness(0) };
         var caption = _theme.Text("Codex Switch", 12); caption.VerticalAlignment = VerticalAlignment.Center;
         var mark = new BrandMark { Width = 18, Height = 18, Ink = _theme.Brush("text") };
         var captionContent = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, VerticalAlignment = VerticalAlignment.Center };
@@ -125,18 +127,27 @@ internal sealed class DeskWindow : Window
             if (!args.GetCurrentPoint(dragRegion).Properties.IsLeftButtonPressed) return;
             BeginMoveDrag(args); args.Handled = true;
         };
-        titlebar.Children.Add(dragRegion);
+        if (!nativeTitle) titlebar.Children.Add(dragRegion);
+        var startCodex = _startCodex = _theme.IconButton(DeskButtonIconKind.Launch, Loc.T("msg.linux_start_codex"), () => _ = RunAsync(async token =>
+        {
+            if (!_ready || _switch != null) return;
+            await _service!.StartDesktopAsync(token);
+            _statusMessage = Loc.T("msg.linux_desktop_ready");
+        }));
+        startCodex.Name = "StartCodexButton"; startCodex.Classes.Add("title-action");
+        startCodex.IsVisible = OperatingSystem.IsLinux() && _host.AccountUnavailableReason == null && (_service == null || _service.HasLinuxDesktop);
+        Grid.SetColumn(startCodex, 1); titlebar.Children.Add(startCodex);
         _add = _theme.IconButton(DeskButtonIconKind.Plus, Loc.T("계정 추가"), () => _ = AddAccountAsync());
-        _add.Classes.Add("title-action"); Grid.SetColumn(_add, 1); titlebar.Children.Add(_add);
+        _add.Classes.Add("title-action"); Grid.SetColumn(_add, 2); titlebar.Children.Add(_add);
         _refresh = _theme.IconButton(DeskButtonIconKind.Refresh, Loc.T("새로 고침"), () => _ = RefreshAsync());
         _refresh.Classes.Add("title-action"); ToolTip.SetTip(_refresh, Loc.T("새로 고침") + (_host.CommandModifier == KeyModifiers.Meta ? " (⌘R / F5)" : " (Ctrl+R / F5)"));
-        Grid.SetColumn(_refresh, 2); titlebar.Children.Add(_refresh);
+        Grid.SetColumn(_refresh, 3); titlebar.Children.Add(_refresh);
         var language = _theme.Button(Loc.LanguageCode + " ▾", () => { });
         language.Name = "LanguageButton";
         ToolTip.SetTip(language, Loc.LanguageName + " · " + Loc.T("언어 설정"));
         Avalonia.Automation.AutomationProperties.SetName(language, Loc.T("언어 설정") + ": " + Loc.LanguageName);
         language.Click += (_, _) => OpenLanguageMenu(language);
-        Grid.SetColumn(language, 3); titlebar.Children.Add(language);
+        Grid.SetColumn(language, 4); titlebar.Children.Add(language);
         var theme = _theme.IconButton(_theme.Dark ? DeskButtonIconKind.Sun : DeskButtonIconKind.Moon, Loc.T(_theme.Dark ? "라이트" : "다크"), () =>
         {
             _ = RunAsync(_ =>
@@ -145,15 +156,21 @@ internal sealed class DeskWindow : Window
                 if (_service != null) { lock (_service.Vault.SyncRoot) { _service.Vault.Data.Theme = next.Dark ? "dark" : "light"; _service.Vault.Save(); } }
                 _theme = next; Build(); return Task.CompletedTask;
             });
-        }); theme.Name = "ThemeButton"; theme.Classes.Add("title-action"); Grid.SetColumn(theme, 4); titlebar.Children.Add(theme);
+        }); theme.Name = "ThemeButton"; theme.Classes.Add("title-action"); Grid.SetColumn(theme, 5); titlebar.Children.Add(theme);
         _settingsButton = _theme.IconButton(DeskButtonIconKind.More, Loc.T("설정"), OpenSettings); _settingsButton.Width = 28; _settingsButton.Padding = new Thickness(0);
-        Grid.SetColumn(_settingsButton, 5); titlebar.Children.Add(_settingsButton); shell.Children.Add(titlebar);
+        Grid.SetColumn(_settingsButton, 6); titlebar.Children.Add(_settingsButton); shell.Children.Add(titlebar);
         var toolbar = new Grid { Margin = new Thickness(8, 1) };
         _cancel = _theme.Button(Loc.T("취소"), () => { _login?.Cancel(); _switch?.Cancel(); }); _cancel.IsVisible = _login != null || _switch != null;
         _cancel.HorizontalAlignment = HorizontalAlignment.Left;
         toolbar.Children.Add(_cancel);
         _sessionValues = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 24, HorizontalAlignment = HorizontalAlignment.Center };
-        toolbar.Children.Add(_sessionValues); Grid.SetRow(toolbar, 1); shell.Children.Add(toolbar);
+        toolbar.Children.Add(_sessionValues);
+        if (nativeTitle)
+        {
+            toolbar.ColumnDefinitions = new ColumnDefinitions("Auto,*"); Grid.SetColumn(_sessionValues, 1);
+            titlebar.Children.Add(toolbar);
+        }
+        else { Grid.SetRow(toolbar, 1); shell.Children.Add(toolbar); }
         _accounts = new Grid { Margin = new Thickness(4, 1) };
         _accountScroll = new ScrollViewer { Content = _accounts, HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled };
         _accountScroll.SizeChanged += (_, _) => ResizeAccounts(); Grid.SetRow(_accountScroll, 2); shell.Children.Add(_accountScroll);
@@ -211,6 +228,7 @@ internal sealed class DeskWindow : Window
         _accounts.Children.Clear(); _accounts.ColumnDefinitions.Clear(); _accounts.RowDefinitions.Clear(); _cards.Clear();
         if (_tray != null) UpdateTray();
         _add.IsEnabled = _ready && _login == null; _cancel.IsVisible = _login != null || _switch != null;
+        _startCodex.IsEnabled = _ready && _login == null && _switch == null;
         _refresh.IsEnabled = !_initializing && _preview == null && _host.AccountUnavailableReason == null;
         var profiles = (_preview ?? _service?.Accounts ?? Array.Empty<AccountProfile>()).OrderByDescending(p => p.IsCurrent).ThenBy(p => p.DisplayName, StringComparer.CurrentCulture).ToArray();
         if (profiles.Length == 0)
@@ -284,7 +302,7 @@ internal sealed class DeskWindow : Window
             await RunAsync(async _ =>
             {
                 await _service!.CheckCredentialBackendAsync(profile, _switch.Token);
-                await using var backend = new DesktopSwitchBackend(_service, _sessions);
+                await using var backend = new DesktopSwitchBackend(_service, _sessions, profile.Key);
                 var coordinator = new AccountSwitchCoordinator(backend,
                     plan => { lock (_service.Vault.SyncRoot) { _service.Vault.Data.PendingSwitch = plan; _service.Vault.Save(); } },
                     plan => OnUi(() => { _phase = plan.Phase; RenderAccounts(); }), UserErrors.Describe);
@@ -453,6 +471,7 @@ internal sealed class DeskWindow : Window
         if (_service != null) await _service.StopAsync();
         await Task.WhenAll(_operations.ToArray());
         await _sessions.DisposeAsync(); await _resources.DisposeAsync(); await _drives.DisposeAsync(); _tray?.Dispose();
+        _service?.ReleaseDesktop();
         Close(); (Application.Current!.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.Shutdown(_host.ExitCode());
     }
 }

@@ -47,6 +47,7 @@ internal sealed class MainWindow : Window
     private readonly DispatcherTimer _clockTimer = new() { Interval = TimeSpan.FromSeconds(1) };
     private Forms.NotifyIcon? _tray;
     private bool _ready, _loggingIn, _switching, _closing, _exit;
+    private bool CanRefresh => !_closing && (_ready || _initialization?.IsCompleted != false);
     private string? _queuedKey;
     private SwitchPhase _switchPhase;
     private CancellationTokenSource? _switchCancellation;
@@ -81,7 +82,7 @@ internal sealed class MainWindow : Window
         _hardware.Changed += HardwareChanged;
         _drives.Changed += DrivesChanged;
         StateChanged += (_, _) => { if (_maximizeButton != null) _maximizeButton.Content = Burn0Theme.Icon(WindowState == WindowState.Maximized ? "window-restore" : "window-maximize", Color("muted"), 12, true); };
-        _refreshTimer.Tick += async (_, _) => { if (_ready && !_closing) await RefreshAsync(); };
+        _refreshTimer.Tick += async (_, _) => { if (CanRefresh) await RefreshAsync(); };
         _clockTimer.Tick += (_, _) => UpdateCountdowns();
         Loaded += async (_, _) => await StartAsync();
         Closing += OnClosing;
@@ -283,6 +284,7 @@ internal sealed class MainWindow : Window
     {
         if (_ready) return;
         if (_initialization == null || _initialization.IsFaulted || _initialization.IsCanceled) _initialization = _service.InitializeAsync(cancellation);
+        UpdateControls(); UpdateTray();
         await _initialization; _ready = true; UpdateControls(); RenderAccounts();
     }
     private async Task StartAsync()
@@ -424,8 +426,8 @@ internal sealed class MainWindow : Window
     }
     private async Task RefreshAsync()
     {
-        if (!_ready || _closing) return;
-        await RunAsync("사용량 갱신 중… 다른 기능을 계속 사용할 수 있습니다.", async token => { await _service.RefreshAllAsync(null, token); SetRefreshStatus(); });
+        if (!CanRefresh) return;
+        await RunAsync("사용량 갱신 중… 다른 기능을 계속 사용할 수 있습니다.", async token => { await EnsureInitializedAsync(token); await _service.RefreshAllAsync(null, token); SetRefreshStatus(); });
     }
     private Task ImportCurrentAsync() => RunAsync("현재 로그인 가져오는 중…", async token =>
     {
@@ -742,7 +744,7 @@ internal sealed class MainWindow : Window
     }
     private void UpdateControls()
     {
-        _refresh.IsEnabled = _ready && !_closing; _add.IsEnabled = _ready && !_loggingIn && !_closing;
+        _refresh.IsEnabled = CanRefresh; _add.IsEnabled = _ready && !_loggingIn && !_closing;
         if (_importCurrent != null) _importCurrent.IsEnabled = !_closing;
         _loginPanel.Visibility = _loggingIn ? Visibility.Visible : Visibility.Collapsed;
         _cancelSwitch.Visibility = Visibility.Collapsed;
@@ -766,7 +768,7 @@ internal sealed class MainWindow : Window
     private void UpdateTray()
     {
         if (_tray == null) return; var menu = new Forms.ContextMenuStrip();
-        menu.Items.Add(Loc.T("계정 관리 열기"), null, (_, _) => BringToFront()); var refresh = menu.Items.Add(Loc.T("사용량 새로 고침"), null, async (_, _) => await RefreshAsync()); refresh.Enabled = _ready && !_closing;
+        menu.Items.Add(Loc.T("계정 관리 열기"), null, (_, _) => BringToFront()); var refresh = menu.Items.Add(Loc.T("사용량 새로 고침"), null, async (_, _) => await RefreshAsync()); refresh.Enabled = CanRefresh;
         menu.Items.Add(new Forms.ToolStripSeparator());
         foreach (var profile in _service.Accounts)
         {

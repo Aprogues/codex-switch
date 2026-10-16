@@ -1,42 +1,44 @@
-<p align="center">
-  <img src="../assets/macos/app-icon.png" width="88" height="88" alt="Codex Switch app icon" />
-</p>
+<p align="center"><img src="../assets/macos/app-icon.png" width="88" height="88" alt="Codex Switch app icon" /></p>
 <h1 align="center">Codex Switch</h1>
 
-快速切换 Codex 账号，先看清下一个账号的剩余额度。**Windows / macOS / 1.27.6**
+手动切换Codex账号，自动继续符合条件的未完成本地聊天，并提前查看下一个账号的剩余额度。**1.40.2 — Windows、macOS和Linux预览版。**
 
 [English](../README.md) / [한국어](README.ko.md) / [日本語](README.ja.md) / 简体中文
 
-![展示不同余额、平稳资源变化和状态颜色的日常虚构演示](media/demo.png)
+## 下载
 
-*源码1.30.2的Windows界面，使用虚构账号和资源。公开下载仍为1.27.6。[最新截图及Windows/Mac实际应用图库](media/README.md#native-platform-gallery)。*
+- [Windows x64 ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-win-x64.zip)
+- macOS15及以上：[Apple Silicon ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-osx-arm64.zip) / [Intel ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-osx-x64.zip)
+- Linux **预览版** x64、ARM64：[DEB、RPM、tar.gz及SHA256](https://github.com/Gaebabi/codex-switch/releases/tag/v1.40.2)
 
-## 开始使用
+完整程序包包含.NET运行时，无需构建或安装.NET。请保留完整文件夹或应用包。Windows/Linux未签名；Mac为临时签名，**未经Apple公证**。[安装](INSTALL.md) / [Mac首次启动](MACOS.md)
 
-1. Windows 完整解压后运行 `CodexSwitch.exe`。Mac 运行 `Install.command` 安装，再打开 **Codex Switch.app**。[构建与安装](INSTALL.md)
-2. 点击标题栏的 **+** 添加账号。Windows 可右键点击 **↻** 导入当前登录。
-3. 比较剩余额度并点击 **Switch**。每60秒自动刷新，也可点击 **↻** 或按 **F5** 立即刷新。
+Linux仍为集成预览版。原生密钥环、已安装UI和程序包验证，与真实双账号交接及完整桌面支持分开记录。桌面集成需要已验证的OpenAI Linux客户端26.1007.71326、现有file认证策略以及X11/XWayland。新客户端需单独审核，否则拒绝使用。显式校验和的CLI专用模式不恢复桌面聊天。[要求](development/LINUX.md) / [安装包](development/LINUX_PACKAGES.md) / [支持计划](PLATFORM_SUPPORT_PLAN.md)
 
-请保留完整的程序包。运行包无需安装 .NET；当前源码构建需要 .NET10.0.4xx SDK 和已安装的 Codex 应用/CLI。源码1.35.0使用 .NET10 LTS/runtime10.0.13，已评估的Mac支持基线为macOS15及以上。公开下载1.27.6在单独发布前保持不变。
+## 使用与功能
 
-## 一眼查看
+1. Windows运行`CodexSwitch.exe`；Mac运行`Install.command`后打开已安装的**Codex Switch.app**。Linux需要完整预览包及受支持的Secret Service。
+2. **+**通过官方浏览器页面登录各账号。如果自动选择了之前的账号，请使用独立的浏览器配置或隐私窗口。Windows可右键点击**↻**导入当前登录。
+3. 比较额度后点击**Switch**。**不会自动轮换账号。** Linux用户请先通过本工具的**Start Codex**启动Codex。
 
-- 剩余额度、重置倒计时、套餐、订阅结束日期、重置次数与积分余额
-- 使用记录和基于记录的耗尽预测。账号的 **...** 菜单中可打开 **History**。
-- 本地运行/队列/目标数量、资源趋势和磁盘剩余空间。悬停在仪表上可查看详情。
-- **1.29.0 源码：** 在资源和磁盘仪表右侧显示温度，并独立应用正常、注意和高温颜色。优先使用设备报告的阈值，否则使用文档说明的显示默认值。不可用时显示 `—°C`；CPU/RAM 可能需要兼容的传感器提供程序。[温度支持范围](TEMPERATURES.md)
-- **1.29.1 源码：** Windows 正常关闭后等待子进程退出，在同一次手动 Switch 操作中继续应用账号、重启和恢复聊天。当前下载尚未包含此修复。[切换流程](SWITCHING.md)
-- **1.29.2 源码：** 到期日期和倒计时在3天（72小时）以内、重置在2天（48小时）以内时使用主题警告色，并每秒更新。[界面对比及支持范围](evidence/date-warnings/README.md)
-- **1.29.3 源码：** 自动刷新始终以60秒为间隔运行。已移除 Windows 底部开关和说明文字，以及 Mac 设置项；以前的关闭设置不会再阻止刷新。[界面对比及验证范围](evidence/always-refresh/README.md)
+- 保存并验证带日期的聊天名称、备份当前登录，正常退出Codex后应用所选账号。重新打开相同聊天ID、目录、模型及权限，向符合条件的未完成空闲聊天**发送一次Continue**，自动继续工作。不重复运行已执行或已完成的工作。
+- **Resume chats**恢复加密保存的交接进度。发送结果不明确时不会自动重发；名称保存或正常退出失败时停止登录变更。Windows等待子进程退出，使一次Switch即可继续后续流程。[切换原理](SWITCHING.md)
+- 剩余额度、重置、套餐、到期日、重置次数、积分和消耗预测。**... → History**查看记录。日期使用用户本地时区，到期72小时、重置48小时以内显示警告色。
+- 本地运行、队列和目标数量，资源趋势及磁盘空间。Windows对可用的资源/磁盘温度独立着色；不可用值保持未知。Linux资源监测尚未支持。[温度范围](TEMPERATURES.md)
+- 始终每60秒刷新，**↻、F5**立即刷新。启动时密钥环锁定导致初始化失败时，解锁后会按同一周期自动重试初始化。九种UI语言、带英语回退的JSON语言包、图标主题操作、深浅色主题及统一滚动条。[翻译贡献](LOCALIZATION.md)
 
-1.28.0 源码支持含简体/繁体中文在内的9种 UI 语言和 JSON 语言包。目前公开下载的1.27.6仍为英语/韩语 UI。可在标题栏选择语言和浅色/深色主题。[语言包与翻译贡献](LOCALIZATION.md)
+切换会重启Codex，也可能影响共享登录的CLI/IDE。Linux真实账号交接和更广泛的桌面、无障碍验证通过支持计划跟踪。
 
-切换前保存并验证带日期的本地主聊天名称，备份当前登录。**切换会重启 Codex**，重新打开相同聊天 ID、目录、模型和权限，并向符合条件的空闲聊天发送一次 **Continue**，自动继续未完成的工作。已运行或完成的工作不重复启动。中断的交接可用 **Resume chats** 恢复；发送结果不明确时不会自动重发。名称保存或正常退出失败会阻止登录变更，也可能影响使用相同登录的 CLI/IDE。[切换详情](SWITCHING.md)
+## 实际应用截图
 
-Linux 支持正在规划中，尚无执行包。[支持计划](PLATFORM_SUPPORT_PLAN.md) / [Issue #1](https://github.com/Gaebabi/codex-switch/issues/1)。欢迎不同语言、环境和无障碍相关的贡献。
+[Windows/Linux最新截图及验证范围](media/release-1.40.2/README.md)。保留实际标题栏并放置在纯色背景上，明确区分虚构UI输入与真实账号验证。
 
-源码1.35.0提供面向贡献者的 [Linux 存储/UI 预览版](development/LINUX.md)，可用于构建和验证。账户、客户端和聊天恢复功能在原生验证完成前保持禁用；这不是正式 Linux 发布版。
+![Windows运行截图](media/release-1.40.2/windows.png)
+![Linux Xfce运行截图](media/release-1.40.2/linux.png)
 
-[Mac](MACOS.md) / [预测](FORECAST.md) / [安全](../SECURITY.md) / [开发](../CONTRIBUTING.md)
+**预留MacBook实机截图位置，稍后由维护者添加。**
+<!-- MacBook screenshot slot: media/release-1.40.2/macbook.png; privacy/provenance review required. -->
 
-公开开源。[Windows / Mac 执行包](https://github.com/Gaebabi/codex-switch/releases/tag/v1.27.6)无需源码构建或安装 .NET。Mac 包未公证。本项目不是OpenAI官方产品。认证信息在本地加密保存。[MIT](../LICENSE)
+[贡献](../CONTRIBUTING.md) / [安全](../SECURITY.md) / [验证资料](evidence/README.md) / [消耗预测](FORECAST.md)
+
+这是独立开源软件，并非OpenAI官方产品。认证信息在本地加密保存。[MIT](../LICENSE)

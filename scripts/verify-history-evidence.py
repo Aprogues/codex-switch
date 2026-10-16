@@ -16,7 +16,7 @@ if not re.fullmatch(r"[a-f0-9]{40}", args.revision):
 report = json.loads((args.source / "history-report.json").read_text(encoding="utf-8"))
 if (report["os"] != "macOS" or report["failures"] != 0 or report["nativeWindowCapture"] is not True
         or report["language"] != "en" or report["rendering"] != "Software (native window)"
-        or report["architecture"] not in ("Arm64", "X64") or len(report["checks"]) < 60):
+        or report["architecture"] not in ("Arm64", "X64") or len(report["checks"]) != 66):
     raise SystemExit("Complete English native history verification required")
 if not re.fullmatch(r"\d+\.\d+\.\d+", report["version"]) or not re.fullmatch(r"\.NET \d+\.\d+\.\d+", report["runtime"]):
     raise SystemExit("Invalid application/runtime version")

@@ -1,6 +1,8 @@
 # Documentation screenshot
 
-`demo.png` is the shared English/Korean/Japanese/Chinese README illustration: one 800×560 lossless PNG, rendered from source 1.30.2 Windows UI by `python scripts/render-demo.py`. It shows the vector theme action and always-on refresh layout. Published download packages remain 1.27.6.
+The current Release1.40.2 [Windows/Linux native-window gallery](release-1.40.2/README.md) preserves each real titlebar on a centered plain background. The MacBook real-device slot is reserved for the maintainer. The1.40.1 gallery, component illustration and source1.30.2 gallery below are historical; they do not describe the current downloaded version.
+
+`demo.png` is the historical shared English/Korean/Japanese/Chinese README illustration: one 800×560 lossless PNG, rendered from source1.30.2 Windows UI by `python scripts/render-demo.py`. It shows the vector theme action and always-on refresh layout. Published downloads were1.27.6 at that capture checkpoint.
 
 The visible **DEMO** label and reserved `example.invalid` addresses identify fictional everyday data.
 

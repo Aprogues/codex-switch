@@ -120,6 +120,30 @@ jobs:
           path: artifacts/native-ui/windows/public
           if-no-files-found: error
           retention-days: 14
+      - name: Package the same verified native Windows application
+        run: python scripts/package-desktop.py --app artifacts/win-x64 --rid win-x64 --output artifacts/release-candidate/win-x64
+      - name: Verify ordinary Windows initialization failure recovery
+        run: dotnet run --project tests/windows-startup/CodexSwitch.WindowsStartup.Tests.csproj -c Release --no-launch-profile -p:UseSharedCompilation=false -- artifacts/startup-recovery/raw
+      - name: Export passing native startup recovery evidence
+        env:
+          EVIDENCE_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: python scripts/verify-startup-evidence.py artifacts/startup-recovery/raw artifacts/startup-recovery/public --revision "${{ env.EVIDENCE_REVISION }}"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: startup-recovery-windows
+          path: artifacts/startup-recovery/public
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload the verified native Windows package
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-candidate-win-x64
+          path: |
+            artifacts/release-candidate/win-x64/*.zip
+            artifacts/release-candidate/win-x64/*.json
+            artifacts/release-candidate/win-x64/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 14
 
   macos:
     name: Mac compilation (${{ matrix.rid }})
@@ -177,6 +201,16 @@ jobs:
           path: artifacts/native-ui/${{ matrix.rid }}/public
           if-no-files-found: error
           retention-days: 14
+      - name: Capture latest-main history baseline on the same native worker
+        # History comparison uses the unchanged latest-main renderer on this same worker.
+        # The external baseline adds diagnostic hosting only, never account credentials.
+        run: python3 scripts/capture-history-baseline.py --revision 2bc551f9d36d5ec4e23f56af43237fecca47ac6c --rid ${{ matrix.rid }} --output artifacts/history-baseline/${{ matrix.rid }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: history-before-${{ matrix.rid }}
+          path: artifacts/history-baseline/${{ matrix.rid }}/public
+          if-no-files-found: error
+          retention-days: 14
       - name: Verify English history windows and quota/range interactions
         run: artifacts/macos-ci/${{ matrix.rid }}/CodexSwitch --verify-history artifacts/native-history/${{ matrix.rid }}/raw
       - name: Validate English native history exports
@@ -187,5 +221,20 @@ jobs:
         with:
           name: native-history-${{ matrix.rid }}
           path: artifacts/native-history/${{ matrix.rid }}/public
+          if-no-files-found: error
+          retention-days: 14
+      - name: Package and verify native ad-hoc signatures
+        run: python3 scripts/package-desktop.py --app artifacts/macos-ci/${{ matrix.rid }} --rid ${{ matrix.rid }} --output artifacts/release-candidate/${{ matrix.rid }}
+      - name: Verify ZIP extraction, staged installation and existing-app preservation
+        shell: bash
+        run: |
+          python3 scripts/verify-macos-install.py artifacts/release-candidate/${{ matrix.rid }}/*.zip > artifacts/release-candidate/${{ matrix.rid }}/INSTALLATION.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-candidate-${{ matrix.rid }}
+          path: |
+            artifacts/release-candidate/${{ matrix.rid }}/*.zip
+            artifacts/release-candidate/${{ matrix.rid }}/*.json
+            artifacts/release-candidate/${{ matrix.rid }}/SHA256SUMS
           if-no-files-found: error
           retention-days: 14
