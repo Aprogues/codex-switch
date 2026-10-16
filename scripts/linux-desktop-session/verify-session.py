@@ -97,11 +97,22 @@ def windows(pid):
     value = subprocess.run(['xdotool', 'search', '--onlyvisible', '--pid', str(pid)], capture_output=True, text=True, timeout=5)
     return value.stdout.splitlines() if value.returncode == 0 else []
 
-def capture(window, pid, name):
+def capture(window, pid, name, include_frame=False):
     check('Capture is bound to original application PID: ' + name, run(['xdotool', 'getwindowpid', window], capture_output=True, text=True).stdout.strip() == str(pid))
+    target = window
+    if include_frame:
+        tree = run(['xwininfo', '-id', window, '-tree'], capture_output=True, text=True).stdout
+        parent = re.search(r'Parent window id: (0x[0-9a-f]+)', tree)
+        desktop_root = re.search(r'Root window id: (0x[0-9a-f]+)', tree)
+        if not parent or not desktop_root or parent[1] == desktop_root[1]:
+            raise RuntimeError('Expected the original application native WM frame')
+        children = run(['xwininfo', '-id', parent[1], '-children'], capture_output=True, text=True).stdout
+        if not re.search(r'^\s+' + re.escape(hex(int(window))) + r'\s', children, re.MULTILINE):
+            raise RuntimeError('Native frame is not the original application parent')
+        target = parent[1]
     raw = root / 'capture.xwd'
     file = results / (name + '.png')
-    run(['xwd', '-silent', '-id', window, '-out', str(raw)])
+    run(['xwd', '-silent', '-id', target, '-out', str(raw)])
     run(['convert', str(raw), '-strip', str(file)])
     with Image.open(file) as source:
         rgb = source.convert('RGB')
@@ -110,7 +121,7 @@ def capture(window, pid, name):
         image = Image.new('RGB', rgb.size)
         image.paste(rgb)
         image.save(file)
-        images.append({'file': file.name, 'width': image.width, 'height': image.height, 'sha256': hashlib.sha256(file.read_bytes()).hexdigest(), 'capture': 'Actual ordinary installed application own XID; no --verify-ui or synthetic account injection'})
+        images.append({'file': file.name, 'width': image.width, 'height': image.height, 'sha256': hashlib.sha256(file.read_bytes()).hexdigest(), 'capture': 'Actual ordinary installed application own XID' + (' with verified direct-parent native WM frame' if include_frame else '') + '; no --verify-ui or synthetic account injection'})
 
 
 def wait_for_initialized_ui(window):
@@ -193,6 +204,7 @@ try:
         run(['xdotool', 'windowsize', '--sync', window, str(width), str(height)])
         time.sleep(0.6)
         capture(window, pid, f'ordinary-dark-{width}x{height}')
+    capture(window, pid, 'ordinary-native-frame', include_frame=True)
     run(['xdotool', 'windowsize', '--sync', window, '500', '360'])
     before_login_vault = (root / 'share/CodexAccountDesk/accounts.vault').read_bytes()
     run(['xdotool', 'mousemove', '--window', window, '359', '17', 'click', '1'])
