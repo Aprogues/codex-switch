@@ -1,6 +1,10 @@
 # Current status
 
-Updated 2026-10-16. Source version **1.40.1**; published binaries **1.27.6**, with release1.40.1 in verification under issue78/PR79.
+Updated 2026-10-17. Source version **1.40.1**; published binaries **1.27.6**, with release1.40.1 in final review under issue78/PR79.
+
+Codea70ec5f passes all six exact-source jobs: [Verify38917767076](https://github.com/Gaebabi/codex-switch/actions/runs/38917767076) and [Linux native38917767141](https://github.com/Gaebabi/codex-switch/actions/runs/38917767141). Native Windows94 existing/ownership and12 startup-recovery checks, native Mac arm64/Intel seven installation checks each, both Linux architectures' provider/client/package gates and ordinary x64 Xfce46 checks pass. [Current inspected Windows/Linux app-window gallery](../media/release-1.40.1/README.md) retains actual titlebars and original pixels on a solid background. MacBook real-device capture remains explicitly pending at the owner's reserved slot.
+
+The owner installation recovered after all three corrupt runtime directories were retained by file hash outside active cleanup, with an opaque encrypted-vault backup. The updated personal utility's Add/Refresh/Switch controls are active, an ordinary Refresh click is accepted, and canonical login bytes remain unchanged. New owner records use the existing atomic writer; strict malformed-record refusal remains. Private originals/identities/diagnostics are excluded from GitHub. The earlier checkpoint descriptions below retain their original timing.
 
 Issue80 fixes Windows startup recovery: failed initialization previously disabled manual/tray refresh and the60s timer behind `_ready`. Refresh now retries the existing shared initializer; account actions remain gated until success, and in-flight initialization disables duplicate refresh input. Actual own-HWND baseline reproduces the disabled button. The corrected WPF manual-button and DispatcherTimer cases pass12 checks without restarting the window, using only empty isolated storage and an unexecuted placeholder. [Native program comparison and scope](../evidence/windows-startup-recovery/README.md). Existing personal Windows Codex/auth are not stopped or switched.
 

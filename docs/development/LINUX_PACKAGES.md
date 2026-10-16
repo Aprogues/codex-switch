@@ -1,5 +1,11 @@
 # Linux preview package candidates
 
+## Release1.40.1 downloads
+
+The [1.40.1 Release](https://github.com/Gaebabi/codex-switch/releases/tag/v1.40.1) provides all six unsigned integration-preview packages: x64/ARM64 × DEB/RPM/tar.gz, with SHA256SUMS.txt. These remain explicit previews with `supportedAccountHandoff: false`; publication does not close #5/#6/#7's authenticated/full-desktop criteria. Earlier records below retain their original checkpoint scope.
+
+Desktop integration pins official OpenAI Linux client26.1007.71326 and verifies the installed package, CLI, executable and ASAR. CI retrieves exact unchanged bytes from the official versioned Debian pool. Newer clients require a separate compatibility review. An existing file credential policy and X11/XWayland are required; explicit-checksum CLI-only mode does not resume desktop chats. Fedora RPM installation/UI verification does not establish integration with an unreviewed RPM-native client.
+
 Source1.40.1 retains complete x64/ARM64 candidate formats and fixes duplicate Linux title ownership. [Direct owner-login evidence](../evidence/linux-interactive-desktop/README.md) confirms a single real account, not cross-account handoff. `supportedAccountHandoff: false` and unsigned preview status remain until their actual acceptance criteria pass.
 
 Source1.40.0/PR75 candidates include [ordinary account and managed desktop integration](LINUX.md#source1400-ordinary-integration--issue74--pr75). They still declare `supportedAccountHandoff: false` until real authenticated acceptance passes; an implemented action is not a supported Release. The earlier source checkpoints below retain their capture-time scope.

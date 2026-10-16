@@ -1,5 +1,7 @@
 # Documentation screenshot
 
+The current Release1.40.1 [Windows/Linux native-window gallery](release-1.40.1/README.md) preserves each real titlebar on a centered plain background. The MacBook real-device slot is reserved for the maintainer. The component illustration and source1.30.2 gallery below are historical; they do not describe the current downloaded version.
+
 `demo.png` is the shared English/Korean/Japanese/Chinese README illustration: one 800×560 lossless PNG, rendered from source 1.30.2 Windows UI by `python scripts/render-demo.py`. It shows the vector theme action and always-on refresh layout. Published download packages remain 1.27.6.
 
 The visible **DEMO** label and reserved `example.invalid` addresses identify fictional everyday data.
