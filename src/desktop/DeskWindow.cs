@@ -63,7 +63,7 @@ internal sealed class DeskWindow : Window
         Opened += async (_, _) =>
         {
             if (diagnostic != null) await diagnostic(this);
-            else if (_preview == null) await RunAsync(InitializeAsync);
+            else if (_preview == null) { _clock.Start(); await RunAsync(InitializeAsync); }
         };
         Closing += (_, args) => { if (!Exiting) { args.Cancel = true; CloseOrHide(); } };
         KeyDown += async (_, args) =>
@@ -80,7 +80,7 @@ internal sealed class DeskWindow : Window
         {
             if (Exiting) return;
             foreach (var card in _cards) card.Update(DateTimeOffset.UtcNow);
-            if (++_ticks % 60 == 0 && _ready) await RunAsync(token => _service!.RefreshAllAsync(null, token));
+            if (++_ticks % 60 == 0) await RefreshAsync();
         };
     }
     private void OnUi(Action action) => Dispatcher.UIThread.Post(() => { if (!Exiting) action(); });
@@ -102,7 +102,7 @@ internal sealed class DeskWindow : Window
             }
             await _service.InitializeAsync(token); _ready = true;
             if (OperatingSystem.IsLinux()) _statusMessage = Loc.T(_service.HasLinuxDesktop ? "msg.linux_desktop_ready" : "msg.linux_cli_only");
-            _sessions.Start(); _resources.Start(); _drives.Configure(_service.Vault.Data.Drives.ToArray()); _drives.Start(); _clock.Start();
+            _sessions.Start(); _resources.Start(); _drives.Configure(_service.Vault.Data.Drives.ToArray()); _drives.Start();
             UpdateTray(); RenderAccounts();
             await _service.RefreshAllAsync(null, token);
         }

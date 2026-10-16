@@ -124,7 +124,7 @@ def capture(window, pid, name, include_frame=False):
         images.append({'file': file.name, 'width': image.width, 'height': image.height, 'sha256': hashlib.sha256(file.read_bytes()).hexdigest(), 'capture': 'Actual ordinary installed application own XID' + (' with verified direct-parent native WM frame' if include_frame else '') + '; no --verify-ui or synthetic account injection'})
 
 
-def wait_for_initialized_ui(window):
+def wait_for_initialized_ui(window, timeout=40):
     def observed():
         native = root / 'initialization-private.xwd'
         png = root / 'initialization-private.png'
@@ -136,7 +136,7 @@ def wait_for_initialized_ui(window):
             def ink(box):
                 return max(max(abs(pixel[channel] - background[channel]) for channel in range(3)) for pixel in frame.crop(box).getdata())
             return ink((9, frame.height - 24, 140, frame.height - 5)) > 20 and ink((frame.width - 149, frame.height - 24, frame.width - 9, frame.height - 5)) > 30
-    wait_for(observed, 40)
+    wait_for(observed, timeout)
 
 daemon = keyring()
 desktop = subprocess.Popen(['xfce4-session'], stdout=private_log, stderr=private_log)
@@ -183,6 +183,10 @@ try:
     run([app, '--install-package'], stdout=private_log, stderr=private_log)
     entry = root / 'share/applications/codex-switch.desktop'
     run(['desktop-file-validate', str(entry)])
+    ordinary_vault = root / 'share/CodexAccountDesk/accounts.vault'
+    check('Locked-startup case begins without an application vault or canonical login', not ordinary_vault.exists() and not (ordinary_home / 'auth.json').exists())
+    gdbus('org.freedesktop.secrets', '/org/freedesktop/secrets', 'org.freedesktop.Secret.Service.Lock', "['" + collection + "']")
+    phase('locked')
     run(['gio', 'launch', str(entry)], stdout=private_log, stderr=private_log)
     executable = (root / 'share/codex-switch/current/CodexSwitch').resolve()
     def find_app():
@@ -197,7 +201,14 @@ try:
         return None
     pid, window = wait_for(find_app, 30)
     check('Ordinary desktop entry launches the actual per-user installed program', Path('/proc/' + str(pid) + '/exe').resolve() == executable)
+    time.sleep(3)
+    check('An initially locked keyring prevents ordinary application vault creation', not ordinary_vault.exists())
+    capture(window, pid, 'ordinary-locked-startup', include_frame=True)
+    phase('unlock', password)
+    wait_for(lambda: ordinary_vault.is_file(), 85)
     wait_for_initialized_ui(window)
+    check('Same ordinary window automatically recovers after keyring unlock without app input', Path('/proc/' + str(pid) + '/exe').resolve() == executable and window in windows(pid) and ordinary_vault.read_bytes().startswith(b'CADL1') and not (ordinary_home / 'auth.json').exists())
+    capture(window, pid, 'ordinary-unlocked-recovery', include_frame=True)
     check('Ordinary account initialization visibly completes with configured volume and capability status', (root / 'share/CodexAccountDesk/accounts.vault').read_bytes().startswith(b'CADL1') and not (ordinary_home / 'auth.json').exists())
     run(['xdotool', 'windowactivate', '--sync', window])
     for width, height in ((500, 360), (600, 420), (800, 600)):

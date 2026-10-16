@@ -1,5 +1,7 @@
 # Current plan
 
+Priority issue81: automatically load preserved accounts after an initially locked keyring is unlocked, without a manual Refresh. Source1.40.2 fixes the shared window clock lifetime and scheduled initializer routing. Require actual ordinary Linux locked-startup/unlock recovery in the same window, before/after app screenshots, preserved security/data boundaries, final-source six-job CI, author review and expected-SHA merge. Update native packages through a separately verified patch Release; retain1.40.1 unchanged.
+
 Release1.40.1 is now explicitly authorized by the owner: current native Windows/Mac binaries, experimental Linux packages, checksums, actual Windows/Linux window-frame screenshots and refreshed download links. Follow [the scoped release checkpoint](RELEASE_1_40_1.md). This publication request supersedes earlier statements that no new binary Release is authorized; pending account/full-desktop acceptance remains open.
 
 Publication checkpoint completed2026-10-17: [PR79](https://github.com/Gaebabi/codex-switch/pull/79) merged the exact six-job verified source/tree, and [Release1.40.1](https://github.com/Gaebabi/codex-switch/releases/tag/v1.40.1) published nine native packages plus verification/checksum receipts after all GitHub asset digests matched. Current Windows/Linux galleries and download links are included. The owner's MacBook screenshot and remaining #5/#6/#7/#76 authenticated/full-desktop acceptance stay open.
