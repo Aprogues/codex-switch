@@ -18,7 +18,7 @@ internal sealed class RuntimeHome : IAsyncDisposable
         SecureFiles.CreatePrivateDirectory(Path);
         if (authJson != null) SecureFiles.AtomicWriteText(System.IO.Path.Combine(Path, "auth.json"), authJson);
         using var owner = Process.GetCurrentProcess();
-        File.WriteAllText(System.IO.Path.Combine(Path, "owner.json"), JsonSerializer.Serialize(new { pid = owner.Id, startedAt = owner.StartTime.ToUniversalTime().Ticks }));
+        SecureFiles.AtomicWriteText(System.IO.Path.Combine(Path, "owner.json"), JsonSerializer.Serialize(new { pid = owner.Id, startedAt = owner.StartTime.ToUniversalTime().Ticks }));
     }
     public string ReadAuth()
     {
