@@ -201,6 +201,28 @@ jobs:
           path: artifacts/native-ui/${{ matrix.rid }}/public
           if-no-files-found: error
           retention-days: 14
+      - name: Capture latest-main history baseline on the same native worker
+        # History comparison uses the unchanged latest-main renderer on this same worker.
+        # The external baseline adds diagnostic hosting only, never account credentials.
+        run: python3 scripts/capture-history-baseline.py --revision 2bc551f9d36d5ec4e23f56af43237fecca47ac6c --rid ${{ matrix.rid }} --output artifacts/history-baseline/${{ matrix.rid }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: history-before-${{ matrix.rid }}
+          path: artifacts/history-baseline/${{ matrix.rid }}/public
+          if-no-files-found: error
+          retention-days: 14
+      - name: Verify English history windows and quota/range interactions
+        run: artifacts/macos-ci/${{ matrix.rid }}/CodexSwitch --verify-history artifacts/native-history/${{ matrix.rid }}/raw
+      - name: Validate English native history exports
+        env:
+          EVIDENCE_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: python scripts/verify-history-evidence.py artifacts/native-history/${{ matrix.rid }}/raw artifacts/native-history/${{ matrix.rid }}/public --revision "$EVIDENCE_REVISION"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: native-history-${{ matrix.rid }}
+          path: artifacts/native-history/${{ matrix.rid }}/public
+          if-no-files-found: error
+          retention-days: 14
       - name: Package and verify native ad-hoc signatures
         run: python3 scripts/package-desktop.py --app artifacts/macos-ci/${{ matrix.rid }} --rid ${{ matrix.rid }} --output artifacts/release-candidate/${{ matrix.rid }}
       - name: Verify ZIP extraction, staged installation and existing-app preservation

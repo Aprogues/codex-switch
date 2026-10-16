@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Automation;
+using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Threading;
 
@@ -80,17 +82,75 @@ internal sealed class HistoryChart : Control
     public UsageObservation[] Points { get; set; } = Array.Empty<UsageObservation>();
     public required DeskTheme Palette { get; set; }
     public int Hours { get; set; } = 24;
+    private DateTimeOffset _now = DateTimeOffset.UtcNow;
+    private Rect Plot => new(40, 34, Math.Max(0, Bounds.Width - 48), Math.Max(0, Bounds.Height - 60));
+    internal static Point Project(UsageObservation point, Rect plot, DateTimeOffset start, DateTimeOffset end) => new(
+        plot.Left + Math.Clamp((point.At - start).TotalSeconds / Math.Max(1, (end - start).TotalSeconds), 0, 1) * plot.Width,
+        plot.Bottom - Math.Clamp(point.UsedPercent, 0, 100) / 100 * plot.Height);
+    internal static bool Connects(UsageObservation previous, UsageObservation next) => previous.Segment == next.Segment &&
+        next.At >= previous.At && next.At - previous.At <= TimeSpan.FromMinutes(20);
+    public void Update(DateTimeOffset now)
+    {
+        var changedMinute = now.ToUnixTimeSeconds() / 60 != _now.ToUnixTimeSeconds() / 60;
+        _now = now;
+        if (changedMinute) InvalidateVisual();
+    }
     public override void Render(DrawingContext context)
     {
-        var now = DateTimeOffset.UtcNow; var start = now.AddHours(-Hours);
-        var points = Points.Where(p => p.At >= start).ToArray();
+        if (Bounds.Width < 100 || Bounds.Height < 90) return;
+        var now = _now; var start = now.AddHours(-Math.Max(1, Hours));
+        var points = Points.Where(p => p.At >= start && p.At <= now).OrderBy(p => p.At).ToArray();
+        var plot = Plot; var left = plot.Left; var right = plot.Right; var top = plot.Top; var bottom = plot.Bottom;
+        AutomationProperties.SetName(this, Loc.T("사용량 추이"));
+        AutomationProperties.SetHelpText(this, points.Length == 0 ? Loc.T("조회 기록이 쌓이면 추이를 볼 수 있습니다.")
+            : Loc.F("실측 · {0:MM/dd HH:mm:ss} (한국 시간)\n사용 {1:0.##}%", UsagePresentation.KoreanTime(points[^1].At), points[^1].UsedPercent));
         var pen = new Pen(Palette.Brush("accent"), 2);
-        Point Position(UsageObservation point) => new(Math.Clamp((point.At - start).TotalHours / Hours, 0, 1) * Bounds.Width, point.UsedPercent / 100 * Bounds.Height);
+        Text(Loc.T("사용량 추이"), 0, 0, "text", 12);
+        Text(Loc.T("실측"), right, 0, "muted", 11, true);
+        foreach (var value in new[] { 0, 25, 50, 75, 100 })
+        {
+            var y = bottom - value / 100.0 * (bottom - top);
+            context.DrawLine(new Pen(Palette.Brush("divider"), 1), new Point(left, y), new Point(right, y));
+            Text(value + "%", left - 9, y - 7, "muted", 11, true);
+        }
+        for (var i = 0; i <= 3; i++)
+        {
+            var at = start.AddTicks((now - start).Ticks * i / 3);
+            var x = left + (right - left) * i / 3;
+            var datesDiffer = UsagePresentation.KoreanTime(start).Date != UsagePresentation.KoreanTime(now).Date;
+            var label = UsagePresentation.KoreanTime(at).ToString(Hours > 24 ? "MM'/'dd" : datesDiffer && i is 0 or 3 ? "MM'/'dd HH:mm" : "HH:mm", Loc.Culture);
+            Text(label, x, bottom + 8, "muted", 11, i == 3, i is 1 or 2);
+        }
+        Point Position(UsageObservation point) => Project(point, plot, start, now);
         for (var i = 0; i < points.Length; i++)
         {
-            if (i > 0 && points[i].Segment == points[i - 1].Segment && points[i].At - points[i - 1].At <= TimeSpan.FromMinutes(20))
+            if (i > 0 && Connects(points[i - 1], points[i]))
                 context.DrawLine(pen, Position(points[i - 1]), Position(points[i]));
             else context.DrawEllipse(Palette.Brush("accent"), null, Position(points[i]), 2, 2);
         }
+        if (points.Length > 0)
+        {
+            var last = Position(points[^1]);
+            context.DrawEllipse(Palette.Brush("accent"), new Pen(Palette.Brush("canvas"), 2), last, 4, 4);
+            Text(points[^1].UsedPercent.ToString("0.#", Loc.Culture) + "%", right, last.Y < top + 24 ? last.Y + 5 : last.Y - 21, "text", 11, true);
+        }
+        if (points.Length < 2)
+            Text(Loc.T("조회 기록이 쌓이면 추이를 볼 수 있습니다."), (left + right) / 2, (top + bottom) / 2 - 7, "muted", 11, false, true);
+
+        void Text(string value, double x, double y, string token, double size, bool alignRight = false, bool center = false)
+        {
+            var text = new FormattedText(value, Loc.Culture, FlowDirection.LeftToRight, new Typeface(Palette.Appearance.FontFamily), size, Palette.Brush(token));
+            context.DrawText(text, new Point(alignRight ? x - text.Width : center ? x - text.Width / 2 : x, y));
+        }
     }
+    protected override void OnPointerMoved(PointerEventArgs e)
+    {
+        base.OnPointerMoved(e);
+        var position = e.GetPosition(this); var start = _now.AddHours(-Math.Max(1, Hours));
+        var points = Points.Where(p => p.At >= start && p.At <= _now).ToArray();
+        var nearest = Plot.Contains(position) ? points.MinBy(p => Math.Abs(Project(p, Plot, start, _now).X - position.X)) : null;
+        ToolTip.SetTip(this, nearest == null ? null : Loc.F("실측 · {0:MM/dd HH:mm:ss} (한국 시간)\n사용 {1:0.##}%",
+            UsagePresentation.KoreanTime(nearest.At), nearest.UsedPercent));
+    }
+    protected override void OnPointerExited(PointerEventArgs e) { base.OnPointerExited(e); ToolTip.SetTip(this, null); }
 }
