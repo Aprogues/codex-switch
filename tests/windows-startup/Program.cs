@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -102,7 +103,7 @@ internal static class Program
             catch (Exception error) { exit=1; Console.Error.WriteLine(error.GetType().Name + ": " + error.Message); }
             finally
             {
-                File.WriteAllText(Path.Combine(output,"receipt.json"),JsonSerializer.Serialize(new {schema=1,version=Product.GetName().Version!.ToString(3),passed=Checks.Count,failed=exit,checks=Checks,
+                File.WriteAllText(Path.Combine(output,"receipt.json"),JsonSerializer.Serialize(new {schema=1,os="Windows",architecture=RuntimeInformation.ProcessArchitecture.ToString(),runtime=RuntimeInformation.FrameworkDescription,version=Product.GetName().Version!.ToString(3),passed=Checks.Count,failed=exit,checks=Checks,
                     scope="Actual WPF window and production initializer/manual button/DispatcherTimer recovery; owned absent-then-placeholder path and empty encrypted storage only. Placeholder never executed; no network, real accounts, personal Codex or desktop capture."}));
                 application.Shutdown();
             }

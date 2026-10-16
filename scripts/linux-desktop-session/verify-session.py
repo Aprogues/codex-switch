@@ -255,7 +255,8 @@ try:
         check('Ordinary theme button changes the rendered application theme', sum(after.convert('RGB').getpixel((5, 80))) > sum(before.convert('RGB').getpixel((5, 80))) + 200)
     run(['xdotool', 'key', '--window', window, 'F5'])
     check('Ordinary refresh keeps the installed program alive', Path('/proc/' + str(pid)).exists())
-    run(['xdotool', 'key', '--window', window, 'ctrl+w'])
+    run(['xdotool', 'windowactivate', '--sync', window])
+    run(['xdotool', 'key', 'ctrl+w'])
     wait_for(lambda: not Path('/proc/' + str(pid)).exists())
     check('Ordinary trayless close exits the installed process', not Path('/proc/' + str(pid)).exists())
     run(['gio', 'launch', str(entry)], stdout=private_log, stderr=private_log)
@@ -263,7 +264,7 @@ try:
     wait_for_initialized_ui(window)
     capture(window, pid, 'ordinary-reopened')
     run(['xdotool', 'windowactivate', '--sync', window])
-    run(['xdotool', 'key', '--window', window, 'ctrl+w'])
+    run(['xdotool', 'key', 'ctrl+w'])
     wait_for(lambda: not Path('/proc/' + str(pid)).exists())
     cli_home = root / 'ordinary-cli-only'
     cli_home.mkdir(mode=0o700)
