@@ -465,6 +465,21 @@ internal static class Diagnostics
         });
         Test("Runtime cleanup refuses paths outside the owned directory", () =>
         { var blocked = false; try { SecureFiles.DeleteOwnedRuntime(Path.Combine(directory, "runtime"), directory); } catch (IOException) { blocked = true; } Assert(blocked, "Unsafe recursive cleanup accepted"); });
+        Test("Runtime ownership records bind the actual process and preserve strict malformed-record refusal", () =>
+        {
+            var data = Path.Combine(directory, "ownership-records");
+            using var process = System.Diagnostics.Process.GetCurrentProcess();
+            var home = new RuntimeHome(data, null);
+            using (var record = JsonDocument.Parse(File.ReadAllText(Path.Combine(home.Path, "owner.json"))))
+                Assert(JsonValue.Int(record.RootElement, "pid") == process.Id && JsonValue.Long(record.RootElement, "startedAt") == process.StartTime.ToUniversalTime().Ticks, "Runtime ownership identity changed");
+            Assert(!Directory.GetFiles(home.Path, ".account-desk-*.tmp").Any(), "Ownership staging file survived");
+            home.DisposeAsync().GetAwaiter().GetResult();
+            var corrupt = Path.Combine(data, "runtime", Guid.NewGuid().ToString("N"));
+            SecureFiles.CreatePrivateDirectory(corrupt);
+            var bytes = new byte[44]; File.WriteAllBytes(Path.Combine(corrupt, "owner.json"), bytes);
+            var rejected = false; try { RuntimeHome.CleanupStale(data); } catch (JsonException) { rejected = true; }
+            Assert(rejected && File.ReadAllBytes(Path.Combine(corrupt, "owner.json")).SequenceEqual(bytes), "Malformed ownership was ignored, overwritten or deleted");
+        });
         Test("Owned child processes terminate when their Windows job closes", () =>
         {
             using var child = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "ping.exe"))

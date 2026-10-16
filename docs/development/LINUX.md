@@ -1,5 +1,11 @@
 # Linux implementation and verification
 
+## Release1.40.1 preview scope
+
+Complete x64/ARM64 DEB/RPM/tar.gz [preview downloads](LINUX_PACKAGES.md#release1401-downloads) include the runtime. Supported account handoff and broad desktop acceptance remain open. The approved installed desktop is OpenAI's Debian package26.1007.71326 with exact executable/CLI/ASAR checksums; newer versions and RPM-native discovery require review. X11/XWayland and an existing file credential policy are required. Versioned vendor downloads preserve already-reviewed client bytes when `latest` advances; the utility never disables updates or rewrites credential policy.
+
+The owner test environment now has two accounts registered through ordinary browser login. Eleven native read-only policy/identity/usage/storage checks pass and canonical credentials remain unchanged. Actual cross-account desktop/continuation acceptance is separate and pending; no authenticated inference success is claimed. Credentials never enter public CI. Earlier checkpoint records below retain their original one-account/candidate scope.
+
 Source1.40.1 retains the native Linux window title/controls and combines session counters with toolbar actions, avoiding a duplicated client caption. [Owner-operated native acceptance and sanitized actual program comparison](../evidence/linux-interactive-desktop/README.md) verifies one real account's existing encrypted storage, active identity and authenticated usage. Only one account is available; cross-account switching/automatic continuation remains unverified. Use the separate [local interactive recipe](LINUX_INTERACTIVE_DESKTOP.md) for direct owner login; credentials never enter public CI.
 
 ## Source1.40.0 ordinary integration — issue74 / PR75

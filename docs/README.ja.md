@@ -1,50 +1,44 @@
-<p align="center">
-  <img src="../assets/macos/app-icon.png" width="88" height="88" alt="Codex Switch app icon" />
-</p>
+<p align="center"><img src="../assets/macos/app-icon.png" width="88" height="88" alt="Codex Switch app icon" /></p>
 <h1 align="center">Codex Switch</h1>
 
-Codex アカウントを切り替え、次に使うアカウントの残り利用枠を確認できます。**Windows / macOS / 1.27.6**
+Codexアカウントを手動で切り替え、再開可能な未完了ローカルチャットを自動で再開します。次のアカウントの残量も確認できます。**1.40.1 — Windows・macOS・Linuxプレビュー。**
 
 [English](../README.md) / [한국어](README.ko.md) / 日本語 / [简体中文](README.zh-CN.md)
 
-![異なる残量と安定したリソース、状態色を示す日常利用の架空デモ](media/demo.png)
+## ダウンロード
 
-*架空のアカウント・リソースを使ったソース1.30.2のWindows画面です。公開ダウンロードは1.27.6です。[最新スクリーンショットとWindows/Mac実行画面](media/README.md#native-platform-gallery)。*
+- [Windows x64 ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.1/CodexSwitch-v1.40.1-win-x64.zip)
+- macOS15以降：[Apple Silicon ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.1/CodexSwitch-v1.40.1-osx-arm64.zip) / [Intel ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.1/CodexSwitch-v1.40.1-osx-x64.zip)
+- Linux **プレビュー** x64・ARM64：[DEB・RPM・tar.gzとSHA256](https://github.com/Gaebabi/codex-switch/releases/tag/v1.40.1)
 
-## はじめる
+.NETを同梱しており、ビルドやランタイムのインストールは不要です。フォルダー・アプリ全体を保持してください。Windows/Linuxは未署名、Macはアドホック署名で**Apple未公証**です。[インストール](INSTALL.md) / [Mac初回起動](MACOS.md)
 
-ソース1.40.1ではLinuxのタイトルバー重複を解消し、[所有者が直接ログインする実行検証](evidence/linux-interactive-desktop/README.md)を追加しました。実際の1アカウントで暗号化保存・有効なID・認証済み利用枠取得を確認しました。2アカウント間の切替・自動再開と幅広いデスクトップ検証は未完了です。Linuxの完全パッケージは署名なしの統合プレビューです。
+Linuxは統合プレビューです。キーストア・インストール済みUI・パッケージ検証と、認証済み2アカウントの引き継ぎ・完全なデスクトップ対応は区別します。デスクトップ統合には検証済みOpenAI Linuxクライアント26.1007.71326、既存のfile認証設定とX11/XWaylandが必要です。新しいクライアントは個別検証まで拒否します。明示的チェックサムのCLI専用モードはデスクトップチャットを再開しません。[要件](development/LINUX.md) / [パッケージ](development/LINUX_PACKAGES.md) / [対応計画](PLATFORM_SUPPORT_PLAN.md)
 
-1. Windows はパッケージ全体を展開して `CodexSwitch.exe` を実行。Mac は `Install.command` でインストールし、**Codex Switch.app** を開きます。[ビルドとインストール](INSTALL.md)
-2. タイトルバーの **+** でアカウントを追加。Windows では **↻** の右クリックから現在のログインを取り込めます。
-3. 残量を比較して **Switch** を選択。60秒ごとに自動取得し、**↻** または **F5** で即時更新できます。
+## 使い方と機能
 
-パッケージ全体を保持してください。実行に .NET のインストールは不要です。現在のソースビルドには .NET10.0.4xx SDK とインストール済み Codex アプリ/CLI が必要です。ソース1.35.0は .NET10 LTS/runtime10.0.13を使用し、検討済みのMac対応基準はmacOS15以降です。公開ダウンロード1.27.6は別途リリースするまで維持します。
+1. Windowsは`CodexSwitch.exe`、Macは`Install.command`でインストールした**Codex Switch.app**を開きます。Linuxは完全なプレビューパッケージと対応するSecret Serviceが必要です。
+2. **+**で公式ブラウザー画面から各アカウントをログインします。以前のアカウントが自動選択される場合は、別のブラウザープロファイル・プライベートウィンドウを使います。Windowsは**↻**の右クリックで現在のログインを取り込めます。
+3. 残量を比較して**Switch**を押します。**アカウントの自動ローテーションはありません。** Linuxでは作業前に本アプリの**Start Codex**を使います。
 
-## 確認できる情報
+- 日付付きチャット名を保存・検証してログインをバックアップし、Codexを正常終了します。同じチャットID・フォルダー・モデル・権限を開いて、再開可能な未完了の待機中チャットに**Continueを一度だけ**送り、自動再開します。実行中・完了済みの作業は重複実行しません。
+- 暗号化された進行状況を**Resume chats**で再開できます。送信結果が不明なら自動再送せず、名前保存・正常終了の失敗時はログイン変更を停止します。Windowsでは子プロセス終了を待ち、一度のSwitchで処理を進めます。[切り替えの詳細](SWITCHING.md)
+- 残量、リセット、プラン、契約期限、クレジットと消費予測。**... → History**で履歴を確認できます。日時は利用者のローカル時間帯で表示し、有効期限72時間・リセット48時間以内は警告色になります。
+- 実行・キュー・目標数、リソース履歴とディスク容量。Windowsは取得可能なリソース/ディスク温度を独立した色で表示します。不明な値は不明のままです。Linuxのリソース計測は未対応です。[温度の範囲](TEMPERATURES.md)
+- 常時60秒更新、**↻・F5**で即時取得。9言語のUI、英語フォールバック付きJSON言語パック、アイコンのテーマ操作、ダーク/ライトと共通スクロールバー。[翻訳への貢献](LOCALIZATION.md)
 
-- 残り利用枠、リセットまでの時間、プラン、契約終了日、リセット権とクレジット
-- 利用履歴と履歴に基づく消費予測。アカウントの **...** メニューから **History** を開けます。
-- ローカル実行/キュー/目標数、リソース推移、ディスク空き容量。ゲージにカーソルを合わせると詳細を表示します。
+切り替えはCodexを再起動し、同じログインを共有するCLI/IDEにも影響する場合があります。残るLinux実アカウント・デスクトップ・アクセシビリティ検証は対応計画で追跡します。
 
-1.28.0 ソースは日本語を含む9言語の UI と JSON 言語パックに対応します。公開ダウンロードの1.27.6は英語・韓国語 UI です。タイトルバーで言語とライト/ダークを選択できます。[言語パック・翻訳への貢献](LOCALIZATION.md)
+## 実際のアプリ画面
 
-**1.29.0 ソース：** リソースとディスクのゲージ右側に温度を表示し、使用率とは独立した通常・注意・高温の色を適用します。デバイスが報告するしきい値を優先し、ない場合は文書化された表示用の既定値を使います。取得できない場合は `—°C` となり、CPU/RAM は互換センサー提供元が必要な場合があります。[温度の対応範囲](TEMPERATURES.md)
+[Windows/Linux最新画像と検証範囲](media/release-1.40.1/README.md)。実際のタイトルバーを残して単色背景に配置し、架空のUI入力と実アカウント検証を明記します。
 
-**1.29.1 ソース：** Windows の正常終了後、子プロセスの終了まで待ち、同じ手動の Switch 操作でアカウント適用・再起動・再開を続行します。現在のダウンロードにはこの修正は含まれません。[切り替えの流れ](SWITCHING.md)
+![Windows実行画面](media/release-1.40.1/windows.png)
+![Linux Xfce実行画面](media/release-1.40.1/linux.png)
 
-**1.29.2 ソース：** 有効期限の日付・D-day が3日（72時間）以内、リセットが2日（48時間）以内の場合、テーマの警告色で表示し、毎秒更新します。[画面比較と対応範囲](evidence/date-warnings/README.md)
+**MacBook実機のスクリーンショットは後日追加予定です。**
+<!-- MacBook screenshot slot: media/release-1.40.1/macbook.png; privacy/provenance review required. -->
 
-**1.29.3 ソース：** 自動更新は常に60秒間隔で動作します。Windows 下部のスイッチ・説明と Mac の設定項目を削除し、以前の無効設定も更新を停止しません。[画面比較と検証範囲](evidence/always-refresh/README.md)
+[貢献](../CONTRIBUTING.md) / [セキュリティ](../SECURITY.md) / [検証資料](evidence/README.md) / [消費予測](FORECAST.md)
 
-切り替え前に日付付きのローカルチャット名を保存・確認し、現在のログインをバックアップします。**Codex を再起動**して同じチャット ID・フォルダー・モデル・権限を開き、再開可能な待機中チャットに一度だけ **Continue** を送り、未完了の作業を自動で再開します。実行中・完了済みの作業は重複実行しません。中断した引き継ぎは **Resume chats** で続けられ、送信結果が不明な場合は自動再送しません。名前保存や正常終了に失敗するとログイン変更を停止します。同じログインを使う CLI/IDE にも影響する場合があります。[詳細](SWITCHING.md)
-
-Linux は[未署名のインストール・UIプレビュー候補](development/LINUX_PACKAGES.md)を、正式なアカウント切り替え対応とは分けて検証しています。[対応計画](PLATFORM_SUPPORT_PLAN.md) / [Issue #1](https://github.com/Gaebabi/codex-switch/issues/1)。実際の認証・チャット再開と完全なデスクトップ検証は継続中です。
-
-ソース1.40.0の[Linuxアカウント・デスクトップ統合プレビュー](development/LINUX.md)は、既存の暗号化された切り替え・復旧・再開処理に接続します。作業前にアプリから Codex を起動し、アカウントは手動で切り替えます。既存の file 認証設定と検証済みクライアントが必要です。明示的なチェックサムを指定する CLI 専用モードはアカウント・使用量機能のみです。[完全なインストール候補](development/LINUX_PACKAGES.md)はプレビューで、実際の二つのアカウントでの切り替え・再開と幅広いデスクトップ検証は未完了です。
-
-[実際のLinuxアプリの前後画像・CLI専用画面とDocker42検証](evidence/linux-account-handoff/README.md)。空のホームと架空の認証データを使用し、実認証の切り替え・Continue検証とは区別しています。
-
-[Mac](MACOS.md) / [予測](FORECAST.md) / [セキュリティ](../SECURITY.md) / [開発](../CONTRIBUTING.md)
-
-公開オープンソースです。[Windows / Mac 実行パッケージ](https://github.com/Gaebabi/codex-switch/releases/tag/v1.27.6)はビルドや .NET のインストールなしで使用できます。Mac は未公証です。OpenAI 公式製品ではありません。認証情報はローカルで暗号化して保存します。[MIT](../LICENSE)
+OpenAIの公式製品ではない独立したオープンソースです。認証情報はローカルで暗号化して保存します。[MIT](../LICENSE)
