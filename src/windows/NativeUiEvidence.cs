@@ -110,16 +110,20 @@ internal static class NativeUiEvidence
                             io = history.Observe(new(ioAt.AddSeconds(seconds - 60), DiskIoState.Available, diskState == "unknown" ? DiskIoProfile.Unknown : DiskIoProfile.NoSeekPenalty,
                                 new(240 * 1048576, diskState == "pressure" ? 15 : 2), new(96 * 1048576, diskState == "pressure" ? 25 : 3), 90));
                         if (diskState == "unknown") io = DiskIoReading.Missing(DiskIoState.Unavailable);
+                        var secondary = new DiskIoHistory().Observe(new(ioAt, DiskIoState.Available, DiskIoProfile.SeekPenalty, new(16 * 1048576, 8), new(0, null), 20));
                         diskPanel.Refresh(new[] { new DriveReading("C:\\", "System", 80L * 1073741824, 250L * 1073741824,
-                            TemperatureReading.From(48, "Fictional disk sensor", "", ioAt), io) }, new Burn0Theme(dark));
+                            TemperatureReading.From(48, "Fictional disk sensor", "", ioAt), io),
+                            new DriveReading("D:\\", "Data", 600L * 1073741824, 1000L * 1073741824,
+                            TemperatureReading.From(55, "Fictional disk sensor", "", ioAt), diskState == "unknown" ? io : secondary) }, new Burn0Theme(dark));
                         window.UpdateLayout(); await Task.Delay(100);
                         var labels = Descendants<FrameworkElement>(diskPanel).Select(System.Windows.Automation.AutomationProperties.GetName).ToArray();
                         Assert(labels.Any(t => t.StartsWith(Loc.T("io.read"), StringComparison.Ordinal)) && labels.Any(t => t.StartsWith(Loc.T("io.write"), StringComparison.Ordinal)), "Disk bars have no accessible direction/rate names");
                         Assert(diskPanel.ActualHeight == 24, "Disk throughput changed footer height");
+                        Assert(diskPanel.Fits, "Disk throughput obscures the disk text/temperature at this size");
                         Capture(window, Path.Combine(directory, name + "-disk-" + diskState + ".png"));
                         if (diskState == "pressure")
                         {
-                            var owner = Descendants<FrameworkElement>(diskPanel).Single(element => element.ToolTip is ResourceToolTip);
+                            var owner = Descendants<FrameworkElement>(diskPanel).First(element => element.ToolTip is ResourceToolTip);
                             var tip = (ToolTip)owner.ToolTip; tip.PlacementTarget = owner; tip.IsOpen = true;
                             await Task.Delay(150);
                             var popup = PresentationSource.FromVisual(tip) as HwndSource ?? throw new InvalidOperationException("Disk tooltip has no native popup");

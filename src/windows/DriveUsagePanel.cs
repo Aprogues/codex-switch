@@ -14,6 +14,7 @@ internal sealed class DriveUsagePanel : Grid
     private readonly List<DriveCell> _cells = new();
     public DriveUsagePanel(Action settings)
     { Height = 24; Margin = new Thickness(0, 0, 8, 0); _settings.Click += (_, _) => settings(); }
+    internal bool Fits => _cells.All(cell => cell.Fits);
     public void Refresh(DriveReading[] readings, Burn0Theme theme)
     {
         if (!_cells.Select(cell => cell.Root).SequenceEqual(readings.Select(reading => reading.Root)))
@@ -34,6 +35,7 @@ internal sealed class DriveUsagePanel : Grid
     private sealed class DriveCell : Grid
     {
         public string Root { get; }
+        public bool Fits => _text.ActualWidth >= 20 && _temperature.ActualWidth + 22 < ActualWidth && _ioFills.All(fill => fill.Height is >= 0 and <= 16);
         private readonly Border _track = new() { CornerRadius = new CornerRadius(3) }, _fill = new() { HorizontalAlignment = HorizontalAlignment.Left, CornerRadius = new CornerRadius(3) };
         private readonly TextBlock _text = new() { FontSize = 11, FontWeight = FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center,
             TextTrimming = TextTrimming.CharacterEllipsis, Margin = new Thickness(5, 0, 4, 0) };
