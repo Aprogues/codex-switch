@@ -34,7 +34,9 @@ Linuxは統合プレビューです。キーストア・インストール済み
 [Windows/Linux最新画像と検証範囲](media/release-1.40.7/README.md)。実際のタイトルバーを残して単色背景に配置し、架空のUI入力と実アカウント検証を明記します。
 
 ![Windows実行画面](media/release-1.40.7/windows.png)
-![Linux Xfce実行画面](media/release-1.40.7/linux.png)
+![4つのデモアカウントを表示するLinuxアプリ](media/release-1.40.7/linux.png)
+
+実際のLinuxネイティブアプリに**架空のデモアカウント4つ**を表示しています。個人のログイン情報は使用していません。[インストール済みXfce画面と検証範囲](media/release-1.40.7/README.md)は別途保持しています。
 
 **MacBook実機のスクリーンショットは後日追加予定です。**
 <!-- MacBook screenshot slot: media/release-1.40.7/macbook.png; privacy/provenance review required. -->
