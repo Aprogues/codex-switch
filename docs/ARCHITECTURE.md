@@ -29,6 +29,7 @@ Source1.32.0 adds `src/application/CodexSwitch.Application.csproj` and `src/desk
 | `src/platforms/client` | Native client discovery/lifecycle, normal shutdown and Mac peer-identity helper assembly |
 | `src/platforms/protocol`, `src/platforms/sqlite` | Codex RPC/desktop IPC/session/queue services and independent native read-only database wrapper |
 | `src/platforms/resources` | UI-independent Windows/Mac sampling, drives and native temperature providers |
+| `src/sensors` | Account-free Windows NativeAOT CPU worker; fixed signed modules/read registers, output-only process-bound IPC |
 | `DesktopSessionMonitor`, queue stores | Read-only local desktop activity and saved/SQLite queue observations |
 | `HardwareSampler`, `DriveMonitor` | Independent machine-resource and volume collection |
 | `MainWindow`, account/resource panels | Windows WPF UI and shared Burn0 theme |

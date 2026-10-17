@@ -1,6 +1,6 @@
 # CPU module provenance
 
-Unmodified signed `AMDFamily17.bin` and `IntelMSR.bin` from [official PawnIO.Modules 0.1.6](https://github.com/namazso/PawnIO.Modules/releases/tag/0.1.6), commit `4aa792beb020a14c8261072e9786d2dfb38489d9`. Corresponding module sources and build files are in `source/` in this repository (`module-source/` in the published worker folder); see `PawnIO-Modules.LGPL-2.1.txt` in the package or [the repository license](../../../licenses/PawnIO-Modules.LGPL-2.1.txt).
+Unmodified signed `AMDFamily17.bin` and `IntelMSR.bin` from [official PawnIO.Modules 0.1.6](https://github.com/namazso/PawnIO.Modules/releases/tag/0.1.6), commit `4aa792beb020a14c8261072e9786d2dfb38489d9`. Corresponding module sources and build files are in `source/` in this repository (`module-source/` in the published worker folder); see `PawnIO-Modules.LGPL-2.1.txt` in the package or [the repository license](https://github.com/Gaebabi/codex-switch/blob/main/licenses/PawnIO-Modules.LGPL-2.1.txt). The original compiler flags are retained in `BUILD.txt`; this flattened source folder uses `-i.` instead of `-iinclude`.
 
 | Signed module | SHA-256 |
 | --- | --- |

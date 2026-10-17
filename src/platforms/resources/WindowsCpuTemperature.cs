@@ -72,6 +72,7 @@ internal sealed class WindowsCpuTemperature : IAsyncDisposable
         catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { }
         catch (OperationCanceledException) { Publish(TemperatureState.ReadFailed); }
         catch (Win32Exception error) { Publish(error.NativeErrorCode is 5 or 1223 ? TemperatureState.AccessDenied : TemperatureState.ReadFailed); }
+        catch (UnauthorizedAccessException) { Publish(TemperatureState.AccessDenied); }
         catch (IOException) { Publish(TemperatureState.ReadFailed); }
         catch (Exception error) when (error is InvalidDataException or System.Text.Json.JsonException or ArgumentException) { Publish(TemperatureState.InvalidData); }
     }

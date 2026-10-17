@@ -62,8 +62,10 @@ checks.Add("A live parent identity cannot authorize a pipe served by a different
 pipe.Dispose();
 using (var limit = new CancellationTokenSource(8000)) await worker.WaitForExitAsync(limit.Token);
 checks.Add("Worker exits on pipe closure without persistent service or account access");
-Console.WriteLine(JsonSerializer.Serialize(new { passed = checks.Count, failed = 0, checks, sensorState = last!.State,
-    scope = "Actual output-only worker lifecycle on this Windows host. No physical temperature success unless sensorState is Available; no accounts, private paths or screen access." }));
+var report = JsonSerializer.Serialize(new { passed = checks.Count, failed = 0, checks, sensorState = last!.State,
+    scope = "Actual output-only worker lifecycle on this Windows host. A fresh native value is separate from owner-device acceptance; no accounts, private paths or screen access." });
+Directory.CreateDirectory("artifacts"); File.WriteAllText(Path.Combine("artifacts", args.Length == 2 ? "cpu-sensor-worker-driver.json" : "cpu-sensor-worker.json"), report);
+Console.WriteLine(report);
 return 0;
 internal static class Native
 {

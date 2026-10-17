@@ -33,14 +33,13 @@ Linux is an integration preview. Native storage, installed UI and package tests 
 - **Recover interrupted handoffs:** encrypted checkpoints retain progress. **Resume chats** continues pending work; uncertain sends are never automatically repeated. Naming/shutdown failures stop the login change. Windows waits for child processes so one Switch click can finish the flow. [Switching details](docs/SWITCHING.md)
 - **Quota and history:** remaining usage, resets, plans, subscription expiry, reset allowances, credits and consumption forecasts. Open **History** in an account's **...** menu. Card dates use your local time zone; the shared history view explicitly labels its KST axes. Expiry within72hours and reset within48hours use warning colors.
 - **Local status and resources:** running/queued/goal counts, resource history and disk space. Windows shows independently colored resource/disk temperatures when supported sensors exist; missing values stay unknown. Linux resource telemetry is currently unavailable. [Sensor support](docs/TEMPERATURES.md)
+- **Built-in Windows CPU temperature (source1.40.5):** right-click CPU to enable it, with explicit consent for optional signed driver setup and sensor-only elevation. No separate hardware monitor; the account app keeps normal privileges. [Setup and limits](docs/TEMPERATURES.md#built-in-windows-cpu-sensor). Published downloads remain1.40.2 until a separate release.
 - **Always-on refresh:** account reads every60seconds, with **↻** or **F5** for an immediate refresh. If startup fails while the keyring/client is unavailable, the same schedule retries initialization automatically after it becomes available.
 - **Nine UI languages and local JSON language packs:** English, Korean, Japanese, Simplified/Traditional Chinese, Spanish, French, German and Brazilian Portuguese, with English fallback. Icon theme actions, dark/light themes and shared scrollbars keep compact windows usable. [Translation guide](docs/LOCALIZATION.md)
 
 **Switching restarts Codex** and may affect CLI/IDE clients sharing the login. Remaining Linux authenticated cross-account/continuation and broader desktop/accessibility criteria are tracked in [the support roadmap](docs/PLATFORM_SUPPORT_PLAN.md).
 
 ## Actual app screenshots
-
-Source1.40.5 adds a built-in Windows CPU sensor: right-click CPU to enable it. No separate hardware monitor is required; optional signed driver setup and sensor-only elevation require explicit consent. The account app keeps normal privileges. [Setup, supported sensors and verification limits](docs/TEMPERATURES.md#built-in-windows-cpu-sensor). Published downloads remain1.40.2 until a separate release.
 
 Actual application titlebars/controls are preserved on a solid background. Captions and source/runtime/hash receipts distinguish fictional UI inputs, ordinary Linux execution and authenticated acceptance. [Current gallery](docs/media/release-1.40.2/README.md)
 

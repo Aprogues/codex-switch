@@ -95,6 +95,14 @@ jobs:
       - name: Verify pinned signed CPU driver on the disposable hosted VM only
         shell: pwsh
         run: ./scripts/verify-cpu-driver.ps1 -Worker artifacts/win-x64/sensors/CodexSwitch.Sensors.exe
+      - name: Export identifier-free CPU verification receipts
+        run: python scripts/export-cpu-evidence.py --revision "${{ github.event.pull_request.head.sha || github.sha }}"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: cpu-sensor-windows
+          path: artifacts/cpu-sensor-public
+          if-no-files-found: error
+          retention-days: 14
       - name: Verify read-only SQLite and WAL
         run: python scripts/verify-queues.py --executable artifacts/win-x64/CodexSwitch.exe
       - name: Publish disposable native shutdown fixture

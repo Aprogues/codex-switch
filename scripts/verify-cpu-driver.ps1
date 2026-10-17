@@ -12,5 +12,6 @@ if (!$taskProcess.WaitForExit(60000) -or $taskProcess.ExitCode -ne 0) { throw 'S
 $taskDriver = Get-CimInstance Win32_SystemDriver -Filter "Name='PawnIO'"
 if (!$taskDriver -or $taskDriver.State -ne 'Running') { throw 'Signed CPU driver is not running' }
 Write-Output 'Pinned signed PawnIO 2.2.0 installed/running on disposable hosted Windows; no security policy altered.'
+@{schema=1;version='2.2.0';installerSha256='1f519a22e47187f70a1379a48ca604981c4fcf694f4e65b734aaa74a9fba3032';authenticodeValid=$true;running=$true;scope='Disposable hosted Windows VM only; no personal driver installation or physical CPU acceptance'} | ConvertTo-Json -Compress | Set-Content -LiteralPath 'artifacts/cpu-sensor-driver.json' -Encoding utf8
 & dotnet run --project tests/sensors/CodexSwitch.Sensors.Tests.csproj -c Release --no-launch-profile -p:UseSharedCompilation=false -- $Worker --driver
 if ($LASTEXITCODE -ne 0) { throw 'CPU driver/worker verification failed' }
