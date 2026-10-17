@@ -40,6 +40,8 @@ Linux is an integration preview. Native storage, installed UI and package tests 
 
 ## Actual app screenshots
 
+Source1.40.5 adds a built-in Windows CPU sensor: right-click CPU to enable it. No separate hardware monitor is required; optional signed driver setup and sensor-only elevation require explicit consent. The account app keeps normal privileges. [Setup, supported sensors and verification limits](docs/TEMPERATURES.md#built-in-windows-cpu-sensor). Published downloads remain1.40.2 until a separate release.
+
 Actual application titlebars/controls are preserved on a solid background. Captions and source/runtime/hash receipts distinguish fictional UI inputs, ordinary Linux execution and authenticated acceptance. [Current gallery](docs/media/release-1.40.2/README.md)
 
 ![Codex Switch running on Windows](docs/media/release-1.40.2/windows.png)

@@ -20,14 +20,15 @@ if args.os!='Windows' and data.get('nativeWindowCapture') is not True:raise Syst
 pattern=re.compile(r'(en|ko)-(dark|light)-(500x360|600x420|800x560|800x600)'+('' if args.os=='Windows' else '-native')+r'\.png')
 extra=re.compile(r'en-(dark|light)-(language|history)'+('' if args.os=='Windows' else '-native')+r'\.png')
 tooltip=re.compile(r'en-(dark|light)-tooltip'+('' if args.os=='Windows' else '-native')+r'\.png') if args.os!='Linux' else None
-paths=sorted(p for p in args.source.glob('*.png') if pattern.fullmatch(p.name) or extra.fullmatch(p.name) or tooltip and tooltip.fullmatch(p.name))
-if len(paths)!=(14 if args.os=='Windows' else 12 if args.os=='Linux' else 18):raise SystemExit('Complete declared language/theme/size/menu/history/tooltip evidence required')
+cpu=re.compile(r'en-(dark|light)-cpu-(setup|denied|available|menu)\.png') if args.os=='Windows' else None
+paths=sorted(p for p in args.source.glob('*.png') if pattern.fullmatch(p.name) or extra.fullmatch(p.name) or tooltip and tooltip.fullmatch(p.name) or cpu and cpu.fullmatch(p.name))
+if len(paths)!=(22 if args.os=='Windows' else 12 if args.os=='Linux' else 18):raise SystemExit('Complete declared language/theme/size/menu/history/tooltip/CPU evidence required')
 args.destination.mkdir(parents=True,exist_ok=True)
 images=[]
 for path in paths:
     with Image.open(path) as raw:
         raw.load();rgb=raw.convert('RGB')
-        minimum=(60,25) if '-tooltip' in path.name else (160,160) if '-language' in path.name else (400,280)
+        minimum=(160,25) if '-cpu-menu' in path.name else (60,25) if '-tooltip' in path.name else (160,160) if '-language' in path.name else (400,280)
         if rgb.width<minimum[0] or rgb.height<minimum[1] or rgb.width>4000 or rgb.height>3000 or rgb.entropy()<1 or all(low==high for low,high in rgb.getextrema()):
             raise SystemExit('Blank or invalid native window image')
         clean=Image.new('RGB',rgb.size);clean.paste(rgb)

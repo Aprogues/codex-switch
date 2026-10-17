@@ -13,6 +13,7 @@ internal sealed class HardwareUsagePanel : Grid
     private readonly ResourceTrendSurface[] _graphs = new ResourceTrendSurface[4];
     private readonly ResourcePressure[] _pressures = new ResourcePressure[4];
     private readonly ResourcePressure[] _temperaturePressures = new ResourcePressure[4];
+    public event Action? CpuTemperatureRequested;
     public HardwareUsagePanel()
     {
         Height = 18; VerticalAlignment = VerticalAlignment.Center; HorizontalAlignment = HorizontalAlignment.Stretch;
@@ -30,6 +31,16 @@ internal sealed class HardwareUsagePanel : Grid
             _temperatures[index] = new() { FontSize = 10, FontWeight = FontWeights.SemiBold, HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(6, 0, 0, 0) };
             primary.Children.Add(_labels[index]); primary.Children.Add(_values[index]); content.Children.Add(primary); SetColumn(_temperatures[index], 1); content.Children.Add(_temperatures[index]); _cells[index] = cell;
             SetColumn(cell, index); Children.Add(cell);
+            if (index == 0)
+            {
+                var menu = new ContextMenu();
+                menu.Opened += (_, _) =>
+                {
+                    menu.Items.Clear(); var enable = new MenuItem { Header = Loc.T("thermal.cpu_enable") };
+                    enable.Click += (_, _) => CpuTemperatureRequested?.Invoke(); menu.Items.Add(enable);
+                };
+                cell.ContextMenu = menu;
+            }
         }
     }
     public void Refresh(HardwareUsage usage, Burn0Theme theme)
@@ -53,6 +64,7 @@ internal sealed class HardwareUsagePanel : Grid
             _temperatures[index].Foreground = theme.Color(TemperatureColors.Color(_temperaturePressures[index]));
             var tooltip = Loc.T(scopes[index]);
             if (pressure == ResourcePressure.Unknown) tooltip += "\n" + Loc.T(reading.Problem ?? "사용률 측정 중…");
+            if (index == 0) tooltip += "\n" + Loc.T("thermal.cpu_menu_hint");
             else
             {
                 if (reading.Device != null) tooltip += "\n" + reading.Device;

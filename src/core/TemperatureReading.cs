@@ -39,7 +39,7 @@ internal static class TemperaturePresentation
         if (reading?.Scope == TemperatureScope.HighestSensor) text += "\n" + Loc.T("thermal.highest_sensor");
         else if (reading?.Scope == TemperatureScope.BackingDisks) text += "\n" + Loc.T("thermal.backing_disks");
         if (!string.IsNullOrEmpty(reading?.Detail)) text += "\n" + reading.Detail;
-        if (!string.IsNullOrEmpty(reading?.Code)) text += "\n" + reading.Code;
+        if (!string.IsNullOrEmpty(reading?.Code)) text += "\n" + (reading.Code.StartsWith("thermal.", StringComparison.Ordinal) ? Loc.T(reading.Code) : reading.Code);
         return text;
     }
 }

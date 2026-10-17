@@ -17,6 +17,9 @@ if data['tfm']!='net10.0' or frameworks!=expected:raise SystemExit('Package does
 names=['CodexSwitch.dll','CodexSwitch.deps.json','System.Private.CoreLib.dll']+(['CodexSwitch.exe','coreclr.dll','hostfxr.dll'] if args.rid.startswith('win') else
     ['CodexSwitch','libcoreclr.so','libhostfxr.so'] if args.rid.startswith('linux') else ['CodexSwitch','libcoreclr.dylib','libhostfxr.dylib'])
 if any(not(root/name).is_file() for name in names):raise SystemExit('Incomplete self-contained package')
+if args.rid.startswith('win'):
+    for name in ['CodexSwitch.Sensors.exe','PawnIO-Modules.LGPL-2.1.txt','SOURCE.md','module-source/AMDFamily17.p','module-source/IntelMSR.p','module-source/pawnio.inc']:
+        if not (root/'sensors'/name).is_file():raise SystemExit('Native CPU sensor worker or corresponding source/license missing')
 if args.rid.startswith('linux'):
     native=root/'libcodex-switch-secret-1.so.0'
     if not native.is_file() or not (root/'licenses/libsecret.LGPL-2.1.txt').is_file():raise SystemExit('Linux encrypted Secret Service library/license is missing')

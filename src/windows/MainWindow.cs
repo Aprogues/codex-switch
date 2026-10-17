@@ -80,6 +80,7 @@ internal sealed class MainWindow : Window
         _service.Changed += ServiceChanged;
         _sessions.Changed += SessionChanged;
         _hardware.Changed += HardwareChanged;
+        _hardwarePanel.CpuTemperatureRequested += async () => await EnableCpuTemperatureAsync();
         _drives.Changed += DrivesChanged;
         StateChanged += (_, _) => { if (_maximizeButton != null) _maximizeButton.Content = Burn0Theme.Icon(WindowState == WindowState.Maximized ? "window-restore" : "window-maximize", Color("muted"), 12, true); };
         _refreshTimer.Tick += async (_, _) => { if (CanRefresh) await RefreshAsync(); };
@@ -91,6 +92,21 @@ internal sealed class MainWindow : Window
         {
             if (arguments.Key == System.Windows.Input.Key.F5) { arguments.Handled = true; await RefreshAsync(); }
         };
+    }
+    private async Task EnableCpuTemperatureAsync()
+    {
+        if (_options.UiEvidenceDirectory != null) return;
+        var reading = _hardware.Current.Cpu.Temperature;
+        var install = reading?.Code == "thermal.cpu_setup_required";
+        if (MessageBox.Show(this, Loc.T(install ? "thermal.cpu_setup_confirm" : "thermal.cpu_enable_confirm"), "Codex Switch", MessageBoxButton.OKCancel, MessageBoxImage.Information) != MessageBoxResult.OK) return;
+        try
+        {
+            if (install) await CpuTemperatureSetup.InstallAsync(_lifetime.Token);
+            await _hardware.EnableCpuTemperatureAsync();
+        }
+        catch (OperationCanceledException) when (_lifetime.IsCancellationRequested) { }
+        catch (Win32Exception error) when (error.NativeErrorCode == 1223) { }
+        catch (Exception error) when (error is IOException or InvalidDataException or Win32Exception or System.Net.Http.HttpRequestException) { ShowError(error); }
     }
     private void ApplyTheme()
     {
