@@ -35,7 +35,9 @@ Linux는 통합 미리보기입니다. 키 모음·설치 UI·패키지 검증�
 [Windows·Linux 최신 화면과 검증 범위](media/release-1.40.7/README.md). 실제 제목 표시줄을 보존하고 단색 배경을 사용합니다. 가상 UI 입력과 실제 계정 검증은 별도로 명시합니다.
 
 ![Windows 실행 화면](media/release-1.40.7/windows.png)
-![Linux Xfce 실행 화면](media/release-1.40.7/linux.png)
+![데모 계정 4개가 표시된 Linux 앱](media/release-1.40.7/linux.png)
+
+실제 Linux 네이티브 앱에 **가상 데모 계정 4개**를 표시한 화면이며 개인 로그인 정보는 사용하지 않았습니다. [설치된 Xfce 창과 검증 범위](media/release-1.40.7/README.md)는 별도로 보존했습니다.
 
 **MacBook 실기기 스크린샷 추가 예정.**
 <!-- MacBook screenshot slot: media/release-1.40.7/macbook.png; privacy/provenance review required. -->
