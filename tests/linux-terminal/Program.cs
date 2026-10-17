@@ -76,11 +76,13 @@ await using (var rpc = CodexRpc.InspectLinuxConfiguration(client.Cli, home))
 }
 var sessions = await Invoke("sessions");
 using (var parsed = JsonDocument.Parse(sessions.Output))
-    Check("The headless command discovers an actual official-CLI persisted session by exact ID and saved folder", sessions.Code == 0 && parsed.RootElement.GetProperty("sessions").EnumerateArray().Any(s => s.GetProperty("id").GetString() == id && s.GetProperty("cwd").GetString() == project));
+    Check("The native CLI session list does not misrepresent an empty app-server metadata thread as saved CLI work", sessions.Code == 0 && parsed.RootElement.GetProperty("sessions").ValueKind == JsonValueKind.Array && !parsed.RootElement.GetProperty("sessions").EnumerateArray().Any(s => s.GetProperty("id").GetString() == id));
+var metadataOnly = await Invoke("switch", first.Key, "--resume", id, "--exec", "--continue");
+Check("A non-CLI metadata thread is refused before changing the login or encrypted data", metadataOnly.Code != 0 && originalVault.SequenceEqual(File.ReadAllBytes(vault.FilePath)) && originalAuth.SequenceEqual(File.ReadAllBytes(Path.Combine(home, "auth.json"))));
 var notTty = await Invoke("switch", first.Key, "--resume", id);
 Check("Interactive resume without a TTY fails before changing the login", notTty.Code != 0 && originalVault.SequenceEqual(File.ReadAllBytes(vault.FilePath)) && originalAuth.SequenceEqual(File.ReadAllBytes(Path.Combine(home, "auth.json"))));
 var control = LinuxTerminalCommands.CreateResumeStart(client.Cli, home, project, id, true, false);
-Check("Resume launch binds the original descriptor, UUID and folder with one explicit follow-up and no permission override", control.FileName == client.Cli.ExecutionPath && control.WorkingDirectory == project && control.ArgumentList.SequenceEqual(new[] { "resume", id, "Continue" }) && !control.UseShellExecute && !control.RedirectStandardInput && !control.RedirectStandardOutput);
+Check("Resume launch binds the original descriptor, UUID and folder with one explicit follow-up and no permission override", control.FileName == client.Cli.ExecutionPath && control.WorkingDirectory == project && control.ArgumentList.SequenceEqual(new[] { "resume", "--no-daemon", id, "Continue" }) && !control.UseShellExecute && !control.RedirectStandardInput && !control.RedirectStandardOutput);
 foreach (var malformed in new[] { new[] { "switch", first.Key, "--continue" }, new[] { "resume", "--last" }, new[] { "resume", id, "--exec" }, new[] { "list", "--data-dir", data, "--data-dir", root } })
 {
     try { LinuxTerminalCommands.Parse(malformed); throw new InvalidOperationException("Unsafe command arguments were accepted."); }

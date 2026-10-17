@@ -69,7 +69,7 @@ internal static class LinuxTerminalCommands
         Quit existing CLI/IDE/desktop clients normally before changing the shared login.
         Interactive resume requires a terminal. --exec --continue resumes non-interactively.
         --continue explicitly submits one follow-up. No automatic account rotation or permission overrides.
-        Published1.40.7 does not include these source commands. Short command output is JSON and contains no tokens/emails.
+        Short command output is JSON and contains no tokens/emails.
         """;
 
     public static int Execute(string[] args, TextWriter output, TextWriter error)
@@ -124,7 +124,7 @@ internal static class LinuxTerminalCommands
             if (options.Command == "sessions")
             {
                 await using var metadata = await LinuxClientSession.OpenAsync(options.Home, options.Context, selected, cancellation).ConfigureAwait(false);
-                var result = await metadata.MetadataAsync("thread/list", new { limit = 100, archived = false }, cancellation).ConfigureAwait(false);
+                var result = await metadata.MetadataAsync("thread/list", new { limit = 100, archived = false, sourceKinds = new[] { "cli", "exec" } }, cancellation).ConfigureAwait(false);
                 Write(output, new { sessions = result.GetProperty("data").EnumerateArray().Select(t => new { id = t.GetProperty("id").GetString(), cwd = t.GetProperty("cwd").GetString() }), nextCursor = JsonValue.String(result, "nextCursor") });
                 return 0;
             }
@@ -149,6 +149,7 @@ internal static class LinuxTerminalCommands
                 await using var metadata = await LinuxClientSession.OpenAsync(options.Home, options.Context, selected, cancellation).ConfigureAwait(false);
                 var thread = (await metadata.MetadataAsync("thread/read", new { threadId = options.Resume, includeTurns = false }, cancellation).ConfigureAwait(false)).GetProperty("thread");
                 if (JsonValue.String(thread, "id") != options.Resume) throw new InvalidDataException("Saved session identity does not match the explicit resume target.");
+                if (JsonValue.String(thread, "source") is not ("cli" or "exec")) throw new InvalidDataException("Resume requires an actual saved CLI/exec session. Use cli sessions; desktop and metadata-only threads are not terminal sessions.");
                 cwd = LinuxClientSession.DirectoryPath(JsonValue.String(thread, "cwd") ?? throw new InvalidDataException("The saved session has no working directory."));
                 await service.CheckThreadContextAsync(thread, target?.Key ?? currentKey, cancellation).ConfigureAwait(false);
             }
@@ -176,7 +177,9 @@ internal static class LinuxTerminalCommands
         if (!Guid.TryParseExact(session, "D", out _) || exec && !followUp) throw new ArgumentException("An exact session UUID and explicit exec follow-up are required.");
         var start = new ProcessStartInfo(executable.ExecutionPath) { UseShellExecute = false, WorkingDirectory = cwd };
         if (exec) start.ArgumentList.Add("exec");
-        start.ArgumentList.Add("resume"); start.ArgumentList.Add(session);
+        start.ArgumentList.Add("resume");
+        if (!exec) start.ArgumentList.Add("--no-daemon");
+        start.ArgumentList.Add(session);
         if (followUp) start.ArgumentList.Add("Continue");
         start.Environment["CODEX_HOME"] = home;
         foreach (var name in new[] { "CODEX_ACCESS_TOKEN", "OPENAI_API_KEY", "OPENAI_IDENTITY_TOKEN_FILE", "OPENAI_IDENTITY_TOKEN_AUDIENCE", "LD_PRELOAD", "LD_LIBRARY_PATH", "LD_AUDIT", "LD_DEBUG", "GLIBC_TUNABLES", "GCONV_PATH" }) start.Environment.Remove(name);
