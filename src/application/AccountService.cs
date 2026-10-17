@@ -270,7 +270,7 @@ internal sealed class AccountService
         return new AccountRegistration(Accounts.Single(a => a.Key == key), refresh);
     }
     public async Task ApplySwitchAsync(string key, Func<bool>? desktopRunning, bool launch, CancellationToken cancellation,
-        string? expectedSource = null, bool verifySource = false)
+        string? expectedSource = null, bool verifySource = false, bool requireCliQuiescence = false)
     {
         await _switchGate.WaitAsync(cancellation).ConfigureAwait(false);
         TaskCompletionSource<bool>? finished = null;
@@ -280,7 +280,8 @@ internal sealed class AccountService
             lock (Vault.SyncRoot) workspace = Vault.Data.Accounts.Find(a => a.Key == key)?.AccountId;
             await using var client = await OpenLinuxAsync(cancellation, workspace).ConfigureAwait(false);
             var installation = client?.Installation ?? await RuntimeLocator.FindAsync(cancellation).ConfigureAwait(false);
-            bool Running() => OperatingSystem.IsLinux() ? LinuxDesktopRuntime.Running(cancellation).Length != 0 :
+            bool Running() => OperatingSystem.IsLinux() ? LinuxDesktopRuntime.Running(cancellation).Length != 0 ||
+                requireCliQuiescence && LinuxTerminalProcesses.AnyRunning(client!.InspectionProcessId, installation.CliPath, cancellation) :
                 desktopRunning?.Invoke() ?? RuntimeLocator.IsDesktopRunning(installation.DesktopPath);
             if (Running()) throw new InvalidOperationException("Codex가 아직 실행 중입니다. 앱 메뉴에서 완전히 종료해 주세요.");
             lock (Vault.SyncRoot)

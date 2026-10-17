@@ -79,6 +79,7 @@ shutil.copyfile(tar[0], context / 'candidate.tar.gz')
 shutil.copyfile(upstream, context / 'upstream.deb')
 recipe = repository / 'scripts/linux-desktop-session'
 shutil.copyfile(recipe / 'verify-session.py', context / 'verify-session.py')
+shutil.copyfile(repository / 'scripts/verify-linux-terminal-lifecycle.py', context / 'verify-linux-terminal-lifecycle.py')
 expected = {'schema': 1, 'testRevision': head, 'candidateRevision': provenance['sourceRevision'], 'candidateVersion': provenance['version'], 'candidateSha256': digest(deb[0]), 'upstreamSha256': digest(upstream), 'architecture': 'X64'}
 (context / 'expected.json').write_text(json.dumps(expected), encoding='utf-8')
 image = 'codex-switch-desktop-session:' + head[:12]

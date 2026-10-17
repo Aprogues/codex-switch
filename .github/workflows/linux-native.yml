@@ -62,7 +62,7 @@ jobs:
       - name: Install the native test provider and D-Bus tools
         run: |
           sudo apt-get update -qq
-          sudo apt-get install --no-install-recommends -y libsecret-1-0 libsqlite3-0 gnome-keyring libkf5wallet-bin libqca-qt5-2-plugins dbus-x11 libglib2.0-bin xvfb xauth x11-apps x11-utils xfwm4 imagemagick libfontconfig1 fonts-dejavu-core fonts-noto-cjk meson ninja-build build-essential pkg-config libglib2.0-dev libgcrypt20-dev gettext xsltproc patch rpm
+          sudo apt-get install --no-install-recommends -y libsecret-1-0 libsqlite3-0 gnome-keyring libkf5wallet-bin libqca-qt5-2-plugins dbus-x11 libglib2.0-bin xvfb xauth x11-apps x11-utils xfwm4 xterm xdotool imagemagick libfontconfig1 fonts-dejavu-core fonts-noto-cjk meson ninja-build build-essential pkg-config libglib2.0-dev libgcrypt20-dev gettext xsltproc patch rpm
       - name: Build the checksum-pinned private encrypted Secret Service library
         run: python scripts/build-linux-secret.py --output artifacts/linux-secret
       - name: Install only the checksum-pinned official native client on this disposable runner
@@ -81,6 +81,18 @@ jobs:
         run: dotnet publish src/linux/CodexSwitch.Linux.csproj -c Release -r ${{ matrix.rid }} --self-contained true -p:UseSharedCompilation=false -o artifacts/linux-native/${{ matrix.rid }}/app
       - name: Inspect the complete Linux runtime package
         run: python scripts/verify-runtime-package.py artifacts/linux-native/${{ matrix.rid }}/app --rid ${{ matrix.rid }} --output artifacts/linux-native/${{ matrix.rid }}/runtime.json
+      - name: Build headless terminal account and session contracts
+        run: dotnet build tests/linux-terminal/CodexSwitch.LinuxTerminal.Tests.csproj -c Release --nologo -p:UseSharedCompilation=false -o artifacts/linux-native/${{ matrix.rid }}/terminal-tests
+      - name: Verify actual headless commands with native standalone CLI and encrypted storage
+        env:
+          EVIDENCE_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: python scripts/verify-linux-keyring.py --assembly artifacts/linux-native/${{ matrix.rid }}/tests/CodexSwitch.LinuxVault.Tests.dll --architecture ${{ matrix.architecture }} --terminal-assembly artifacts/linux-native/${{ matrix.rid }}/terminal-tests/CodexSwitch.LinuxTerminal.Tests.dll --terminal-app artifacts/linux-native/${{ matrix.rid }}/app/CodexSwitch --terminal-capture --report artifacts/linux-native/${{ matrix.rid }}/terminal-public/evidence.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: terminal-contracts-${{ matrix.rid }}
+          path: artifacts/linux-native/${{ matrix.rid }}/terminal-public
+          if-no-files-found: error
+          retention-days: 14
       - run: python -m pip install -r requirements-dev.txt
       - name: Verify actual app account cards and original OS titlebar together
         env:
@@ -127,6 +139,7 @@ jobs:
             artifacts/linux-native/${{ matrix.rid }}/desktop-session/results/*.png
             artifacts/linux-native/${{ matrix.rid }}/desktop-session/results/session.json
             artifacts/linux-native/${{ matrix.rid }}/desktop-session/results/framed-accounts.json
+            artifacts/linux-native/${{ matrix.rid }}/desktop-session/results/terminal-lifecycle.json
           if-no-files-found: error
           retention-days: 14
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

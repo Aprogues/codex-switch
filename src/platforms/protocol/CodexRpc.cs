@@ -22,6 +22,7 @@ internal sealed class CodexRpc : IAsyncDisposable
     private int _nextId;
     public event Action<string, JsonElement>? Notification;
     public JsonElement? Initialization { get; private set; }
+    internal int OwnedProcessId => _process.Id;
     public CodexRpc(string executable, string home, bool preserveProvider = false)
         : this(CreateStart(executable, home, preserveProvider, true)) { }
     public static CodexRpc InspectLinuxConfiguration(LinuxExecutable executable, string home)

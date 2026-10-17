@@ -17,6 +17,8 @@ Linux는 통합 미리보기입니다. 키 모음·설치 UI·패키지 검증�
 
 ## 사용과 주요 기능
 
+**Linux 터미널 명령은 소스1.41.0의 새 기능이며 위1.40.7 다운로드에는 없습니다.** `CodexSwitch cli`로 화면 서버 없이 기존 암호화 계정을 관리하고, `cli switch <계정> --resume <CLI 세션 UUID>`로 수동 전환과 공식 CLI 재개를 연결합니다. `--continue`는 후속 메시지 전송을 명시하며, `--exec --continue`는 비대화형 실행입니다. 검증된 네이티브 CLI·체크섬과 잠금 해제된 지원 Secret Service가 필요합니다. Linux x64에서 실제 두 계정 전환 후 기존 문맥을 기억하는 CLI 재개를 확인했습니다. ARM64·오프라인 검증과 전체 데스크톱 수용 범위는 구분합니다. [명령·실제 스크린샷·정확한 검증 범위](development/LINUX_TERMINAL.md).
+
 1. Windows는 `CodexSwitch.exe`, Mac은 `Install.command`로 설치한 **Codex Switch.app**을 실행하세요. Linux는 전체 미리보기 패키지와 지원하는 Secret Service 제공자가 필요합니다.
 2. **+**로 각 계정을 공식 브라우저 로그인합니다. 이전 계정이 자동 선택되면 별도 브라우저 프로필·비공개 창으로 다음 계정을 로그인하세요. Windows는 **↻** 우클릭으로 현재 로그인을 가져올 수 있습니다.
 3. 잔량을 비교한 뒤 **Switch**를 누르세요. **자동 계정 전환은 없습니다.** Linux에서는 작업 전에 앱의 **Start Codex**로 시작하세요.

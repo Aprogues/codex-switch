@@ -1,5 +1,7 @@
 # Linux implementation and verification
 
+Source1.41.0 adds a distinct [headless terminal account/saved-session command surface](LINUX_TERMINAL.md), including explicit `switch --resume`, optional follow-up and exec mode. Native x64/ARM64 command/terminal tests and real two-account x64 contextual CLI resumption are verified separately. The commands are absent from published1.40.7. GUI CLI-only selection and terminal session restoration are different capabilities. Current desktop/full-environment acceptance remains open; historical sections below keep their checkpoint-time scope.
+
 ## Release1.40.2 preview scope
 
 Complete x64/ARM64 DEB/RPM/tar.gz [preview downloads](LINUX_PACKAGES.md#release1402-downloads) include the runtime. Supported account handoff and broad desktop acceptance remain open. The approved installed desktop is OpenAI's Debian package26.1007.71326 with exact executable/CLI/ASAR checksums; newer versions and RPM-native discovery require review. X11/XWayland and an existing file credential policy are required. Versioned vendor downloads preserve already-reviewed client bytes when `latest` advances; the utility never disables updates or rewrites credential policy.

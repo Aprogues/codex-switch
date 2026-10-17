@@ -1,5 +1,7 @@
 # Development map
 
+Source1.41.0 adds `LinuxTerminalCommands` in the UI-neutral Application assembly. The Linux host dispatches `cli` before Avalonia/native display initialization. It composes the existing vault/account/policy/native executable services, serializes with GUI and terminal operations, refuses conflicting CLI clients, and delegates exact CLI/exec session restoration to the descriptor-bound official executable. It uses no shell, permission override, desktop adoption or plaintext credential path. [Terminal contract and current evidence](development/LINUX_TERMINAL.md).
+
 ## Main parts
 
 Current Linux source1.40.0 composes `src/linux` with the shared desktop, verified account/usage policy, native Secret Service/private files, read-only SQLite and the shared encrypted switch/recovery coordinator. A home-scoped managed desktop runtime owns original launch/normal Quit/relaunch/thread-open; CLI-only selection has no desktop resumption. Metadata checks each thread's actual project policy. [Linux contracts](development/LINUX.md) and [offline desktop-session verification](development/LINUX_DESKTOP_SESSION.md) distinguish implementation from pending authenticated two-account/Continue and full desktop/Release acceptance. Hardware resources remain unavailable. Versioned paragraphs below retain their original extraction checkpoints; extraction #3 is complete.
