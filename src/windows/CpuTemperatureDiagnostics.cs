@@ -18,6 +18,9 @@ internal static class CpuTemperatureDiagnostics
             reading = sensor.Current;
             if (reading.State is TemperatureState.Pending or TemperatureState.InvalidData or TemperatureState.ReadFailed || reading.Code == "thermal.cpu_bundle_missing")
                 throw new InvalidDataException("CPU worker application integration failed.");
+            var refreshed = await sensor.ProbeAsync(default);
+            if (refreshed.CheckedAt <= reading.CheckedAt || refreshed.State is TemperatureState.Pending or TemperatureState.InvalidData || refreshed.Code == "thermal.cpu_bundle_missing")
+                throw new InvalidDataException("CPU capability probe did not replace the original worker result.");
             foreach (var delay in new[] { 0, 20 })
             {
                 var quick = new WindowsCpuTemperature(); quick.Start();

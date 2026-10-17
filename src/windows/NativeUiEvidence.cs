@@ -94,6 +94,20 @@ internal static class NativeUiEvidence
                         cpuPanel.Refresh(HardwareUsage.Pending with { CheckedAt = at, Cpu = new ResourceReading(28, Temperature: reading), Memory = new ResourceReading(42) }, new Burn0Theme(dark));
                         window.UpdateLayout(); await Task.Delay(100); Capture(window, Path.Combine(directory, name + "-cpu-" + state + ".png"));
                         Assert(Descendants<TextBlock>(cpuPanel).Any(t => t.Text == (state == "available" ? "78°C" : "—°C")), "CPU temperature state not rendered");
+                        var setup = Descendants<Button>(cpuPanel).Single(b => b.Name == "CpuTemperatureSetupButton");
+                        Assert(setup.IsVisible == (state != "available"), "CPU setup discovery does not match sensor capability");
+                        Assert(System.Windows.Automation.AutomationProperties.GetName(setup) == Loc.T("thermal.cpu_enable"), "CPU setup accessible action missing");
+                        cpuPanel.SetCpuTemperatureBusy(true); Assert(!setup.IsEnabled, "Repeated CPU authorization is possible while busy");
+                        cpuPanel.SetCpuTemperatureBusy(false); Assert(setup.IsEnabled, "CPU action did not recover after completion/cancel");
+                        if (state != "available")
+                        {
+                            window.Width = 500; window.Height = 360; window.UpdateLayout(); await Task.Delay(80);
+                            var cell = (FrameworkElement)cpuPanel.Children[0];
+                            var edge = setup.TransformToAncestor(cell).Transform(new System.Windows.Point(setup.ActualWidth, 0));
+                            Assert(setup.ActualWidth >= 16 && setup.ActualHeight >= 16 && edge.X <= cell.ActualWidth + 0.5, "CPU setup action clipped at minimum size");
+                            Capture(window, Path.Combine(directory, name + "-cpu-" + state + "-compact.png"));
+                            window.Width = 800; window.Height = 560; window.UpdateLayout();
+                        }
                     }
                     var cpuMenu = ((FrameworkElement)cpuPanel.Children[0]).ContextMenu!; cpuMenu.PlacementTarget = cpuPanel.Children[0] as UIElement;
                     cpuMenu.IsOpen = true; await Task.Delay(100);

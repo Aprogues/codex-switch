@@ -12,7 +12,7 @@ namespace CodexAccountDesk;
 internal static class CpuTemperatureSetup
 {
     internal const string InstallerSha256 = "1f519a22e47187f70a1379a48ca604981c4fcf694f4e65b734aaa74a9fba3032";
-    public static async Task InstallAsync(CancellationToken cancellation)
+    public static async Task<bool> InstallAsync(CancellationToken cancellation)
     {
         var file = Path.Combine(Path.GetTempPath(), "CodexSwitch-PawnIO-" + Guid.NewGuid().ToString("N") + ".exe");
         try
@@ -33,7 +33,8 @@ internal static class CpuTemperatureSetup
             using var installer = Process.Start(new ProcessStartInfo(file) { UseShellExecute = true, Verb = "runas", Arguments = "-install -silent", WindowStyle = ProcessWindowStyle.Hidden }) ??
                 throw new IOException("CPU driver setup did not start.");
             await installer.WaitForExitAsync();
-            if (installer.ExitCode != 0) throw new Win32Exception(installer.ExitCode);
+            if (installer.ExitCode is not (0 or 3010)) throw new Win32Exception(installer.ExitCode);
+            return installer.ExitCode == 3010;
         }
         finally { if (File.Exists(file)) File.Delete(file); }
     }

@@ -17,6 +17,7 @@ internal sealed class HardwareResourceMonitor : IAsyncDisposable
     private readonly WindowsCpuTemperature _cpuTemperature = new();
     public TemperatureReading CpuTemperatureStatus => _cpuTemperature.Current;
     public Task EnableCpuTemperatureAsync(CancellationToken cancellation) => _cpuTemperature.EnableAsync(cancellation);
+    public Task<TemperatureReading> ProbeCpuTemperatureAsync(CancellationToken cancellation) => _cpuTemperature.ProbeAsync(cancellation);
     public HardwareUsage Current => Volatile.Read(ref _current);
     public event Action<HardwareUsage>? Changed;
     public void Start()
