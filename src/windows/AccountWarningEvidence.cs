@@ -96,8 +96,14 @@ internal static class AccountWarningEvidence
                     Check(!Descendants<Button>(window).Any(b => b.Name == "AccountWarningButton") && panel.IsVisible, "Healthy accounts restore without stale warnings or hidden disks");
                     Call("SetStatus", "Synthetic application warning: operation needs attention.", true, Array.Empty<object?>()); window.UpdateLayout();
                     var status = Only(Descendants<TextBlock>(window).Where(t => t.Text == "Synthetic application warning: operation needs attention."), "Global warning label");
-                    Check(panel.IsVisible && status.IsVisible && Bounds(panel).Bottom <= Bounds(status).Top && Bounds(status).Bottom <= window.ActualHeight,
-                        "Global operation warnings have their own row below the visible disks");
+                    var globalLayoutsFit = true;
+                    foreach (var size in new[] { (600, 440), (500, 360) })
+                    {
+                        window.Width = size.Item1; window.Height = size.Item2; window.UpdateLayout();
+                        globalLayoutsFit &= panel.IsVisible && status.IsVisible && Bounds(panel).Bottom <= Bounds(status).Top && Bounds(status).Bottom <= window.ActualHeight;
+                    }
+                    Check(globalLayoutsFit, "Global operation warnings fit below visible disks at normal and minimum size");
+                    window.Width = 600; window.Height = 440; window.UpdateLayout();
                     Capture(window, name + "global.png");
                 }
                 finally { tip.IsOpen = false; }
