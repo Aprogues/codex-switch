@@ -41,7 +41,7 @@ internal static class AccountWarningEvidence
                 var name = "en-" + (dark ? "dark" : "light") + "-account-warning-";
                 accounts[1].Error = "The saved login is unavailable. Sign in again."; accounts[1].Usage = null;
                 accounts[2].Error = string.Join(" ", Enumerable.Repeat("Fictional refresh failure. Cached usage is retained; retry after the service becomes available.", 6));
-                window.PrepareUiEvidence("en", dark);
+                window.PrepareUiEvidence("en", dark); window.UpdateLayout();
                 var panel = Only(Descendants<DriveUsagePanel>(window), "Disk monitor");
                 panel.Refresh(new[] { new DriveReading("C:\\", "Synthetic disk", 80L * 1073741824, 250L * 1073741824) }, new Burn0Theme(dark));
                 Call("SetRefreshStatus");
@@ -61,7 +61,8 @@ internal static class AccountWarningEvidence
                             var label = Only(title.Children.OfType<TextBlock>(), "Account name label");
                             Check(warning.IsVisible && warning.IsEnabled && warning.Focusable && Bounds(warning).Right <= Bounds(label).Left + .5 && Bounds(warning).Top < Bounds(card).Top + 35,
                                 "Each warning is a reachable compact control beside its account name");
-                            Check(AutomationProperties.GetName(warning).Length > 0 && AutomationProperties.GetHelpText(warning).Length > 0,
+                            Check(AutomationProperties.GetName(warning).Contains(label.Text, StringComparison.Ordinal) && AutomationProperties.GetHelpText(warning).Length > 0 &&
+                                ReferenceEquals(warning.Style, window.Resources[typeof(Button)]),
                                 "Warning name and full explanation are available to assistive technology");
                         }
                     }
