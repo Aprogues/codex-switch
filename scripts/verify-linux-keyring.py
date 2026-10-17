@@ -64,6 +64,7 @@ if not a.inside:
         for key in ('G_DBUS_DEBUG','G_MESSAGES_DEBUG','GNOME_KEYRING_DEBUG','GNOME_KEYRING_TEST_PATH','LIBSECRET_DEBUG'):env.pop(key,None)
         command=['dbus-run-session','--config-file',str(config),'--',sys.executable,str(Path(__file__).resolve()),'--inside','--assembly',str(assembly),'--architecture',a.architecture,'--report',str(report),'--provider',a.provider]
         if a.storage_only:command.append('--storage-only')
+        if a.terminal_assembly is not None:command+=['--terminal-assembly',str(a.terminal_assembly),'--terminal-app',str(a.terminal_app)]
         subprocess.run(command,env=env,check=True,timeout=240)
     finally:
         if root.parent!=Path(tempfile.gettempdir()).resolve() or not root.name.startswith('codex-linux-keyring-test-') or root.is_symlink() or root.stat().st_uid!=os.geteuid():raise SystemExit('Unexpected diagnostic cleanup root')
