@@ -1,15 +1,15 @@
 <p align="center"><img src="../assets/macos/app-icon.png" width="88" height="88" alt="Codex Switch app icon" /></p>
 <h1 align="center">Codex Switch</h1>
 
-Codexアカウントを手動で切り替え、再開可能な未完了ローカルチャットを自動で再開します。次のアカウントの残量も確認できます。**1.40.2 — Windows・macOS・Linuxプレビュー。**
+Codexアカウントを手動で切り替え、再開可能な未完了ローカルチャットを自動で再開します。次のアカウントの残量も確認できます。**Windows・Linuxプレビューは1.40.7、macOSダウンロードは1.40.2です。**
 
 [English](../README.md) / [한국어](README.ko.md) / 日本語 / [简体中文](README.zh-CN.md)
 
 ## ダウンロード
 
-- [Windows x64 ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-win-x64.zip)
+- [Windows x64 ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.7/CodexSwitch-v1.40.7-win-x64.zip)
 - macOS15以降：[Apple Silicon ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-osx-arm64.zip) / [Intel ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-osx-x64.zip)
-- Linux **プレビュー** x64・ARM64：[DEB・RPM・tar.gzとSHA256](https://github.com/Gaebabi/codex-switch/releases/tag/v1.40.2)
+- Linux **プレビュー** x64・ARM64：[DEB・RPM・tar.gzとSHA256](https://github.com/Gaebabi/codex-switch/releases/tag/v1.40.7)
 
 .NETを同梱しており、ビルドやランタイムのインストールは不要です。フォルダー・アプリ全体を保持してください。Windows/Linuxは未署名、Macはアドホック署名で**Apple未公証**です。[インストール](INSTALL.md) / [Mac初回起動](MACOS.md)
 
@@ -31,13 +31,13 @@ Linuxは統合プレビューです。キーストア・インストール済み
 
 ## 実際のアプリ画面
 
-[Windows/Linux最新画像と検証範囲](media/release-1.40.2/README.md)。実際のタイトルバーを残して単色背景に配置し、架空のUI入力と実アカウント検証を明記します。
+[Windows/Linux最新画像と検証範囲](media/release-1.40.7/README.md)。実際のタイトルバーを残して単色背景に配置し、架空のUI入力と実アカウント検証を明記します。
 
-![Windows実行画面](media/release-1.40.2/windows.png)
-![Linux Xfce実行画面](media/release-1.40.2/linux.png)
+![Windows実行画面](media/release-1.40.7/windows.png)
+![Linux Xfce実行画面](media/release-1.40.7/linux.png)
 
 **MacBook実機のスクリーンショットは後日追加予定です。**
-<!-- MacBook screenshot slot: media/release-1.40.2/macbook.png; privacy/provenance review required. -->
+<!-- MacBook screenshot slot: media/release-1.40.7/macbook.png; privacy/provenance review required. -->
 
 [貢献](../CONTRIBUTING.md) / [セキュリティ](../SECURITY.md) / [検証資料](evidence/README.md) / [消費予測](FORECAST.md)
 

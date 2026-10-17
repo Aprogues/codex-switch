@@ -1,7 +1,7 @@
 <p align="center"><img src="assets/macos/app-icon.png" width="88" height="88" alt="Codex Switch app icon" /></p>
 <h1 align="center">Codex Switch</h1>
 
-Switch Codex accounts manually, automatically resume eligible unfinished local chats, and see the remaining quota before choosing your next account. **1.40.2 — Windows, macOS and Linux preview.**
+Switch Codex accounts manually, automatically resume eligible unfinished local chats, and see the remaining quota before choosing your next account. **1.40.7 — Windows and Linux preview; macOS downloads remain 1.40.2.**
 
 [English](README.md) / [한국어](docs/README.ko.md) / [日本語](docs/README.ja.md) / [简体中文](docs/README.zh-CN.md)
 
@@ -11,13 +11,13 @@ Complete packages include the .NET runtime; no source build or .NET installation
 
 | Platform | Download |
 | --- | --- |
-| Windows x64 | [ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-win-x64.zip) |
+| Windows x64 | [ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.7/CodexSwitch-v1.40.7-win-x64.zip) |
 | macOS15+ Apple Silicon | [ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-osx-arm64.zip) |
 | macOS15+ Intel | [ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-osx-x64.zip) |
-| Linux x64 **preview** | [DEB](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-preview-linux-x64.deb) / [RPM](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-preview-linux-x64.rpm) / [tar.gz](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-preview-linux-x64.tar.gz) |
-| Linux ARM64 **preview** | [DEB](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-preview-linux-arm64.deb) / [RPM](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-preview-linux-arm64.rpm) / [tar.gz](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-preview-linux-arm64.tar.gz) |
+| Linux x64 **preview** | [DEB](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.7/CodexSwitch-v1.40.7-preview-linux-x64.deb) / [RPM](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.7/CodexSwitch-v1.40.7-preview-linux-x64.rpm) / [tar.gz](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.7/CodexSwitch-v1.40.7-preview-linux-x64.tar.gz) |
+| Linux ARM64 **preview** | [DEB](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.7/CodexSwitch-v1.40.7-preview-linux-arm64.deb) / [RPM](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.7/CodexSwitch-v1.40.7-preview-linux-arm64.rpm) / [tar.gz](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.7/CodexSwitch-v1.40.7-preview-linux-arm64.tar.gz) |
 
-[Release notes and SHA256 checksums](https://github.com/Gaebabi/codex-switch/releases/tag/v1.40.2). Windows/Linux packages are unsigned. Mac bundles are ad-hoc signed and **not Apple-notarized**; follow [Mac setup](docs/MACOS.md).
+[Release notes and SHA256 checksums](https://github.com/Gaebabi/codex-switch/releases/tag/v1.40.7). Windows/Linux packages are unsigned. Mac bundles are ad-hoc signed and **not Apple-notarized**; follow [Mac setup](docs/MACOS.md).
 
 Linux is an integration preview. Native storage, installed UI and package tests are distinct from supported account handoff and full desktop acceptance. Desktop integration requires approved OpenAI Linux client26.1007.71326, an existing file credential policy and X11/XWayland; newer clients require review. CLI-only mode needs an explicit executable checksum and does not resume desktop chats. [Requirements and limits](docs/development/LINUX.md) / [Linux installation](docs/development/LINUX_PACKAGES.md)
 
@@ -34,7 +34,7 @@ Linux is an integration preview. Native storage, installed UI and package tests 
 - **Quota and history:** remaining usage, resets, plans, subscription expiry, reset allowances, credits and consumption forecasts. Open **History** in an account's **...** menu. Card dates use your local time zone; the shared history view explicitly labels its KST axes. Expiry within72hours and reset within48hours use warning colors.
 - **Local status and resources:** running/queued/goal counts, resource history and disk space. Windows shows independently colored resource/disk temperatures when supported sensors exist; missing values stay unknown. Linux resource telemetry is currently unavailable. [Sensor support](docs/TEMPERATURES.md)
 - **Windows disk I/O (source1.40.6):** thin read/write bars beside disk temperature, exact rates on hover and sustained latency-pressure colors selected from actual backing-device characteristics. Observed scale is explicit; missing capabilities never invent a rated speed or health warning. [How it works](docs/DISK_IO.md)
-- **Built-in Windows CPU temperature (source1.40.5):** right-click CPU to enable it, with explicit consent for optional signed driver setup and sensor-only elevation. No separate hardware monitor; the account app keeps normal privileges. [Setup and limits](docs/TEMPERATURES.md#built-in-windows-cpu-sensor). Published downloads remain1.40.2 until a separate release.
+- **Built-in Windows CPU temperature:** select the visible **download + °C** or **lock + °C** button to install the optional signed driver or authorize the sensor for this session. No separate hardware monitor; the account app keeps normal privileges. No automatic driver/UAC/reboot. [Setup and limits](docs/TEMPERATURES.md#built-in-windows-cpu-sensor) / [actual app before/after](docs/evidence/cpu-setup/README.md).
 - **Always-on refresh:** account reads every60seconds, with **↻** or **F5** for an immediate refresh. If startup fails while the keyring/client is unavailable, the same schedule retries initialization automatically after it becomes available.
 - **Nine UI languages and local JSON language packs:** English, Korean, Japanese, Simplified/Traditional Chinese, Spanish, French, German and Brazilian Portuguese, with English fallback. Icon theme actions, dark/light themes and shared scrollbars keep compact windows usable. [Translation guide](docs/LOCALIZATION.md)
 
@@ -42,14 +42,14 @@ Linux is an integration preview. Native storage, installed UI and package tests 
 
 ## Actual app screenshots
 
-Actual application titlebars/controls are preserved on a solid background. Captions and source/runtime/hash receipts distinguish fictional UI inputs, ordinary Linux execution and authenticated acceptance. [Current gallery](docs/media/release-1.40.2/README.md)
+Actual application titlebars/controls are preserved on a solid background. Captions and source/runtime/hash receipts distinguish fictional UI inputs, ordinary Linux execution and authenticated acceptance. [Current gallery](docs/media/release-1.40.7/README.md)
 
-![Codex Switch running on Windows](docs/media/release-1.40.2/windows.png)
+![Codex Switch running on Windows](docs/media/release-1.40.7/windows.png)
 
-![Codex Switch running in an isolated Linux Xfce desktop](docs/media/release-1.40.2/linux.png)
+![Codex Switch running in an isolated Linux Xfce desktop](docs/media/release-1.40.7/linux.png)
 
 **MacBook screenshot:** reserved for the maintainer's real-device capture.
-<!-- MacBook screenshot slot: add docs/media/release-1.40.2/macbook.png and its privacy/provenance receipt, then embed here. Never substitute a different OS image or mockup. -->
+<!-- MacBook screenshot slot: add docs/media/release-1.40.7/macbook.png and its privacy/provenance receipt, then embed here. Never substitute a different OS image or mockup. -->
 
 ## Contribute
 
