@@ -47,6 +47,7 @@ internal sealed class MainWindow : Window
     private readonly DispatcherTimer _clockTimer = new() { Interval = TimeSpan.FromSeconds(1) };
     private Forms.NotifyIcon? _tray;
     private bool _ready, _loggingIn, _switching, _closing, _exit;
+    private bool _cpuTemperatureChanging;
     private bool CanRefresh => !_closing && (_ready || _initialization?.IsCompleted != false);
     private string? _queuedKey;
     private SwitchPhase _switchPhase;
@@ -95,18 +96,20 @@ internal sealed class MainWindow : Window
     }
     private async Task EnableCpuTemperatureAsync()
     {
-        if (_options.UiEvidenceDirectory != null) return;
+        if (_options.UiEvidenceDirectory != null || _closing || _cpuTemperatureChanging) return;
         var reading = _hardware.Current.Cpu.Temperature;
         var install = reading?.Code == "thermal.cpu_setup_required";
         if (MessageBox.Show(this, Loc.T(install ? "thermal.cpu_setup_confirm" : "thermal.cpu_enable_confirm"), "Codex Switch", MessageBoxButton.OKCancel, MessageBoxImage.Information) != MessageBoxResult.OK) return;
         try
         {
+            _cpuTemperatureChanging = true;
             if (install) await CpuTemperatureSetup.InstallAsync(_lifetime.Token);
-            await _hardware.EnableCpuTemperatureAsync();
+            await _hardware.EnableCpuTemperatureAsync(_lifetime.Token);
         }
         catch (OperationCanceledException) when (_lifetime.IsCancellationRequested) { }
         catch (Win32Exception error) when (error.NativeErrorCode == 1223) { }
         catch (Exception error) when (error is IOException or InvalidDataException or Win32Exception or System.Net.Http.HttpRequestException) { ShowError(error); }
+        finally { _cpuTemperatureChanging = false; }
     }
     private void ApplyTheme()
     {

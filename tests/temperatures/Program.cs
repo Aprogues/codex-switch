@@ -142,5 +142,11 @@ Check("CPU framing round-trips source-generated packets without arbitrary comman
     CodexSwitch.Sensors.CpuSensorProtocol.WriteAsync(stream,packet,default).GetAwaiter().GetResult();stream.Position=0;
     Assert(CodexSwitch.Sensors.CpuSensorProtocol.ReadAsync(stream,default).GetAwaiter().GetResult()==packet);
 });
+Check("A replaced worker is refused before any privileged launch",()=>{
+    var bytes=new byte[]{1,2,3,4}; var digest=Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(bytes));
+    using(var stream=new System.IO.MemoryStream(bytes)) WindowsCpuTemperature.VerifyWorker(stream,digest);
+    foreach(var wrong in new[]{"",new string('0',64),new string('x',64)})
+    {using var stream=new System.IO.MemoryStream(bytes);var rejected=false;try{WindowsCpuTemperature.VerifyWorker(stream,wrong);}catch(System.IO.InvalidDataException){rejected=true;}Assert(rejected);}
+});
 Loc.SetLanguage("en");
 Console.WriteLine(JsonSerializer.Serialize(new {passed=checks.Count,failed=0,checks,scope="Production storage parsing, identity/channel selection and presentation contracts; synthetic bytes/metadata only, no native device queries, accounts or process actions."},new JsonSerializerOptions {WriteIndented=true}));

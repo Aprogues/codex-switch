@@ -27,4 +27,4 @@
 *.ico binary
 *.gif binary
 src/sensors/modules/*.bin binary
-src/sensors/modules/source/** -text
+src/sensors/modules/source/** -text whitespace=-blank-at-eol

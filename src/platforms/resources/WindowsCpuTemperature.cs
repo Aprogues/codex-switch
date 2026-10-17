@@ -4,6 +4,9 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Runtime.InteropServices;
+using System.Reflection;
+using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using CodexSwitch.Sensors;
@@ -16,15 +19,16 @@ internal sealed class WindowsCpuTemperature : IAsyncDisposable
     private CancellationTokenSource? _stop;
     private Task? _run;
     private Process? _worker;
+    private bool _disposed;
     private readonly SemaphoreSlim _transition = new(1, 1);
     private TemperatureReading _current = TemperatureReading.Missing(TemperatureState.Pending, CpuSensorProtocol.Source);
     public TemperatureReading Current => Volatile.Read(ref _current);
     public static string WorkerPath => Path.Combine(AppContext.BaseDirectory, "sensors", "CodexSwitch.Sensors.exe");
     public void Start() { if (_run == null) StartWorker(false); }
-    public async Task EnableAsync()
+    public async Task EnableAsync(CancellationToken cancellation)
     {
-        await _transition.WaitAsync();
-        try { await StopAsync(); StartWorker(true); }
+        await _transition.WaitAsync(cancellation);
+        try { ObjectDisposedException.ThrowIf(_disposed, this); await StopAsync(); cancellation.ThrowIfCancellationRequested(); StartWorker(true); }
         finally { _transition.Release(); }
     }
     private void StartWorker(bool elevate)
@@ -37,6 +41,10 @@ internal sealed class WindowsCpuTemperature : IAsyncDisposable
         try
         {
             if (!File.Exists(WorkerPath)) { Publish(TemperatureState.ProviderMissing, "thermal.cpu_bundle_missing"); return; }
+            var digest = Assembly.GetEntryAssembly()?.GetCustomAttributes<AssemblyMetadataAttribute>().SingleOrDefault(a => a.Key == "CodexSwitch.CpuSensorSha256")?.Value;
+            if (string.IsNullOrEmpty(digest)) { Publish(TemperatureState.ProviderMissing, "thermal.cpu_bundle_missing"); return; }
+            using var verified = new FileStream(WorkerPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            VerifyWorker(verified, digest);
             var nonce = Guid.NewGuid().ToString("N");
             using var pipe = new NamedPipeServerStream("CodexSwitch.Cpu." + nonce, PipeDirection.In, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous | PipeOptions.CurrentUserOnly);
             using var parent = Process.GetCurrentProcess();
@@ -67,6 +75,11 @@ internal sealed class WindowsCpuTemperature : IAsyncDisposable
         catch (IOException) { Publish(TemperatureState.ReadFailed); }
         catch (Exception error) when (error is InvalidDataException or System.Text.Json.JsonException or ArgumentException) { Publish(TemperatureState.InvalidData); }
     }
+    internal static void VerifyWorker(Stream binary, string expected)
+    {
+        if (expected.Length != 64 || !expected.All(char.IsAsciiHexDigit) || !Convert.ToHexString(SHA256.HashData(binary)).Equals(expected, StringComparison.OrdinalIgnoreCase))
+            throw new InvalidDataException("CPU worker does not match this application build.");
+    }
     private void Publish(TemperatureState state, string? code = null) => Volatile.Write(ref _current, TemperatureReading.Missing(state, CpuSensorProtocol.Source, code: code));
     private async Task StopAsync()
     {
@@ -78,7 +91,7 @@ internal sealed class WindowsCpuTemperature : IAsyncDisposable
         }
         _stop?.Dispose(); _stop = null; _run = null;
     }
-    public async ValueTask DisposeAsync() { await _transition.WaitAsync(); try { await StopAsync(); } finally { _transition.Release(); } }
+    public async ValueTask DisposeAsync() { await _transition.WaitAsync(); try { _disposed = true; await StopAsync(); } finally { _transition.Release(); } }
     [DllImport("kernel32.dll", SetLastError = true)] [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool GetNamedPipeClientProcessId(SafePipeHandle pipe, out uint process);
 }

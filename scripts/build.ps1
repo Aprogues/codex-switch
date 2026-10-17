@@ -2,10 +2,11 @@ param([switch]$Verify)
 $ErrorActionPreference = 'Stop'
 $taskRoot = Split-Path -Parent $PSScriptRoot
 $taskOutput = Join-Path $taskRoot 'artifacts\win-x64'
-& dotnet publish (Join-Path $taskRoot 'src/windows/CodexSwitch.Windows.csproj') -c Release -r win-x64 --self-contained true --nologo -p:UseSharedCompilation=false -o $taskOutput
-if ($LASTEXITCODE -ne 0) { throw 'Windows publish failed' }
 & dotnet publish (Join-Path $taskRoot 'src/sensors/CodexSwitch.Sensors.csproj') -c Release -r win-x64 --self-contained true --nologo -p:UseSharedCompilation=false -o (Join-Path $taskOutput 'sensors')
 if ($LASTEXITCODE -ne 0) { throw 'Native CPU sensor worker publish failed' }
+$taskSensorHash = (Get-FileHash -LiteralPath (Join-Path $taskOutput 'sensors/CodexSwitch.Sensors.exe') -Algorithm SHA256).Hash
+& dotnet publish (Join-Path $taskRoot 'src/windows/CodexSwitch.Windows.csproj') -c Release -r win-x64 --self-contained true --nologo -p:UseSharedCompilation=false "-p:CpuSensorWorkerSha256=$taskSensorHash" -o $taskOutput
+if ($LASTEXITCODE -ne 0) { throw 'Windows publish failed' }
 Copy-Item -LiteralPath (Join-Path $taskRoot 'licenses/PawnIO-Modules.LGPL-2.1.txt') -Destination (Join-Path $taskOutput 'sensors/PawnIO-Modules.LGPL-2.1.txt')
 Copy-Item -LiteralPath (Join-Path $taskRoot 'src/sensors/modules/SOURCE.md') -Destination (Join-Path $taskOutput 'sensors/SOURCE.md')
 Copy-Item -LiteralPath (Join-Path $taskRoot 'src/sensors/modules/source') -Destination (Join-Path $taskOutput 'sensors/module-source') -Recurse -Force
