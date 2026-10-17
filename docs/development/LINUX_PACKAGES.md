@@ -1,12 +1,16 @@
 # Linux preview package candidates
 
-## Release1.40.2 downloads
+## Release1.40.7 downloads
 
-The [1.40.2 Release](https://github.com/Gaebabi/codex-switch/releases/tag/v1.40.2) provides all six unsigned integration-preview packages: x64/ARM64 × DEB/RPM/tar.gz, with SHA256SUMS.txt. These remain explicit previews with `supportedAccountHandoff: false`; publication does not close #5/#6/#7's remaining authenticated/full-desktop criteria. Earlier records below retain their original checkpoint scope.
+<a id="release1402-downloads"></a>
+
+The legacy 1.40.2 heading anchor is retained for existing links; the packages below are current1.40.7 downloads. [Previous1.40.2 Release](https://github.com/Gaebabi/codex-switch/releases/tag/v1.40.2) stays available.
+
+The [1.40.7 Release](https://github.com/Gaebabi/codex-switch/releases/tag/v1.40.7) provides all six unsigned integration-preview packages: x64/ARM64 × DEB/RPM/tar.gz, with SHA256SUMS.txt. These remain explicit previews with `supportedAccountHandoff: false`; publication does not close #5/#6/#7's remaining authenticated/full-desktop criteria. Earlier records below retain their original checkpoint scope.
 
 Desktop integration pins official OpenAI Linux client26.1007.71326 and verifies the installed package, CLI, executable and ASAR. CI retrieves exact unchanged bytes from the official versioned Debian pool. Newer clients require a separate compatibility review. An existing file credential policy and X11/XWayland are required; explicit-checksum CLI-only mode does not resume desktop chats. Fedora RPM installation/UI verification does not establish integration with an unreviewed RPM-native client.
 
-Source1.40.2 retains complete x64/ARM64 candidate formats and a single native Linux titlebar, and fixes automatic startup recovery after keyring unlock. [Actual program comparison and identifier-free owner verification](../evidence/automatic-startup-recovery/README.md) separates the empty-home startup regression from owner-operated two-real-account no-chat switching. Authenticated active-chat continuation and broader desktop acceptance remain open. `supportedAccountHandoff: false` and unsigned preview status remain until their actual acceptance criteria pass.
+Source1.40.7 retains complete x64/ARM64 candidate formats and a single native Linux titlebar, and fixes automatic startup recovery after keyring unlock. [Actual program comparison and identifier-free owner verification](../evidence/automatic-startup-recovery/README.md) separates the empty-home startup regression from owner-operated two-real-account no-chat switching. Authenticated active-chat continuation and broader desktop acceptance remain open. `supportedAccountHandoff: false` and unsigned preview status remain until their actual acceptance criteria pass.
 
 Source1.40.0/PR75 candidates include [ordinary account and managed desktop integration](LINUX.md#source1400-ordinary-integration--issue74--pr75). They still declare `supportedAccountHandoff: false` until real authenticated acceptance passes; an implemented action is not a supported Release. The earlier source checkpoints below retain their capture-time scope.
 

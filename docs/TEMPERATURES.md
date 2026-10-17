@@ -1,6 +1,6 @@
 # Resource and disk temperatures
 
-Source **1.40.5** adds built-in Windows CPU collection to the Celsius gauges introduced in1.29.0. Utilization/free space remains on the left, with the same footer height. Values and sensor/access status appear in existing tooltips. Published1.40.2 packages retain the earlier external-provider CPU path until a new binary release.
+Source **1.40.5** adds built-in Windows CPU collection to the Celsius gauges introduced in1.29.0. Utilization/free space remains on the left, with the same footer height. Values and sensor/access status appear in existing tooltips. Release1.40.7 Windows packages include this worker and visible download/authorization buttons. Older1.40.2 downloads retain the earlier external-provider CPU path.
 
 Missing, unsupported, denied, invalid or stale readings display **—°C**, never a made-up zero or a percentage converted to Celsius. Temperature is independent of utilization warning colors. GPU core temperature does not substitute for VRAM. A reading older than 30 seconds is unavailable; this checks query age, not a provider's undocumented internal sample age.
 

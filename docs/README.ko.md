@@ -1,15 +1,15 @@
 <p align="center"><img src="../assets/macos/app-icon.png" width="88" height="88" alt="Codex Switch app icon" /></p>
 <h1 align="center">Codex Switch</h1>
 
-Codex 계정을 수동으로 전환하고, 재개 가능한 미완료 로컬 작업을 자동으로 이어가세요. 다음 계정의 남은 사용량도 확인합니다. **1.40.2 — Windows·macOS·Linux 미리보기.**
+Codex 계정을 수동으로 전환하고, 재개 가능한 미완료 로컬 작업을 자동으로 이어가세요. 다음 계정의 남은 사용량도 확인합니다. **Windows·Linux 미리보기 1.40.7 · macOS 다운로드는 1.40.2 유지.**
 
 [English](../README.md) / 한국어 / [日本語](README.ja.md) / [简体中文](README.zh-CN.md)
 
 ## 다운로드
 
-- [Windows x64 ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-win-x64.zip)
+- [Windows x64 ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.7/CodexSwitch-v1.40.7-win-x64.zip)
 - macOS15+: [Apple Silicon ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-osx-arm64.zip) / [Intel ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-osx-x64.zip)
-- Linux **미리보기** x64·ARM64: [DEB·RPM·tar.gz 및 SHA256](https://github.com/Gaebabi/codex-switch/releases/tag/v1.40.2)
+- Linux **미리보기** x64·ARM64: [DEB·RPM·tar.gz 및 SHA256](https://github.com/Gaebabi/codex-switch/releases/tag/v1.40.7)
 
 전체 실행 패키지에 .NET 런타임이 포함되어 소스 빌드나 .NET 설치가 필요 없습니다. 폴더·앱 번들 전체를 유지하세요. Windows·Linux는 미서명이며 Mac은 임시 서명으로 **Apple 공증은 없습니다**. [설치](INSTALL.md) / [Mac 최초 실행](MACOS.md)
 
@@ -32,13 +32,13 @@ Linux는 통합 미리보기입니다. 키 모음·설치 UI·패키지 검증�
 
 ## 실제 앱 화면
 
-[Windows·Linux 최신 화면과 검증 범위](media/release-1.40.2/README.md). 실제 제목 표시줄을 보존하고 단색 배경을 사용합니다. 가상 UI 입력과 실제 계정 검증은 별도로 명시합니다.
+[Windows·Linux 최신 화면과 검증 범위](media/release-1.40.7/README.md). 실제 제목 표시줄을 보존하고 단색 배경을 사용합니다. 가상 UI 입력과 실제 계정 검증은 별도로 명시합니다.
 
-![Windows 실행 화면](media/release-1.40.2/windows.png)
-![Linux Xfce 실행 화면](media/release-1.40.2/linux.png)
+![Windows 실행 화면](media/release-1.40.7/windows.png)
+![Linux Xfce 실행 화면](media/release-1.40.7/linux.png)
 
 **MacBook 실기기 스크린샷 추가 예정.**
-<!-- MacBook screenshot slot: media/release-1.40.2/macbook.png; privacy/provenance review required. -->
+<!-- MacBook screenshot slot: media/release-1.40.7/macbook.png; privacy/provenance review required. -->
 
 [개발·기여](../CONTRIBUTING.md) / [보안](../SECURITY.md) / [검증 자료](evidence/README.md) / [예측 방식](FORECAST.md)
 

@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "appVersion": "1.40.7",
+  "captureRevision": "a3f4d5f3a2e0c54378f5371682b1d928700c6c50",
+  "canvas": [
+    1000,
+    800
+  ],
+  "background": "#18202b",
+  "runtime": ".NET10.0.13",
+  "images": [
+    {
+      "file": "windows.png",
+      "captureRevision": "a3f4d5f3a2e0c54378f5371682b1d928700c6c50",
+      "captureSha256": "52e2a05388f6ed21f7d7411027a8581b72b22cd7b0fe1cab6d1fdaa45c7b062a",
+      "sha256": "b7d20eb428535fc4c90cb2b2f0ccae8ecba755f43620bd27625078c167ec9fbf",
+      "originalSize": [
+        800,
+        560
+      ],
+      "offset": [
+        100,
+        120
+      ],
+      "originalPixelsUnchanged": true,
+      "os": "Windows x64 native WPF",
+      "inputs": "Fictional accounts and sensor states"
+    },
+    {
+      "file": "linux.png",
+      "captureRevision": "a3f4d5f3a2e0c54378f5371682b1d928700c6c50",
+      "captureSha256": "cc06853e0358a61d800fc4a024c888d60c047efc35df0855dce3549969457785",
+      "sha256": "d6793c162c2c974e9a0b5a7d9a10ccd5010baeb9118bd1f35e2be38f9467bb7d",
+      "originalSize": [
+        810,
+        634
+      ],
+      "offset": [
+        95,
+        83
+      ],
+      "originalPixelsUnchanged": true,
+      "os": "Linux x64 Debian13 Xfce/xfwm4 isolated desktop",
+      "inputs": "Empty account home, actual per-user installed app and native window frame"
+    }
+  ],
+  "scope": "Native own windows on isolated CI, no personal desktop/account/cursor; centered 1:1 unchanged app pixels on a solid canvas; image metadata removed. Capture is separate from authenticated handoff/full desktop acceptance and final release package source."
+}

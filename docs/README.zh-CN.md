@@ -1,15 +1,15 @@
 <p align="center"><img src="../assets/macos/app-icon.png" width="88" height="88" alt="Codex Switch app icon" /></p>
 <h1 align="center">Codex Switch</h1>
 
-手动切换Codex账号，自动继续符合条件的未完成本地聊天，并提前查看下一个账号的剩余额度。**1.40.2 — Windows、macOS和Linux预览版。**
+手动切换Codex账号，自动继续符合条件的未完成本地聊天，并提前查看下一个账号的剩余额度。**Windows和Linux预览版为1.40.7；macOS下载仍为1.40.2。**
 
 [English](../README.md) / [한국어](README.ko.md) / [日本語](README.ja.md) / 简体中文
 
 ## 下载
 
-- [Windows x64 ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-win-x64.zip)
+- [Windows x64 ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.7/CodexSwitch-v1.40.7-win-x64.zip)
 - macOS15及以上：[Apple Silicon ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-osx-arm64.zip) / [Intel ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-osx-x64.zip)
-- Linux **预览版** x64、ARM64：[DEB、RPM、tar.gz及SHA256](https://github.com/Gaebabi/codex-switch/releases/tag/v1.40.2)
+- Linux **预览版** x64、ARM64：[DEB、RPM、tar.gz及SHA256](https://github.com/Gaebabi/codex-switch/releases/tag/v1.40.7)
 
 完整程序包包含.NET运行时，无需构建或安装.NET。请保留完整文件夹或应用包。Windows/Linux未签名；Mac为临时签名，**未经Apple公证**。[安装](INSTALL.md) / [Mac首次启动](MACOS.md)
 
@@ -31,13 +31,13 @@ Linux仍为集成预览版。原生密钥环、已安装UI和程序包验证，�
 
 ## 实际应用截图
 
-[Windows/Linux最新截图及验证范围](media/release-1.40.2/README.md)。保留实际标题栏并放置在纯色背景上，明确区分虚构UI输入与真实账号验证。
+[Windows/Linux最新截图及验证范围](media/release-1.40.7/README.md)。保留实际标题栏并放置在纯色背景上，明确区分虚构UI输入与真实账号验证。
 
-![Windows运行截图](media/release-1.40.2/windows.png)
-![Linux Xfce运行截图](media/release-1.40.2/linux.png)
+![Windows运行截图](media/release-1.40.7/windows.png)
+![Linux Xfce运行截图](media/release-1.40.7/linux.png)
 
 **预留MacBook实机截图位置，稍后由维护者添加。**
-<!-- MacBook screenshot slot: media/release-1.40.2/macbook.png; privacy/provenance review required. -->
+<!-- MacBook screenshot slot: media/release-1.40.7/macbook.png; privacy/provenance review required. -->
 
 [贡献](../CONTRIBUTING.md) / [安全](../SECURITY.md) / [验证资料](evidence/README.md) / [消耗预测](FORECAST.md)
 
