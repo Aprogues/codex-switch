@@ -350,7 +350,7 @@ internal sealed class MainWindow : Window
                 CapturePreview(Path.Combine(Path.GetDirectoryName(_options.PreviewPath)!, Path.GetFileNameWithoutExtension(_options.PreviewPath) + "-" + Loc.Language + ".png"));
                 _languageInteraction = new { originalLanguage, alternateLanguage = Loc.Language,
                     registrationsPreserved = identities.SequenceEqual(_service.Accounts.Select(a => a.Key + ":" + a.Alias)),
-                    manualRefreshAvailable = _ready && !_closing, languageAppliedToStatus = _status.Text == Loc.T(_statusSource) };
+                    manualRefreshAvailable = _ready && !_closing, languageAppliedToStatus = _status.Text == (_statusSource.Length == 0 ? "" : Loc.T(_statusSource)) };
                 ChangeLanguage(originalLanguage, false);
             }
             var tankLayout = ProbeTankLayout();
@@ -758,7 +758,7 @@ internal sealed class MainWindow : Window
     private void SetStatus(string source, bool warning = false, params object?[] arguments) { _statusSource = source; _statusArguments = arguments; _statusWarning = warning; RenderStatus(); }
     private void RenderStatus()
     {
-        var template = _statusWarning ? Loc.Error(_statusSource) : Loc.T(_statusSource);
+        var template = _statusSource.Length == 0 ? "" : _statusWarning ? Loc.Error(_statusSource) : Loc.T(_statusSource);
         _status.Text = _statusArguments.Length == 0 ? template : string.Format(Loc.Culture, template, _statusArguments);
         _status.ToolTip = _status.Text;
         _status.Foreground = Color(_statusWarning ? "warning" : "muted");
