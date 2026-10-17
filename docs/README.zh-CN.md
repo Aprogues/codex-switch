@@ -34,9 +34,11 @@ Linux仍为集成预览版。原生密钥环、已安装UI和程序包验证，�
 [Windows/Linux最新截图及验证范围](media/release-1.40.7/README.md)。保留实际标题栏并放置在纯色背景上，明确区分虚构UI输入与真实账号验证。
 
 ![Windows运行截图](media/release-1.40.7/windows.png)
-![显示4个演示账号的Linux应用](media/release-1.40.7/linux.png)
 
-实际Linux原生应用中显示的是**4个虚构演示账号**，未使用个人登录信息。[已安装的Xfce窗口及验证范围](media/release-1.40.7/README.md)另行保留。
+**Windows x64：**实际WPF应用中的虚构演示账号和CPU设置按钮，未使用个人账号或桌面。
+![同一窗口中实际Xfce系统标题栏和4个演示账号的Linux截图](media/release-1.40.7/linux-framed.png)
+
+**Linux x64 · X11/Xfwm4：**实际系统标题栏与4个虚构演示账号在同一窗口内一起拍摄。未合成标题栏，也没有个人登录信息。[浅色主题、来源、哈希及验证范围](media/release-1.40.7/README.md)。
 
 **预留MacBook实机截图位置，稍后由维护者添加。**
 <!-- MacBook screenshot slot: media/release-1.40.7/macbook.png; privacy/provenance review required. -->

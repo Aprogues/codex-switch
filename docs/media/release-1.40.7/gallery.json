@@ -41,7 +41,7 @@
       "originalPixelsUnchanged": true,
       "os": "Linux x64 native X11 app on isolated CI",
       "inputs": "Four fictional demo accounts; not authenticated owner accounts",
-      "role": "Main Linux account overview",
+      "role": "Historical unframed demo overview; superseded by actual framed capture",
       "frame": "Original native app-owned XID pixels; no desktop WM frame is present or synthesized"
     },
     {
@@ -61,11 +61,54 @@
       "os": "Linux x64 Debian13 Xfce/xfwm4 isolated desktop",
       "inputs": "Empty account home, actual per-user installed app and native window frame",
       "role": "Supporting installed-desktop/lifecycle evidence, not the main account overview"
+    },
+    {
+      "file": "linux-framed.png",
+      "captureRevision": "919b8c2229d6989b53fa70b4591b5b5899ed5bd6",
+      "captureSha256": "5a429199290b2f845cd33f1a64f5ec093b281d17c45593dfdde3669623a3e372",
+      "sha256": "9a4876f59d80c40a94b187685601805ae4864d00a14911715461f082a54fda46",
+      "originalSize": [
+        810,
+        634
+      ],
+      "offset": [
+        95,
+        83
+      ],
+      "originalPixelsUnchanged": true,
+      "os": "Linux x64, actual X11/Xfwm4 OS titlebar",
+      "inputs": "Four fictional demo accounts in the actual published app diagnostic; no personal login",
+      "role": "Main account overview",
+      "frame": "Original direct-parent window-manager frame containing the same app PID; desktop root excluded; no titlebar composition",
+      "originalAppPidVerified": true,
+      "directParentFrameVerified": true
+    },
+    {
+      "file": "linux-framed-light.png",
+      "captureRevision": "919b8c2229d6989b53fa70b4591b5b5899ed5bd6",
+      "captureSha256": "e9c1116c56422e700372b6fe9c52747286081985db210105ee8c3bb9f11b6dcf",
+      "sha256": "0c8735c37c54d9d6f496d817c4ad0d2da56f553e729b0f9e19091b2dee2488c0",
+      "originalSize": [
+        810,
+        634
+      ],
+      "offset": [
+        95,
+        83
+      ],
+      "originalPixelsUnchanged": true,
+      "os": "Linux x64, actual X11/Xfwm4 OS titlebar",
+      "inputs": "Four fictional demo accounts in the actual published app diagnostic; no personal login",
+      "role": "Light-theme account overview",
+      "frame": "Original direct-parent window-manager frame containing the same app PID; desktop root excluded; no titlebar composition",
+      "originalAppPidVerified": true,
+      "directParentFrameVerified": true
     }
   ],
-  "scope": "Native own windows on isolated CI with per-image capture revisions; unchanged app pixels centered1:1 on a solid canvas. The Linux main image shows fictional demo cards; the separate original Xfce-frame image proves installed desktop execution with an empty home. Neither is authenticated account acceptance. No owner pixels, cursor or credentials.",
+  "scope": "Actual native app windows, including same-capture Linux demo cards and original direct-parent Xfce OS titlebar. Per-image source/runtime/hash recorded, every original frame pixel unchanged at1:1 on a solid canvas; no owner screen, login, cursor or titlebar composition. Historical unframed/empty-home proof is retained separately. Not authenticated handoff/full-desktop acceptance.",
   "captureRevisions": [
     "a3f4d5f3a2e0c54378f5371682b1d928700c6c50",
-    "7645e74e5285b3f8458333a0381a4a12e36eb357"
+    "7645e74e5285b3f8458333a0381a4a12e36eb357",
+    "919b8c2229d6989b53fa70b4591b5b5899ed5bd6"
   ]
 }
