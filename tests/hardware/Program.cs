@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CodexAccountDesk;
 
 var checks = new List<string>();
+object? nativeDiskIo = null;
 var ioAt = DateTimeOffset.UtcNow;
 DiskIoReading SampleIo(double read = 1024, double write = 512, double readMs = 2, double writeMs = 3, double busy = 90, DiskIoProfile profile = DiskIoProfile.NoSeekPenalty) =>
     new(ioAt, DiskIoState.Available, profile, new(read, readMs), new(write, writeMs), busy);
@@ -131,6 +132,8 @@ if (OperatingSystem.IsWindows())
     using(var io=new WindowsDiskIoSampler())
     {
         var root=Path.GetPathRoot(Environment.SystemDirectory)!;io.Sample(new[]{root});await Task.Delay(1100);var sample=io.Sample(new[]{root})[root];
+        nativeDiskIo = new { state = sample.State.ToString(), profile = sample.Profile.ToString(), readAvailable = DiskIoReading.Rate(sample.Read.BytesPerSecond),
+            writeAvailable = DiskIoReading.Rate(sample.Write.BytesPerSecond), busyAvailable = sample.BusyPercent.HasValue };
         Check("Actual local disk counters are read without generated I/O or device identities",()=>{Assert(sample.State is DiskIoState.Available or DiskIoState.Unavailable or DiskIoState.AccessDenied);if(sample.State==DiskIoState.Available)Assert(DiskIoReading.Rate(sample.Read.BytesPerSecond)&&DiskIoReading.Rate(sample.Write.BytesPerSecond));});
     }
     Check("Native Windows read-only sample preserves actual memory and bounded-or-unknown usage", () => { using var sampler = new HardwareSampler(); Validate(sampler.Sample()); });
@@ -154,5 +157,11 @@ else
     Check("Mac monitor refuses synchronously before background native sampling", () => Unsupported(mac.Start));
     Check("Mac sampler refuses before acquiring a Mach host port", () => Unsupported(() => new MacResourceSampler()));
 }
-Console.WriteLine(JsonSerializer.Serialize(new { passed = checks.Count, failed = 0, checks,
-    scope = "Production hardware module, actual supported-OS read-only sampler, JSON compatibility and wrong-OS rejection; no device names, personal homes, credentials or client/account actions exported." }));
+var report = JsonSerializer.Serialize(new { passed = checks.Count, failed = 0, checks, nativeDiskIo,
+    scope = "Production hardware module, actual supported-OS read-only sampler, JSON compatibility and wrong-OS rejection; no device names, personal homes, credentials or client/account actions exported." });
+if (args.Length != 0)
+{
+    if (args.Length != 2 || args[0] != "--report") throw new ArgumentException("Use --report <output>.");
+    Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(args[1]))!);File.WriteAllText(args[1],report);
+}
+Console.WriteLine(report);
