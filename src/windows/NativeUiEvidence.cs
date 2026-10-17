@@ -83,6 +83,24 @@ internal static class NativeUiEvidence
                     cases.Add(new { name = name + "-scroll-surfaces", passed = true });
                     VerifyTooltipLifecycle(window, directory, name);
                     cases.Add(new { name = name + "-tooltip-lifecycle", passed = true });
+                    window.PrepareUiEvidence("en", dark); window.Width = 800; window.Height = 560; window.UpdateLayout();
+                    var cpuPanel = Descendants<HardwareUsagePanel>(window).Single();
+                    var at = DateTimeOffset.UtcNow;
+                    foreach (var state in new[] { "setup", "denied", "available" })
+                    {
+                        var reading = state == "available" ? TemperatureReading.From(78.125, CodexSwitch.Sensors.CpuSensorProtocol.Source, "AMD CPU (Tctl)", at) :
+                            TemperatureReading.Missing(state == "setup" ? TemperatureState.ProviderMissing : TemperatureState.AccessDenied,
+                            CodexSwitch.Sensors.CpuSensorProtocol.Source, code: state == "setup" ? "thermal.cpu_setup_required" : "thermal.cpu_enable_required", at: at);
+                        cpuPanel.Refresh(HardwareUsage.Pending with { CheckedAt = at, Cpu = new ResourceReading(28, Temperature: reading), Memory = new ResourceReading(42) }, new Burn0Theme(dark));
+                        window.UpdateLayout(); await Task.Delay(100); Capture(window, Path.Combine(directory, name + "-cpu-" + state + ".png"));
+                        Assert(Descendants<TextBlock>(cpuPanel).Any(t => t.Text == (state == "available" ? "78°C" : "—°C")), "CPU temperature state not rendered");
+                    }
+                    var cpuMenu = ((FrameworkElement)cpuPanel.Children[0]).ContextMenu!; cpuMenu.PlacementTarget = cpuPanel.Children[0] as UIElement;
+                    cpuMenu.IsOpen = true; await Task.Delay(100);
+                    Assert(cpuMenu.Items.OfType<MenuItem>().Single().Header as string == Loc.T("thermal.cpu_enable"), "CPU action missing");
+                    var cpuSource = PresentationSource.FromVisual(cpuMenu) as HwndSource ?? throw new InvalidOperationException("Native CPU menu unavailable");
+                    Capture(cpuSource.Handle, Path.Combine(directory, name + "-cpu-menu.png")); cpuMenu.IsOpen = false;
+                    cases.Add(new { name = name + "-cpu-confirmation", passed = true, scope = "Fictional sensor states in real app; not physical CPU acceptance" });
                 }
             }
             catch (Exception error) { exit = 1; cases.Add(new { name = "native-window", passed = false, error = error.GetType().Name }); Console.Error.WriteLine("Isolated UI verification: " + error.Message); }
@@ -166,7 +184,7 @@ internal static class NativeUiEvidence
         GetWindowThreadProcessId(handle, out var process);
         if (process != Environment.ProcessId || !GetWindowRect(handle, out var bounds)) throw new InvalidOperationException("Capture requires this app's own window");
         var width = bounds.Right - bounds.Left; var height = bounds.Bottom - bounds.Top;
-        if (width < 160 || height < 160 || width > 4000 || height > 3000) throw new InvalidOperationException("Invalid native window bounds");
+        if (width < 160 || height < 25 || width > 4000 || height > 3000) throw new InvalidOperationException("Invalid native window bounds");
         using var bitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
         using (var graphics = Graphics.FromImage(bitmap))
         {

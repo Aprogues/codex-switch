@@ -13,6 +13,8 @@ Run these commands from the repository root:
 
 `artifacts/win-x64` is the complete self-contained package. Keep the entire folder; an EXE alone is insufficient. An existing installed copy can be opened using its Codex Switch shortcut.
 
+Source1.40.5 builds additionally require the Windows NativeAOT prerequisites (Visual Studio C++ desktop build tools and Windows SDK); hosted Windows CI supplies them. Use `scripts/build.ps1` so the worker is published first and its exact hash is embedded in the account app. A direct account-project publish does not create a complete CPU-capable package. Keep `sensors/` with its executable and source/license files. CPU-menu setup is optional and requires explicit driver/worker approval; no separate monitor app is needed. [CPU setup and limits](TEMPERATURES.md#built-in-windows-cpu-sensor).
+
 ## Mac
 
 Current packages require macOS15 or later. Choose Apple Silicon or Intel to match your Mac. For a source build:
