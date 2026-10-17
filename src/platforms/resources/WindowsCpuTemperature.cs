@@ -27,9 +27,15 @@ internal sealed class WindowsCpuTemperature : IAsyncDisposable
     public static string WorkerPath => Path.Combine(AppContext.BaseDirectory, "sensors", "CodexSwitch.Sensors.exe");
     public void Start() { ObjectDisposedException.ThrowIf(_disposed, this); if (_run == null) StartWorker(false); }
     public async Task EnableAsync(CancellationToken cancellation)
+        => await RestartAsync(true, cancellation);
+    public async Task<TemperatureReading> ProbeAsync(CancellationToken cancellation)
+    {
+        await RestartAsync(false, cancellation); return Current;
+    }
+    private async Task RestartAsync(bool elevate, CancellationToken cancellation)
     {
         await _transition.WaitAsync(cancellation);
-        try { ObjectDisposedException.ThrowIf(_disposed, this); await StopAsync(); cancellation.ThrowIfCancellationRequested(); StartWorker(true); await _started!.Task.WaitAsync(cancellation); }
+        try { ObjectDisposedException.ThrowIf(_disposed, this); await StopAsync(); cancellation.ThrowIfCancellationRequested(); StartWorker(elevate); await _started!.Task.WaitAsync(cancellation); }
         finally { _transition.Release(); }
     }
     private void StartWorker(bool elevate)

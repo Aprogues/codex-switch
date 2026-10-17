@@ -99,18 +99,23 @@ internal sealed class MainWindow : Window
         if (_options.UiEvidenceDirectory != null || _closing || _cpuTemperatureChanging) return;
         var reading = _hardware.CpuTemperatureStatus;
         if (TemperaturePresentation.Fresh(reading, DateTimeOffset.UtcNow)) return;
-        var install = reading?.Code == "thermal.cpu_setup_required";
-        if (MessageBox.Show(this, Loc.T(install ? "thermal.cpu_setup_confirm" : "thermal.cpu_enable_confirm"), "Codex Switch", MessageBoxButton.OKCancel, MessageBoxImage.Information) != MessageBoxResult.OK) return;
         try
         {
-            _cpuTemperatureChanging = true;
-            if (install) await CpuTemperatureSetup.InstallAsync(_lifetime.Token);
+            _cpuTemperatureChanging = true; _hardwarePanel.SetCpuTemperatureBusy(true);
+            if (reading.Code == "thermal.cpu_setup_required") reading = await _hardware.ProbeCpuTemperatureAsync(_lifetime.Token);
+            if (TemperaturePresentation.Fresh(reading, DateTimeOffset.UtcNow)) return;
+            if (reading.Code == "thermal.cpu_bundle_missing") { Confirm(Loc.T(reading.Code), "Codex Switch", "확인", false); return; }
+            var install = reading.Code == "thermal.cpu_setup_required";
+            if (MessageBox.Show(this, Loc.T(install ? "thermal.cpu_setup_confirm" : "thermal.cpu_enable_confirm"), "Codex Switch", MessageBoxButton.OKCancel, MessageBoxImage.Information) != MessageBoxResult.OK) return;
+            if (install && await CpuTemperatureSetup.InstallAsync(_lifetime.Token))
+            { Confirm(Loc.T("thermal.cpu_restart_required"), "Codex Switch", "확인", false); return; }
             await _hardware.EnableCpuTemperatureAsync(_lifetime.Token);
         }
         catch (OperationCanceledException) when (_lifetime.IsCancellationRequested) { }
         catch (Win32Exception error) when (error.NativeErrorCode == 1223) { }
-        catch (Exception error) when (error is IOException or InvalidDataException or Win32Exception or System.Net.Http.HttpRequestException) { ShowError(error); }
-        finally { _cpuTemperatureChanging = false; }
+        catch (Win32Exception error) { Confirm(Loc.F("thermal.cpu_setup_failed", error.NativeErrorCode), "Codex Switch", "확인", false); }
+        catch (Exception error) when (error is IOException or InvalidDataException or System.Net.Http.HttpRequestException) { ShowError(error); }
+        finally { _cpuTemperatureChanging = false; _hardwarePanel.SetCpuTemperatureBusy(false); }
     }
     private void ApplyTheme()
     {
