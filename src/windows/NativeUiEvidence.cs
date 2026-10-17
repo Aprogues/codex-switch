@@ -153,7 +153,7 @@ internal static class NativeUiEvidence
                 }
                 await AccountWarningEvidence.CaptureAsync(window, service, directory);
             }
-            catch (Exception error) { exit = 1; cases.Add(new { name = "native-window", passed = false, error = error.GetType().Name }); Console.Error.WriteLine("Isolated UI verification: " + error.Message); }
+            catch (Exception error) { exit = 1; cases.Add(new { name = "native-window", passed = false, error = error.GetType().Name, message = error.Message }); Console.Error.WriteLine("Isolated UI verification: " + error.Message); }
             finally
             {
                 File.WriteAllText(Path.Combine(directory, "receipt.json"), JsonSerializer.Serialize(new { schema = 1, os = "Windows",

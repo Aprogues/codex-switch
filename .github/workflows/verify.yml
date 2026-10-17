@@ -137,7 +137,11 @@ jobs:
         run: |
           $taskProcess = Start-Process artifacts/win-x64/CodexSwitch.exe -ArgumentList @('--verify-ui','artifacts/native-ui/windows/raw') -WindowStyle Hidden -PassThru
           if (!$taskProcess.WaitForExit(45000)) { throw 'Owned UI evidence process did not finish' }
-          if ($taskProcess.ExitCode -ne 0) { throw 'Native Windows UI verification failed' }
+          if ($taskProcess.ExitCode -ne 0) {
+            $taskReceipt = Get-Content -LiteralPath artifacts/native-ui/windows/raw/receipt.json -Raw | ConvertFrom-Json
+            $taskReceipt.cases | Where-Object { -not $_.passed } | ConvertTo-Json -Compress
+            throw 'Native Windows UI verification failed'
+          }
       - name: Validate isolated Windows window exports
         env:
           EVIDENCE_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
