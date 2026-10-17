@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CodexSwitch.Sensors;
 
-internal sealed record CpuSample(int Version, string State, double? Celsius, long At, string Sensor);
+internal sealed record CpuSample(int Version, string State, double? Celsius, long At, string Sensor, int? Error = null);
 [JsonSourceGenerationOptions(UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow)]
 [JsonSerializable(typeof(CpuSample))]
 internal partial class CpuJson : JsonSerializerContext { }
@@ -21,7 +21,8 @@ internal static class CpuSensorProtocol
     {
         if (value.Version != 1 || value.State is not ("Available" or "ProviderMissing" or "AccessDenied" or "SensorUnavailable" or "ReadFailed" or "PlatformUnsupported") ||
             value.At < now.AddSeconds(-30).ToUnixTimeMilliseconds() || value.At > now.AddSeconds(5).ToUnixTimeMilliseconds() ||
-            value.Sensor is not ("" or "AMD CPU (Tctl)" or "Intel CPU package" or "Intel CPU core") ||
+            value.Sensor is not ("" or "AMD CPU (Tctl)" or "Intel CPU package" or "Intel CPU core") || value.Error is < 0 or > 65535 ||
+            value.State == "Available" && value.Error != null ||
             (value.State == "Available" ? value.Celsius is not double c || !double.IsFinite(c) || c < -50 || c > 150 || value.Sensor.Length == 0 : value.Celsius != null || value.Sensor.Length != 0))
             throw new InvalidDataException("Invalid CPU sensor message.");
         return value;
