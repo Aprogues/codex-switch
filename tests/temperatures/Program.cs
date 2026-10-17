@@ -148,5 +148,10 @@ Check("A replaced worker is refused before any privileged launch",()=>{
     foreach(var wrong in new[]{"",new string('0',64),new string('x',64)})
     {using var stream=new System.IO.MemoryStream(bytes);var rejected=false;try{WindowsCpuTemperature.VerifyWorker(stream,wrong);}catch(System.IO.InvalidDataException){rejected=true;}Assert(rejected);}
 });
+Check("Built-in CPU setup never incorrectly requires an external WMI monitor",()=>{
+    Loc.SetLanguage("en"); var text=TemperaturePresentation.Tooltip(TemperatureReading.Missing(TemperatureState.ProviderMissing,
+        CodexSwitch.Sensors.CpuSensorProtocol.Source,code:"thermal.cpu_setup_required",at:now),now);
+    Assert(text.Contains("PawnIO")&&!text.Contains("WMI"));
+});
 Loc.SetLanguage("en");
 Console.WriteLine(JsonSerializer.Serialize(new {passed=checks.Count,failed=0,checks,scope="Production storage parsing, identity/channel selection and presentation contracts; synthetic bytes/metadata only, no native device queries, accounts or process actions."},new JsonSerializerOptions {WriteIndented=true}));
