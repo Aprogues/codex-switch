@@ -1,5 +1,7 @@
 # Current status
 
+Issue97 is implementing Linux terminal account switching and exact saved-session resume. [Command/safety/verification checkpoints](LINUX_TERMINAL.md) are authoritative for this new scope. Published1.40.7 still has only the GUI preview and diagnostic commands; new terminal, native PTY and authenticated continuation confirmation are pending.
+
 Issue95 capture checkpoint919b8c2 passes actual framed UI on native Linux x64/ARM64:12 original app/OS-frame captures per architecture, with four fictional demo cards, matching app PID/direct parent and desktop-root exclusion. [The gallery](../media/release-1.40.7/README.md) now shows real Xfce titlebars and account cards together in both themes; Windows/Linux captions are added in four README languages. Original pixels, source/PNG hashes, metadata and privacy are inspected. Final six checks, installed-session vault preservation, author review/merge and public verification remain in PR96. No binary Release or owner environment changes are included.
 
 Issue95 adds a real framed-account capture to the existing isolated Xfce desktop verification: same installed app, four fictional demo cards, original app PID/direct-parent OS frame and desktop-root exclusion. Both themes, no private data and unchanged ordinary vault/auth state are required. Native capture is pending; the main screenshot will be replaced only after the actual frames are inspected. This diagnostic/evidence scope does not modify account behavior or republish binary1.40.7.
