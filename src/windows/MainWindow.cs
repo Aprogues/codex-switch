@@ -97,7 +97,7 @@ internal sealed class MainWindow : Window
     private async Task EnableCpuTemperatureAsync()
     {
         if (_options.UiEvidenceDirectory != null || _closing || _cpuTemperatureChanging) return;
-        var reading = _hardware.Current.Cpu.Temperature;
+        var reading = _hardware.CpuTemperatureStatus;
         if (TemperaturePresentation.Fresh(reading, DateTimeOffset.UtcNow)) return;
         var install = reading?.Code == "thermal.cpu_setup_required";
         if (MessageBox.Show(this, Loc.T(install ? "thermal.cpu_setup_confirm" : "thermal.cpu_enable_confirm"), "Codex Switch", MessageBoxButton.OKCancel, MessageBoxImage.Information) != MessageBoxResult.OK) return;
