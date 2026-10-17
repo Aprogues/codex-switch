@@ -29,6 +29,7 @@ internal sealed class LinuxClientSession : IAsyncDisposable
     public string Provenance => _installation.Provenance;
     public string? PackageVersion => _installation.PackageVersion;
     public bool DesktopBinaryApproved => _installation.Desktop != null;
+    internal int InspectionProcessId => _rpc.OwnedProcessId;
     private LinuxClientSession(LinuxClientInstallation installation, CodexRpc rpc, string home, string context, string version)
     { _installation = installation; _rpc = rpc; Home = home; Context = context; CliVersion = version; }
     public static string DirectoryPath(string path)
@@ -92,7 +93,7 @@ internal sealed class LinuxClientSession : IAsyncDisposable
     }
     internal async Task<JsonElement> MetadataAsync(string method, object parameters, CancellationToken cancellation)
     {
-        if (method is not ("thread/read" or "thread/name/set")) throw new ArgumentException("Unsupported metadata operation.");
+        if (method is not ("thread/read" or "thread/list" or "thread/name/set")) throw new ArgumentException("Unsupported metadata operation.");
         await RequireFileAsync(cancellation).ConfigureAwait(false);
         return await _rpc.RequestAsync(method, parameters, cancellation).ConfigureAwait(false);
     }

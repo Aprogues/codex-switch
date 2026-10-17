@@ -24,10 +24,16 @@ p.add_argument('--provider',choices=['gnome','kwallet5','kwallet6','ksecrets','k
 p.add_argument('--owned-xvfb',action='store_true',help=argparse.SUPPRESS)
 p.add_argument('--storage-only',action='store_true',help='Exclude the separate installed-client account-policy contracts')
 p.add_argument('--inside',action='store_true')
+p.add_argument('--terminal-assembly',type=Path,help='Run the dedicated headless terminal contracts in the owned GNOME session')
+p.add_argument('--terminal-app',type=Path)
 a=p.parse_args()
 if sys.platform!='linux':raise SystemExit('Native Linux is required')
 assembly=a.assembly.resolve();report=a.report.resolve()
 if not assembly.is_file():raise SystemExit('Build the native test assembly first')
+if (a.terminal_assembly is None)!=(a.terminal_app is None) or a.terminal_assembly is not None and a.provider!='gnome':
+    raise SystemExit('Terminal contracts require both the built assembly/app and the owned GNOME provider')
+if a.terminal_assembly is not None:
+    a.terminal_assembly=a.terminal_assembly.resolve(strict=True);a.terminal_app=a.terminal_app.resolve(strict=True)
 
 if a.provider=='ksecrets-current' and not a.inside and not a.owned_xvfb:
     env=dict(os.environ)
@@ -210,7 +216,23 @@ def run_contracts():
     finally:os.kill(daemon.pid,signal.SIGCONT)
     phase('read-after-timeout');phase('missing');stop();phase('offline')
 try:
-    run_contracts()
+    terminal=None
+    if a.terminal_assembly is not None:
+        start();verify_owner()
+        environment=dict(os.environ)
+        for name in ('DISPLAY','WAYLAND_DISPLAY','XAUTHORITY'):environment.pop(name,None)
+        native=Path(environment['CODEX_SWITCH_STANDALONE_CLI']).resolve(strict=True)
+        import hashlib
+        environment['CODEX_SWITCH_STANDALONE_CLI']=str(native)
+        environment['CODEX_SWITCH_STANDALONE_CLI_SHA']=hashlib.sha256(native.read_bytes()).hexdigest()
+        task=subprocess.run(['dotnet',str(a.terminal_assembly),str(root/'codex-linux-terminal-test-contracts'),str(a.terminal_app)],env=environment,capture_output=True,timeout=240)
+        if task.returncode:
+            private_log.write(task.stdout);private_log.write(task.stderr);private_log.flush()
+            raise RuntimeError('Native headless terminal contracts failed; inspect private diagnostics')
+        terminal=json.loads(task.stdout)
+        if terminal['failed'] or terminal['passed']!=13 or terminal['architecture']!=a.architecture:raise RuntimeError('Complete native headless terminal verification is required')
+        verify_owner()
+    else:run_contracts()
     package='gnome-keyring' if a.provider=='gnome' else 'libkf5wallet-bin' if a.provider=='kwallet5' else 'kwallet6'
     provider_version=subprocess.run(['dpkg-query','-W','-f=${Version}',package],capture_output=True,text=True,check=True,timeout=10).stdout.strip()
     environment={}
@@ -220,6 +242,9 @@ try:
     value={'schema':1,'provider':a.provider,'providerVersion':provider_version,'providerCompatibility':'verified-storage','architecture':a.architecture,'passed':sum(v['passed'] for v in results),'failed':0,'phases':results,'nativePackages':environment,'accountPolicyIncluded':not a.storage_only,
         'display':'Qt/X11 on owned Xvfb; actual password dialog' if a.provider=='ksecrets-current' else 'Qt offscreen' if a.provider!='gnome' else 'Headless GNOME Keyring',
         'scope':'Actual declared Secret Service/Linux private-file contracts on a disposable file-socket D-Bus/HOME/XDG session; no full KDE/Wayland or authenticated Codex handoff acceptance. No personal bus, accounts, Codex, key material or private paths exported.'}
+    if terminal is not None:
+        value.update(revision=os.environ['EVIDENCE_REVISION'],terminal=terminal,standaloneCliSha256=environment['CODEX_SWITCH_STANDALONE_CLI_SHA'],headless=True)
+        value['passed']=terminal['passed'];value['accountPolicyIncluded']=False
     report.parent.mkdir(parents=True,exist_ok=True);report.write_text(json.dumps(value,indent=2)+'\n',encoding='utf-8')
     print(json.dumps({key:value[key] for key in ('provider','providerVersion','providerCompatibility','architecture','passed','failed')} | {'phaseCount':len(results)}),flush=True)
 finally:
