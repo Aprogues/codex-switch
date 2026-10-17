@@ -25,7 +25,7 @@ internal sealed class WindowsCpuTemperature : IAsyncDisposable
     private TemperatureReading _current = TemperatureReading.Missing(TemperatureState.Pending, CpuSensorProtocol.Source);
     public TemperatureReading Current => Volatile.Read(ref _current);
     public static string WorkerPath => Path.Combine(AppContext.BaseDirectory, "sensors", "CodexSwitch.Sensors.exe");
-    public void Start() { if (_run == null) StartWorker(false); }
+    public void Start() { ObjectDisposedException.ThrowIf(_disposed, this); if (_run == null) StartWorker(false); }
     public async Task EnableAsync(CancellationToken cancellation)
     {
         await _transition.WaitAsync(cancellation);
@@ -42,11 +42,13 @@ internal sealed class WindowsCpuTemperature : IAsyncDisposable
     {
         try
         {
+            cancellation.ThrowIfCancellationRequested();
             if (!File.Exists(WorkerPath)) { Publish(TemperatureState.ProviderMissing, "thermal.cpu_bundle_missing"); return; }
             var digest = Assembly.GetEntryAssembly()?.GetCustomAttributes<AssemblyMetadataAttribute>().SingleOrDefault(a => a.Key == "CodexSwitch.CpuSensorSha256")?.Value;
             if (string.IsNullOrEmpty(digest)) { Publish(TemperatureState.ProviderMissing, "thermal.cpu_bundle_missing"); return; }
             using var verified = new FileStream(WorkerPath, FileMode.Open, FileAccess.Read, FileShare.Read);
             VerifyWorker(verified, digest);
+            cancellation.ThrowIfCancellationRequested();
             var nonce = Guid.NewGuid().ToString("N");
             using var pipe = new NamedPipeServerStream("CodexSwitch.Cpu." + nonce, PipeDirection.In, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous | PipeOptions.CurrentUserOnly);
             using var parent = Process.GetCurrentProcess();
@@ -91,7 +93,7 @@ internal sealed class WindowsCpuTemperature : IAsyncDisposable
         _stop?.Cancel(); if (_run != null) await _run;
         if (_worker != null)
         {
-            if (!_worker.HasExited) { using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(7)); await _worker.WaitForExitAsync(timeout.Token); }
+            if (!_worker.HasExited) { using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(CpuSensorProtocol.ShutdownTimeoutSeconds)); await _worker.WaitForExitAsync(timeout.Token); }
             _worker.Dispose(); _worker = null;
         }
         _stop?.Dispose(); _stop = null; _run = null;

@@ -28,7 +28,7 @@ internal static class Program
             using var parent = Process.GetProcessById(parentId);
             if (parent.StartTime.ToUniversalTime().Ticks != ticks) return 3;
             using var pipe = new NamedPipeClientStream(".", "CodexSwitch.Cpu." + nonce.ToString("N"), PipeDirection.Out, PipeOptions.Asynchronous);
-            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10)); await pipe.ConnectAsync(timeout.Token);
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(CpuSensorProtocol.ConnectTimeoutSeconds)); await pipe.ConnectAsync(timeout.Token);
             if (!GetNamedPipeServerProcessId(pipe.SafePipeHandle, out var serverId) || serverId != parentId) return 4;
             using var reader = CreateReader(out var failure);
             while (!parent.HasExited)

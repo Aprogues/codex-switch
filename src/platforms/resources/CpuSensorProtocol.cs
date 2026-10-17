@@ -14,6 +14,7 @@ internal partial class CpuJson : JsonSerializerContext { }
 internal static class CpuSensorProtocol
 {
     public const int MaximumBytes = 1024;
+    public const int ConnectTimeoutSeconds = 5, ShutdownTimeoutSeconds = 10;
     public const string Source = "Codex Switch · native CPU sensor";
     public static CpuSample Missing(string state) => new(1, state, null, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), "");
     public static CpuSample Validate(CpuSample value, DateTimeOffset now)

@@ -18,6 +18,14 @@ internal static class CpuTemperatureDiagnostics
             reading = sensor.Current;
             if (reading.State is TemperatureState.Pending or TemperatureState.InvalidData or TemperatureState.ReadFailed || reading.Code == "thermal.cpu_bundle_missing")
                 throw new InvalidDataException("CPU worker application integration failed.");
+            foreach (var delay in new[] { 0, 20 })
+            {
+                var quick = new WindowsCpuTemperature(); quick.Start();
+                if (delay != 0) await Task.Delay(delay);
+                await quick.DisposeAsync();
+                try { quick.Start(); throw new InvalidDataException("Disposed CPU worker restarted."); }
+                catch (ObjectDisposedException) { }
+            }
         }
         catch (Exception error) { failure = error.GetType().Name; }
         var value = new { schema = 1, passed = failure == null ? 1 : 0, failed = failure == null ? 0 : 1, failure,
