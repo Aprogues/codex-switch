@@ -30,6 +30,8 @@ The published account app embeds its worker's exact digest and retains a non-wri
 
 AMD reports **Tctl**, including control-temperature offsets on older Zen parts; it is not relabeled as die temperature. Intel requires a real target MSR and valid DTS bit, without guessed TjMax. Initial coverage is one CPU package, not hottest-of-all sockets/CCDs. Older CPUs, Windows ARM64, virtual machines, unsupported registers and blocked drivers can remain unavailable. GPU/VRAM/disk and nine language packs are retained. Physical CPU success requires a fresh native value; a running driver or fictional UI screenshot does not establish it.
 
+A CPUID-reported hypervisor explicitly disables the physical-register collector before opening a driver. Hosted runners expose varying virtual CPU models; some advertise DTS while rejecting its MSRs. That is an unsupported virtual platform, not proof of physical sensor failure or a reason to ignore failed reads. This also means Windows hosts reporting a hypervisor (including some VBS/Hyper-V configurations) retain the external-provider fallback rather than claiming unverified register access.
+
 NVML loads from the protected Windows system directory with restricted dependency search. Native handles/libraries are released. CPU/memory WMI reads run in the background every five seconds; missing providers are probed once a minute. Temperature queries do not access Codex accounts, credentials or chats.
 
 VRAM matching enumerates NVIDIA PCI identities and requires a unique bus/device/function match for an NVIDIA DXGI adapter. It does not assume PCI domain zero or guess among identical addresses across domains. Unresolved/linked/multi-domain ambiguity remains unavailable.
