@@ -1,12 +1,13 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace CodexAccountDesk;
 
-internal sealed record DriveReading(string Root, string Label, long? Free, long? Total, TemperatureReading? Temperature = null)
+internal sealed record DriveReading(string Root, string Label, long? Free, long? Total, TemperatureReading? Temperature = null, DiskIoReading? Io = null)
 {
     public double? FreePercent => Free.HasValue && Total > 0 ? 100.0 * Free.Value / Total.Value : null;
 }
@@ -33,13 +34,23 @@ internal sealed class DriveMonitor : IAsyncDisposable
     public void Start() { _run ??= Task.Run(RunAsync); }
     private async Task RunAsync()
     {
+        using var io = OperatingSystem.IsWindows() ? new WindowsDiskIoSampler() : null;
+        var cache = new Dictionary<string, (DriveReading Reading, DateTimeOffset Next)>(StringComparer.OrdinalIgnoreCase);
         try
         {
             while (!_stop.IsCancellationRequested)
             {
-                var readings = Volatile.Read(ref _configuration).Select(Read).ToArray();
+                var configuration = Volatile.Read(ref _configuration); var now = DateTimeOffset.UtcNow;
+                foreach (var removed in cache.Keys.Except(configuration.Select(p => p.Root), StringComparer.OrdinalIgnoreCase).ToArray()) cache.Remove(removed);
+                var throughput = io?.Sample(configuration.Select(p => p.Root).ToArray());
+                var readings = configuration.Select(preference =>
+                {
+                    if (!cache.TryGetValue(preference.Root, out var cached) || now >= cached.Next)
+                    { cached = (Read(preference), now.AddSeconds(15)); cache[preference.Root] = cached; }
+                    return cached.Reading with { Label = preference.Label, Io = throughput != null && throughput.TryGetValue(preference.Root, out var value) ? value : DiskIoReading.Missing(DiskIoState.PlatformUnsupported) };
+                }).ToArray();
                 Volatile.Write(ref _current, readings); Changed?.Invoke();
-                await _changed.WaitAsync(TimeSpan.FromSeconds(15), _stop.Token);
+                await _changed.WaitAsync(TimeSpan.FromSeconds(OperatingSystem.IsWindows() ? 2 : 15), _stop.Token);
             }
         }
         catch (OperationCanceledException) when (_stop.IsCancellationRequested) { }

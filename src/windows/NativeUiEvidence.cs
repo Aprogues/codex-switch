@@ -101,6 +101,33 @@ internal static class NativeUiEvidence
                     var cpuSource = PresentationSource.FromVisual(cpuMenu) as HwndSource ?? throw new InvalidOperationException("Native CPU menu unavailable");
                     Capture(cpuSource.Handle, Path.Combine(directory, name + "-cpu-menu.png")); cpuMenu.IsOpen = false;
                     cases.Add(new { name = name + "-cpu-confirmation", passed = true, scope = "Fictional sensor states in real app; not physical CPU acceptance" });
+                    var diskPanel = Descendants<DriveUsagePanel>(window).Single();
+                    foreach (var diskState in new[] { "normal", "pressure", "unknown", "compact" })
+                    {
+                        window.Width = diskState == "compact" ? 500 : 800; window.Height = diskState == "compact" ? 360 : 560;
+                        var ioAt = DateTimeOffset.UtcNow; var history = new DiskIoHistory(); DiskIoReading io = DiskIoReading.Missing(DiskIoState.Pending);
+                        for (var seconds = 0; seconds <= 60; seconds += 2)
+                            io = history.Observe(new(ioAt.AddSeconds(seconds - 60), DiskIoState.Available, diskState == "unknown" ? DiskIoProfile.Unknown : DiskIoProfile.NoSeekPenalty,
+                                new(240 * 1048576, diskState == "pressure" ? 15 : 2), new(96 * 1048576, diskState == "pressure" ? 25 : 3), 90));
+                        if (diskState == "unknown") io = DiskIoReading.Missing(DiskIoState.Unavailable);
+                        diskPanel.Refresh(new[] { new DriveReading("C:\\", "System", 80L * 1073741824, 250L * 1073741824,
+                            TemperatureReading.From(48, "Fictional disk sensor", "", ioAt), io) }, new Burn0Theme(dark));
+                        window.UpdateLayout(); await Task.Delay(100);
+                        var labels = Descendants<FrameworkElement>(diskPanel).Select(System.Windows.Automation.AutomationProperties.GetName).ToArray();
+                        Assert(labels.Any(t => t.StartsWith(Loc.T("io.read"), StringComparison.Ordinal)) && labels.Any(t => t.StartsWith(Loc.T("io.write"), StringComparison.Ordinal)), "Disk bars have no accessible direction/rate names");
+                        Assert(diskPanel.ActualHeight == 24, "Disk throughput changed footer height");
+                        Capture(window, Path.Combine(directory, name + "-disk-" + diskState + ".png"));
+                        if (diskState == "pressure")
+                        {
+                            var owner = Descendants<FrameworkElement>(diskPanel).Single(element => element.ToolTip is ResourceToolTip);
+                            var tip = (ToolTip)owner.ToolTip; tip.PlacementTarget = owner; tip.IsOpen = true;
+                            await Task.Delay(150);
+                            var popup = PresentationSource.FromVisual(tip) as HwndSource ?? throw new InvalidOperationException("Disk tooltip has no native popup");
+                            Capture(popup.Handle, Path.Combine(directory, name + "-disk-tooltip.png")); tip.IsOpen = false;
+                        }
+                    }
+                    window.Width = 800; window.Height = 560;
+                    cases.Add(new { name = name + "-disk-confirmation", passed = true, scope = "Fictional disk throughput/profile/latency in real native app; not manufacturer rating or physical benchmark" });
                 }
             }
             catch (Exception error) { exit = 1; cases.Add(new { name = "native-window", passed = false, error = error.GetType().Name }); Console.Error.WriteLine("Isolated UI verification: " + error.Message); }
