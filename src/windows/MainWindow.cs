@@ -164,7 +164,7 @@ internal sealed class MainWindow : Window
         _scroll.Content = _rows; Grid.SetRow(_scroll, 2); body.Children.Add(_scroll);
         var footer = new StackPanel { Margin = new Thickness(0, 4, 0, 0) };
         _hardwarePanel.Margin = new Thickness(0, 0, 0, 4); footer.Children.Add(_hardwarePanel);
-        var statusHost = new Grid(); statusHost.Children.Add(_status); statusHost.Children.Add(_drivePanel); footer.Children.Add(statusHost);
+        footer.Children.Add(_drivePanel); footer.Children.Add(_status);
         _cancelSwitch.HorizontalAlignment = HorizontalAlignment.Left; _cancelSwitch.Margin = new Thickness(0, 10, 0, 0); footer.Children.Add(_cancelSwitch);
         Grid.SetRow(footer, 3); body.Children.Add(footer); Grid.SetRow(body, 1); root.Children.Add(body); return root;
     }
@@ -540,7 +540,8 @@ internal sealed class MainWindow : Window
             switchButton.Click += async (_, _) => await QueueSwitchAsync(profile); actions.Children.Add(switchButton);
             var more = NewButton("", "more"); more.Padding = new Thickness(6); more.Margin = new Thickness(4, 0, 0, 0); more.ToolTip = Loc.T("계정 메뉴"); more.Click += (_, _) => OpenAccountMenu(more, profile); actions.Children.Add(more);
             var details = profile.RequiresApply ? Loc.T("새 로그인 적용 대기") : "";
-            var titleRow = new AccountCardHeader(profile.DisplayName, details, _theme, actions, profile.IsCurrent);
+            var warning = profile.Error == null ? null : profile.Usage == null ? Loc.Error(profile.Error) : Loc.F("갱신 실패 · 이전 조회값\n{0}", Loc.Error(profile.Error));
+            var titleRow = new AccountCardHeader(profile.DisplayName, details, _theme, actions, profile.IsCurrent, warning);
             _selectedQuotas.TryGetValue(profile.Key, out var selected);
             var card = new AccountTankCard(profile, AccountTankCard.SelectQuota(profile, selected), _theme, titleRow, more,
                 selection => { _selectedQuotas[profile.Key] = selection; RenderAccounts(); });
@@ -752,7 +753,7 @@ internal sealed class MainWindow : Window
     }
     private void SetRefreshStatus()
     {
-        var failures = _service.Accounts.Count(a => a.Error != null); SetStatus(failures > 0 ? "{0}개 계정의 갱신에 실패했습니다. 이전 조회값과 안내를 확인하세요." : "사용량을 갱신했습니다.", failures > 0, failures);
+        SetStatus(_service.Accounts.Any(a => a.Error != null) ? "" : "사용량을 갱신했습니다.");
     }
     private void SetStatus(string source, bool warning = false, params object?[] arguments) { _statusSource = source; _statusArguments = arguments; _statusWarning = warning; RenderStatus(); }
     private void RenderStatus()
@@ -762,8 +763,8 @@ internal sealed class MainWindow : Window
         _status.ToolTip = _status.Text;
         _status.Foreground = Color(_statusWarning ? "warning" : "muted");
         var empty = _service.Vault.Data.Drives.Count == 0;
-        _status.Visibility = _statusWarning || empty ? Visibility.Visible : Visibility.Collapsed;
-        _drivePanel.Visibility = _statusWarning ? Visibility.Collapsed : Visibility.Visible;
+        _status.Visibility = _status.Text.Length > 0 && (_statusWarning || empty) ? Visibility.Visible : Visibility.Collapsed;
+        _drivePanel.Visibility = Visibility.Visible;
         _drivePanel.HorizontalAlignment = empty ? HorizontalAlignment.Right : HorizontalAlignment.Stretch;
         _drivePanel.Width = empty ? 22 : double.NaN;
     }
