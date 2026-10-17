@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "58c715097eb4a1881e77a7a0d1915969fdc8ecea",
+  "revision": "6c40f175d34cf07e5c64bab5aa77f954689eca24",
   "sourceVersion": "1.41.0",
   "os": "Linux",
   "architecture": "Arm64",
@@ -8,7 +8,7 @@
   "provider": "gnome",
   "providerVersion": "46.1-2ubuntu0.2",
   "standaloneCliSha256": "071cbe8d821cf1b02b6d8ba6c8b7991b228fcb8519dcb68a37d31222bb8cabe5",
-  "passed": 14,
+  "passed": 15,
   "failed": 0,
   "checks": [
     "Published headless command lists two encrypted accounts without token/email output or data writes",
@@ -22,6 +22,7 @@
     "A non-CLI metadata thread is refused before changing the login or encrypted data",
     "Interactive resume without a TTY fails before changing the login",
     "Resume launch binds the original descriptor, UUID and folder with one explicit follow-up and no permission override",
+    "Noninteractive resume exposes real upstream JSON events without a permission or session-selection override",
     "Ambiguous/implicit session targets and incomplete/duplicate options are refused",
     "Duplicate account aliases require the explicit stable account ID",
     "Original Codex configuration remains byte-identical"

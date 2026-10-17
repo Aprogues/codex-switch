@@ -16,13 +16,13 @@ Source1.40.0/issue74/PR75 implements ordinary Linux account/usage, explicit chec
 
 | Environment | Package | Evidence boundary |
 | --- | --- | --- |
-| Windows x64 | 1.27.6 self-contained ZIP | 93 internal / 23 isolated SQLite-WAL checks; live client acceptance is separate |
-| Mac arm64 / x64 | 1.27.6 self-contained ZIP | Cross-publish/package checks; native login/switch/resume, Intel-device acceptance and notarization remain open |
-| Linux x64 / arm64 | Unsigned tar.gz/deb/rpm installation/UI preview candidates | Declared storage/client/policy/SQLite/peer and controlled close; fresh Ubuntu24.04/Debian13/Fedora44 minimal-container install/update/removal/bootstrap UI. Actual account/handoff, full desktop/display/accessibility and supported Release promotion remain pending |
-| WSL / remote / headless / CLI-only | No dedicated supported setup | Do not assume desktop restoration or share credentials across homes/OSes |
-| Linux terminal, source1.41.0 | Headless encrypted-account commands and exact CLI/exec session resume; not in published1.40.7 | Explicit native executable/SHA and unlocked supported Secret Service required; offline verification is distinct from authenticated continuation. [Commands/current evidence](development/LINUX_TERMINAL.md) |
+| Windows x64 | 1.40.7 self-contained ZIP | Native build, account-free regression and actual app images; real client acceptance remains distinct |
+| Mac arm64 / x64 | 1.40.2 self-contained ZIP | Native hosted Mac checks/images; physical MacBook evidence and notarization remain separate |
+| Linux x64 / arm64 | 1.40.7 unsigned tar.gz/deb/rpm integration preview | Declared storage/client/policy/SQLite/peer and controlled close; fresh Ubuntu24.04/Debian13/Fedora44 minimal-container install/update/removal/bootstrap UI. Desktop active-chat handoff and full desktop/display/accessibility acceptance remain pending |
+| WSL / cross-OS homes | No dedicated supported setup | Do not assume desktop restoration or share credentials across homes/OSes |
+| Linux terminal, source1.41.0 | Headless encrypted-account commands and exact CLI/exec session resume; not in published1.40.7 | Explicit native executable/SHA and unlocked supported Secret Service required. Native x64/ARM64 offline contracts and real two-account x64 contextual resume verified; authenticated ARM64/full desktop remain separate. [Commands/current evidence](development/LINUX_TERMINAL.md) |
 
-English stays the shared default. Published 1.27.6 UI supports English/Korean. Source 1.28.0 adds nine UI catalogues and extensible local packs, tracked in [#16](https://github.com/Gaebabi/codex-switch/issues/16) and the [translator guide](LOCALIZATION.md). Contributions in other languages and for other environments are welcome.
+English stays the shared default. Current packages include nine UI catalogues and extensible local JSON packs, introduced in [#16](https://github.com/Gaebabi/codex-switch/issues/16); see the [translator guide](LOCALIZATION.md). Contributions in other languages and for other environments are welcome. Earlier versioned checkpoint paragraphs retain their historical scope.
 
 ## Sequence and completion gates
 
