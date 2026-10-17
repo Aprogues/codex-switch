@@ -101,10 +101,14 @@ internal static class NativeUiEvidence
                         cpuPanel.SetCpuTemperatureBusy(false); Assert(setup.IsEnabled, "CPU action did not recover after completion/cancel");
                         if (state != "available")
                         {
+                            cpuPanel.Refresh(HardwareUsage.Pending with { CheckedAt = at, Cpu = new ResourceReading(100, Temperature: reading), Memory = new ResourceReading(42) }, new Burn0Theme(dark));
                             window.Width = 500; window.Height = 360; window.UpdateLayout(); await Task.Delay(80);
                             var cell = (FrameworkElement)cpuPanel.Children[0];
                             var edge = setup.TransformToAncestor(cell).Transform(new System.Windows.Point(setup.ActualWidth, 0));
                             Assert(setup.ActualWidth >= 16 && setup.ActualHeight >= 16 && edge.X <= cell.ActualWidth + 0.5, "CPU setup action clipped at minimum size");
+                            var percentage = Descendants<TextBlock>(cpuPanel).Single(t => t.Text == "100%");
+                            var valueEdge = percentage.TransformToAncestor(cell).Transform(new System.Windows.Point(percentage.ActualWidth, 0));
+                            Assert(valueEdge.X + 2 <= setup.TransformToAncestor(cell).Transform(new System.Windows.Point()).X, "CPU setup overlaps full utilization");
                             Capture(window, Path.Combine(directory, name + "-cpu-" + state + "-compact.png"));
                             window.Width = 800; window.Height = 560; window.UpdateLayout();
                         }
