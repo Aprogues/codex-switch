@@ -19,6 +19,7 @@ internal sealed class WindowsCpuTemperature : IAsyncDisposable
     private CancellationTokenSource? _stop;
     private Task? _run;
     private Process? _worker;
+    private TaskCompletionSource? _started;
     private bool _disposed;
     private readonly SemaphoreSlim _transition = new(1, 1);
     private TemperatureReading _current = TemperatureReading.Missing(TemperatureState.Pending, CpuSensorProtocol.Source);
@@ -28,13 +29,14 @@ internal sealed class WindowsCpuTemperature : IAsyncDisposable
     public async Task EnableAsync(CancellationToken cancellation)
     {
         await _transition.WaitAsync(cancellation);
-        try { ObjectDisposedException.ThrowIf(_disposed, this); await StopAsync(); cancellation.ThrowIfCancellationRequested(); StartWorker(true); }
+        try { ObjectDisposedException.ThrowIf(_disposed, this); await StopAsync(); cancellation.ThrowIfCancellationRequested(); StartWorker(true); await _started!.Task.WaitAsync(cancellation); }
         finally { _transition.Release(); }
     }
     private void StartWorker(bool elevate)
     {
         if (!OperatingSystem.IsWindows()) throw new PlatformNotSupportedException("Windows CPU collection requires Windows.");
-        _stop = new(); var token = _stop.Token; _run = Task.Run(() => RunAsync(elevate, token));
+        _stop = new(); _started = new(TaskCreationOptions.RunContinuationsAsynchronously); Publish(TemperatureState.Pending);
+        var token = _stop.Token; _run = Task.Run(() => RunAsync(elevate, token));
     }
     private async Task RunAsync(bool elevate, CancellationToken cancellation)
     {
@@ -67,6 +69,7 @@ internal sealed class WindowsCpuTemperature : IAsyncDisposable
                 var reading = state == TemperatureState.Available ? TemperatureReading.From(sample.Celsius!.Value, CpuSensorProtocol.Source, sample.Sensor, at) :
                     TemperatureReading.Missing(state, CpuSensorProtocol.Source, code: state switch { TemperatureState.ProviderMissing => "thermal.cpu_setup_required", TemperatureState.AccessDenied => "thermal.cpu_enable_required", _ => null }, at: at);
                 Volatile.Write(ref _current, reading);
+                _started!.TrySetResult();
             }
         }
         catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { }
@@ -75,6 +78,7 @@ internal sealed class WindowsCpuTemperature : IAsyncDisposable
         catch (UnauthorizedAccessException) { Publish(TemperatureState.AccessDenied); }
         catch (IOException) { Publish(TemperatureState.ReadFailed); }
         catch (Exception error) when (error is InvalidDataException or System.Text.Json.JsonException or ArgumentException) { Publish(TemperatureState.InvalidData); }
+        finally { _started!.TrySetResult(); }
     }
     internal static void VerifyWorker(Stream binary, string expected)
     {
