@@ -42,7 +42,7 @@ internal static class AccountWarningEvidence
                 accounts[1].Error = "The saved login is unavailable. Sign in again."; accounts[1].Usage = null;
                 accounts[2].Error = string.Join(" ", Enumerable.Repeat("Fictional refresh failure. Cached usage is retained; retry after the service becomes available.", 6));
                 window.PrepareUiEvidence("en", dark);
-                var panel = Descendants<DriveUsagePanel>(window).Single();
+                var panel = Only(Descendants<DriveUsagePanel>(window), "Disk monitor");
                 panel.Refresh(new[] { new DriveReading("C:\\", "Synthetic disk", 80L * 1073741824, 250L * 1073741824) }, new Burn0Theme(dark));
                 Call("SetRefreshStatus");
                 foreach (var size in new[] { (600, 440), (500, 360) })
@@ -53,12 +53,12 @@ internal static class AccountWarningEvidence
                     Check(panel.IsVisible != baseline, baseline ? "Original warning replaces the disk monitor" : "Account refresh failures do not replace the disk monitor");
                     if (!baseline)
                     {
-                        var hardware = Descendants<HardwareUsagePanel>(window).Single();
+                        var hardware = Only(Descendants<HardwareUsagePanel>(window), "Hardware monitor");
                         Check(Bounds(hardware).Bottom <= Bounds(panel).Top && Bounds(panel).Bottom <= window.ActualHeight, "Hardware and disk rows fit without overlap at minimum size");
                         foreach (var warning in warnings)
                         {
                             var card = Ancestor<AccountTankCard>(warning); var title = (Grid)warning.Parent;
-                            var label = title.Children.OfType<TextBlock>().Single();
+                            var label = Only(title.Children.OfType<TextBlock>(), "Account name label");
                             Check(warning.IsVisible && warning.IsEnabled && warning.Focusable && Bounds(warning).Right <= Bounds(label).Left + .5 && Bounds(warning).Top < Bounds(card).Top + 35,
                                 "Each warning is a reachable compact control beside its account name");
                             Check(AutomationProperties.GetName(warning).Length > 0 && AutomationProperties.GetHelpText(warning).Length > 0,
@@ -70,7 +70,7 @@ internal static class AccountWarningEvidence
                 if (baseline) continue;
                 window.Width = 600; window.Height = 440; window.UpdateLayout();
                 var buttons = Descendants<Button>(window).Where(b => b.Name == "AccountWarningButton").ToArray();
-                var longWarning = buttons.Single(b => AutomationProperties.GetHelpText(b).Contains("Fictional refresh failure.", StringComparison.Ordinal));
+                var longWarning = Only(buttons.Where(b => AutomationProperties.GetHelpText(b).Contains("Fictional refresh failure.", StringComparison.Ordinal)), "Long account error action");
                 var tip = (ToolTip)longWarning.ToolTip;
                 var tooltipServiceType = typeof(ToolTip).Assembly.GetType("System.Windows.Controls.PopupControlService")!;
                 var tooltipService = tooltipServiceType.GetProperty("Current", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
@@ -95,7 +95,7 @@ internal static class AccountWarningEvidence
                     accounts[1].Error = null; accounts[1].Usage = oldUsage; Call("RenderAccounts"); Call("SetRefreshStatus"); window.UpdateLayout();
                     Check(!Descendants<Button>(window).Any(b => b.Name == "AccountWarningButton") && panel.IsVisible, "Healthy accounts restore without stale warnings or hidden disks");
                     Call("SetStatus", "Synthetic application warning: operation needs attention.", true, Array.Empty<object?>()); window.UpdateLayout();
-                    var status = Descendants<TextBlock>(window).Single(t => t.Text == "Synthetic application warning: operation needs attention.");
+                    var status = Only(Descendants<TextBlock>(window).Where(t => t.Text == "Synthetic application warning: operation needs attention."), "Global warning label");
                     Check(panel.IsVisible && status.IsVisible && Bounds(panel).Bottom <= Bounds(status).Top && Bounds(status).Bottom <= window.ActualHeight,
                         "Global operation warnings have their own row below the visible disks");
                     Capture(window, name + "global.png");
@@ -113,6 +113,8 @@ internal static class AccountWarningEvidence
             service.Vault.Data.Drives.Clear(); service.Vault.Data.Drives.AddRange(drives);
         }
     }
+    private static T Only<T>(IEnumerable<T> source, string description)
+    { var values = source.ToArray(); return values.Length == 1 ? values[0] : throw new InvalidOperationException(description + ": expected one native control, observed " + values.Length); }
     private static T Ancestor<T>(DependencyObject owner) where T : DependencyObject
     { for (var parent = VisualTreeHelper.GetParent(owner); parent != null; parent = VisualTreeHelper.GetParent(parent)) if (parent is T value) return value; throw new InvalidOperationException("Expected account ancestor"); }
     private static IEnumerable<T> Descendants<T>(DependencyObject root) where T : DependencyObject
