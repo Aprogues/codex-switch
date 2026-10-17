@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -108,7 +107,7 @@ internal static class LinuxTerminalCommands
     private static async Task<int> RunAsync(Options options, TextWriter output, TextWriter error, CancellationToken cancellation)
     {
         LinuxClientSession.DirectoryPath(options.Home);
-        if (options.Resume != null && !options.Exec && (isatty(0) != 1 || isatty(1) != 1))
+        if (options.Resume != null && !options.Exec && !LinuxTerminal.IsInteractive)
             throw new InvalidOperationException("Interactive resume requires a terminal. Use --exec --continue for an explicitly requested noninteractive follow-up.");
         using var installed = LinuxClientDiscovery.Open(options.Client, cancellation);
         var selected = new LinuxClientSelection(installed.Cli.Path, installed.Cli.Sha256);
@@ -187,5 +186,4 @@ internal static class LinuxTerminalCommands
         foreach (var name in new[] { "CODEX_ACCESS_TOKEN", "OPENAI_API_KEY", "OPENAI_IDENTITY_TOKEN_FILE", "OPENAI_IDENTITY_TOKEN_AUDIENCE", "LD_PRELOAD", "LD_LIBRARY_PATH", "LD_AUDIT", "LD_DEBUG", "GLIBC_TUNABLES", "GCONV_PATH" }) start.Environment.Remove(name);
         return start;
     }
-    [DllImport("libc")] private static extern int isatty(int descriptor);
 }
