@@ -13,6 +13,7 @@ internal sealed record DriveReading(string Root, string Label, long? Free, long?
 }
 internal sealed class DriveMonitor : IAsyncDisposable
 {
+    internal static StringComparer RootComparer => OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
     private readonly Func<string, TemperatureReading> _temperature;
     public DriveMonitor(Func<string, TemperatureReading>? temperature = null) => _temperature = temperature ?? (_ => TemperatureReading.Missing(TemperatureState.PlatformUnsupported));
     private DrivePreference[] _configuration = Array.Empty<DrivePreference>();
@@ -24,7 +25,7 @@ internal sealed class DriveMonitor : IAsyncDisposable
     public DriveReading[] Current => Volatile.Read(ref _current);
     public void Configure(DrivePreference[] preferences)
     {
-        var comparison = OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
+        var comparison = RootComparer;
         if (preferences.Any(p => OperatingSystem.IsWindows() ? p.Root.Length != 3 || !char.IsAsciiLetter(p.Root[0]) || p.Root[1..] != ":\\" :
             !Path.IsPathFullyQualified(p.Root) || Path.GetFullPath(p.Root) != p.Root) || preferences.Select(p => p.Root).Distinct(comparison).Count() != preferences.Length)
             throw new InvalidDataException("드라이브 설정이 올바르지 않습니다.");
@@ -35,13 +36,13 @@ internal sealed class DriveMonitor : IAsyncDisposable
     private async Task RunAsync()
     {
         using var io = OperatingSystem.IsWindows() ? new WindowsDiskIoSampler() : null;
-        var cache = new Dictionary<string, (DriveReading Reading, DateTimeOffset Next)>(StringComparer.OrdinalIgnoreCase);
+        var cache = new Dictionary<string, (DriveReading Reading, DateTimeOffset Next)>(RootComparer);
         try
         {
             while (!_stop.IsCancellationRequested)
             {
                 var configuration = Volatile.Read(ref _configuration); var now = DateTimeOffset.UtcNow;
-                foreach (var removed in cache.Keys.Except(configuration.Select(p => p.Root), StringComparer.OrdinalIgnoreCase).ToArray()) cache.Remove(removed);
+                foreach (var removed in cache.Keys.Except(configuration.Select(p => p.Root), RootComparer).ToArray()) cache.Remove(removed);
                 var throughput = io?.Sample(configuration.Select(p => p.Root).ToArray());
                 var readings = configuration.Select(preference =>
                 {

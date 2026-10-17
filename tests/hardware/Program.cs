@@ -41,6 +41,12 @@ Check("Drive preferences preserve existing JSON field names, values and defaults
     Assert(JsonSerializer.Serialize(JsonSerializer.Deserialize<DrivePreference>(json)) == json);
 });
 await using var drives = new DriveMonitor();
+Check("Drive cache identity retains native case sensitivity on Mac and Linux", () =>
+{
+    var cache = new Dictionary<string,int>(DriveMonitor.RootComparer) { ["/media/A"] = 1, ["/media/a"] = 2 };
+    Assert(cache.Count == (OperatingSystem.IsWindows() ? 1 : 2));
+    if (!OperatingSystem.IsWindows()) drives.Configure(new[]{new DrivePreference{Root="/media/A"},new DrivePreference{Root="/media/a"}});
+});
 Check("Disk I/O uses real capability bytes, not model strings or presumed interface speed", () =>
 {
     var seek=new byte[12];var device=new byte[40];
