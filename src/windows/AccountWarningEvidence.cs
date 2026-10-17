@@ -73,19 +73,18 @@ internal static class AccountWarningEvidence
                 var buttons = Descendants<Button>(window).Where(b => b.Name == "AccountWarningButton").ToArray();
                 var longWarning = Only(buttons.Where(b => AutomationProperties.GetHelpText(b).Contains("Fictional refresh failure.", StringComparison.Ordinal)), "Long account error action");
                 var tip = (ToolTip)longWarning.ToolTip;
-                var tooltipServiceType = typeof(ToolTip).Assembly.GetType("System.Windows.Controls.PopupControlService")!;
-                var tooltipService = tooltipServiceType.GetProperty("Current", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
-                var dismiss = tooltipServiceType.GetMethod("DismissToolTips", BindingFlags.NonPublic | BindingFlags.Instance)!;
                 try
                 {
-                    tooltipServiceType.GetMethod("ShowToolTip", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(tooltipService, new object[] { longWarning, false });
+                    longWarning.RaiseEvent(new MouseEventArgs(Mouse.PrimaryDevice, Environment.TickCount) { RoutedEvent = Mouse.MouseEnterEvent });
                     await Task.Delay(150);
-                    Check(tip.IsOpen && ReferenceEquals(tooltipServiceType.GetProperty("CurrentToolTip", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(tooltipService), tip), "Hover opens the explicit account tooltip instead of a native fallback");
-                    dismiss.Invoke(tooltipService, null);
+                    Check(tip.IsOpen && !ToolTipService.GetIsEnabled(longWarning), "Hover opens the single account tooltip without a second system tooltip owner");
+                    longWarning.RaiseEvent(new MouseEventArgs(Mouse.PrimaryDevice, Environment.TickCount) { RoutedEvent = Mouse.MouseLeaveEvent });
+                    Check(!tip.IsOpen, "Leaving a hover-only warning closes its explanation");
                     longWarning.Focus(); longWarning.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await Task.Delay(150);
+                    longWarning.RaiseEvent(new MouseEventArgs(Mouse.PrimaryDevice, Environment.TickCount) { RoutedEvent = Mouse.MouseLeaveEvent });
                     tip.ApplyTemplate();
                     Check(tip.IsOpen && tip.Template.FindName("tipSurface", tip) is Border && tip.ActualWidth <= 340.5 &&
-                        tip.Content as string == AutomationProperties.GetHelpText(longWarning), "Click opens the same themed wrapped full error explanation");
+                        tip.Content as string == AutomationProperties.GetHelpText(longWarning), "Click pins the same themed wrapped full explanation after pointer exit");
                     var native = PresentationSource.FromVisual(tip) as HwndSource ?? throw new InvalidOperationException("Account tooltip has no native popup");
                     Capture(native.Handle, name + "tooltip.png");
                     longWarning.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice, PresentationSource.FromVisual(longWarning), Environment.TickCount, Key.Escape) { RoutedEvent = Keyboard.PreviewKeyDownEvent });
@@ -101,7 +100,7 @@ internal static class AccountWarningEvidence
                         "Global operation warnings have their own row below the visible disks");
                     Capture(window, name + "global.png");
                 }
-                finally { dismiss.Invoke(tooltipService, null); tip.IsOpen = false; }
+                finally { tip.IsOpen = false; }
             }
             File.WriteAllText(Path.Combine(directory, "account-warning-receipt.json"), JsonSerializer.Serialize(new {
                 schema = 1, os = "Windows", architecture = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture.ToString(),

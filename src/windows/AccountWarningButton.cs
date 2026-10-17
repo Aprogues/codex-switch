@@ -21,15 +21,19 @@ internal sealed class AccountWarningButton : Button
             StrokeStartLineCap = PenLineCap.Round, StrokeEndLineCap = PenLineCap.Round,
             Width = 14, Height = 14, Stretch = Stretch.Uniform, IsHitTestVisible = false };
         var tip = new ToolTip { Content = details, Style = ToolTipTheme.StyleFor(theme), PlacementTarget = this, Placement = PlacementMode.Bottom };
-        ToolTip = tip; ToolTipService.SetInitialShowDelay(this, 200); ToolTipService.SetShowDuration(this, int.MaxValue);
+        ToolTip = tip; ToolTipService.SetIsEnabled(this, false);
         AutomationProperties.SetName(this, accountName + ": " + Loc.T("갱신 필요")); AutomationProperties.SetHelpText(this, details);
-        Click += (_, _) => tip.IsOpen = true;
-        PreviewKeyDown += (_, args) => { if (args.Key == Key.Escape) { tip.IsOpen = false; args.Handled = true; } };
-        LostKeyboardFocus += (_, _) => tip.IsOpen = false;
-        IsVisibleChanged += (_, _) => { if (!IsVisible) tip.IsOpen = false; };
+        var pinned = false;
+        void Close() { pinned = false; tip.IsOpen = false; }
+        MouseEnter += (_, _) => tip.IsOpen = true;
+        MouseLeave += (_, _) => { if (!pinned) tip.IsOpen = false; };
+        Click += (_, _) => { pinned = !pinned; tip.IsOpen = pinned; };
+        PreviewKeyDown += (_, args) => { if (args.Key == Key.Escape) { Close(); args.Handled = true; } };
+        LostKeyboardFocus += (_, _) => Close();
+        IsVisibleChanged += (_, _) => { if (!IsVisible) Close(); };
         Window? owner = null;
-        EventHandler deactivate = (_, _) => tip.IsOpen = false;
+        EventHandler deactivate = (_, _) => Close();
         Loaded += (_, _) => { owner = Window.GetWindow(this); if (owner != null) owner.Deactivated += deactivate; };
-        Unloaded += (_, _) => { tip.IsOpen = false; if (owner != null) owner.Deactivated -= deactivate; owner = null; };
+        Unloaded += (_, _) => { Close(); if (owner != null) owner.Deactivated -= deactivate; owner = null; };
     }
 }
