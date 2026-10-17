@@ -13,7 +13,7 @@ namespace CodexAccountDesk;
 internal static class LinuxTerminalCommands
 {
     internal sealed record Options(string Command, string? Target, string Data, string Home, string Context, LinuxClientSelection? Client,
-        string? Name, string? Resume, bool Continue, bool Exec);
+        string? Name, string? Resume, bool Continue, bool Exec, string? Cursor);
 
     internal static Options Parse(string[] args)
     {
@@ -22,7 +22,7 @@ internal static class LinuxTerminalCommands
         if (command is not ("list" or "import" or "switch" or "sessions" or "resume")) throw new ArgumentException("Unknown terminal command. Use cli --help.");
         var data = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CodexAccountDesk");
         var home = Environment.GetEnvironmentVariable("CODEX_HOME") ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".codex");
-        var context = Environment.CurrentDirectory; string? target = null, cli = null, sha = null, name = null, resume = null;
+        var context = Environment.CurrentDirectory; string? target = null, cli = null, sha = null, name = null, resume = null, cursor = null;
         var follow = false; var exec = false; var seen = new HashSet<string>(StringComparer.Ordinal);
         for (var i = 1; i < args.Length; i++)
         {
@@ -43,6 +43,7 @@ internal static class LinuxTerminalCommands
                 case "--codex-cli-sha256": if (sha != null) throw new ArgumentException("Duplicate CLI checksum."); sha = value; break;
                 case "--name": if (name != null) throw new ArgumentException("Duplicate account name."); name = value; break;
                 case "--resume": if (resume != null) throw new ArgumentException("Duplicate session target."); resume = value; break;
+                case "--cursor": cursor = value; break;
                 default: throw new ArgumentException("Unknown terminal option.");
             }
         }
@@ -53,7 +54,8 @@ internal static class LinuxTerminalCommands
             throw new ArgumentException("Resume requires an exact saved session UUID.");
         if (follow && resume == null || exec && (!follow || resume == null)) throw new ArgumentException("--continue requires a session; --exec also requires --continue.");
         if (name != null && (command != "import" || name.Length is 0 or > 80 || name.Any(char.IsControl))) throw new ArgumentException("Only import accepts a nonempty account name of at most80 printable characters.");
-        return new(command, target, Path.GetFullPath(data), Path.GetFullPath(home), Path.GetFullPath(context), cli == null ? null : new(Path.GetFullPath(cli), sha!), name, resume, follow, exec);
+        if (cursor != null && (command != "sessions" || cursor.Length is 0 or > 4096 || cursor.Any(char.IsControl))) throw new ArgumentException("Only sessions accepts an opaque pagination cursor.");
+        return new(command, target, Path.GetFullPath(data), Path.GetFullPath(home), Path.GetFullPath(context), cli == null ? null : new(Path.GetFullPath(cli), sha!), name, resume, follow, exec, cursor);
     }
 
     internal const string Help = """
@@ -63,7 +65,7 @@ internal static class LinuxTerminalCommands
 
         Options: --codex-cli <native executable> --codex-cli-sha256 <SHA256>
                  --codex-home <existing private Codex home> --data-dir <existing vault directory>
-                 --client-context <project> --name <alias> (import only)
+                 --client-context <project> --name <alias> (import only) --cursor <nextCursor> (sessions only)
         Authenticate with the official Codex CLI, then import to save that login in the existing encrypted vault.
         No DISPLAY is required. An unlocked supported Secret Service is required; no plaintext fallback.
         Quit existing CLI/IDE/desktop clients normally before changing the shared login.
@@ -124,7 +126,7 @@ internal static class LinuxTerminalCommands
             if (options.Command == "sessions")
             {
                 await using var metadata = await LinuxClientSession.OpenAsync(options.Home, options.Context, selected, cancellation).ConfigureAwait(false);
-                var result = await metadata.MetadataAsync("thread/list", new { limit = 100, archived = false, sourceKinds = new[] { "cli", "exec" } }, cancellation).ConfigureAwait(false);
+                var result = await metadata.MetadataAsync("thread/list", new { limit = 100, archived = false, sourceKinds = new[] { "cli", "exec" }, cursor = options.Cursor }, cancellation).ConfigureAwait(false);
                 Write(output, new { sessions = result.GetProperty("data").EnumerateArray().Select(t => new { id = t.GetProperty("id").GetString(), cwd = t.GetProperty("cwd").GetString() }), nextCursor = JsonValue.String(result, "nextCursor") });
                 return 0;
             }

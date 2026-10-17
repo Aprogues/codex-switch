@@ -1,6 +1,40 @@
 # Linux terminal account switching and session resume
 
-Implementation in progress for [issue97](https://github.com/Gaebabi/codex-switch/issues/97). Published1.40.7 does not contain these terminal commands. Do not confuse the existing GUI preview or fictional-card screenshots with terminal/account/continuation acceptance.
+Source1.41.0 implements the terminal commands in [issue97](https://github.com/Gaebabi/codex-switch/issues/97). Published1.40.7 does not contain them: [build current source](../INSTALL.md#linux-preview) until a separate binary release includes them. Do not confuse GUI preview or fictional-card screenshots with authenticated continuation acceptance.
+
+## Commands
+
+The complete Linux app also handles `cli` commands before GUI initialization. DISPLAY/Wayland is not needed. Use an existing unlocked configured GNOME Keyring/KWallet Secret Service and the same Codex home/data directory as the GUI. No new credentials, vault or provider are silently substituted.
+
+Select an official native Linux executable, not the npm JavaScript launcher. Version0.162.1 and the separately approved packaged0.162.0-alpha.17.2 are currently verified; other versions fail the protocol check. Supply its exact SHA256 and native path together, or use the approved installed desktop package's CLI. Verify where your executable came from before trusting its checksum. The wrapper never searches PATH for an arbitrary program. Examples use shell variables for an explicitly chosen native executable and expected digest:
+
+```sh
+# Set these to the actual trusted native executable and its reviewed SHA256.
+native=/absolute/path/to/native/codex
+expected=REPLACE_WITH_EXPECTED_SHA256
+cs() { /absolute/path/to/CodexSwitch cli "$@" --codex-cli "$native" --codex-cli-sha256 "$expected"; }
+
+# Sign in using the official Codex CLI, then save each login under a unique name.
+cs import --name personal
+cs list
+cs sessions
+
+# Quit clients using the shared login normally first. Switching always needs this command.
+cs switch personal
+cs switch personal --resume 00000000-0000-4000-8000-000000000001
+# Add --continue to submit one explicit follow-up after restoring the chosen session.
+cs switch personal --resume 00000000-0000-4000-8000-000000000001 --continue
+# SSH/batch without a terminal: noninteractive continuation is explicitly selected.
+cs resume 00000000-0000-4000-8000-000000000001 --exec --continue
+```
+
+The UUID above is an example: replace it with a real saved CLI/exec session from `cs sessions`. The wrapper rejects a nonexistent session or a desktop/app-server metadata-only thread before applying an account. `sessions` returns at most100 CLI/exec records and a `nextCursor`; use `cs sessions --cursor '<nextCursor>'` for the next page. It does not infer tasks from a desktop screenshot. Commands accept `--codex-home`, `--data-dir` and `--client-context` for an explicitly selected existing environment. `list` uses stable account IDs/aliases and omits emails/tokens; duplicate aliases require the full ID.
+
+`--resume` restores the original exact session in its recorded directory. Interactive mode inherits the real terminal and uses official `codex resume --no-daemon`; it does not reuse a background server holding an earlier login. `--exec --continue` delegates to official `codex exec resume`. The wrapper sets no sandbox/approval/model/provider override. Original transcript/settings restoration remains the official CLI's responsibility and existing project/managed credential policy must permit the selected account. No automatic rotation, inferred last-session selection, forced client shutdown or automatic repeat after an uncertain send.
+
+Close existing CLI/IDE/desktop clients before switching the shared login. If a normal Codex shared daemon remains after clients exit, stop it explicitly with the official `codex app-server daemon stop` before using the wrapper; it never kills or adopts an external process. Do not stop a daemon that still owns work. Wrapper-launched interactive resumes use their own foreground lifetime. A pending desktop recovery must be completed first. A failed model turn is returned as a failure; a completed account application is not reported as a completed task.
+
+References: [official interactive/noninteractive resume](https://developers.openai.com/codex/cli/reference), [upstream CLI features](https://developers.openai.com/codex/cli/features).
 
 ## Delivery checkpoints
 
@@ -21,4 +55,4 @@ Implementation in progress for [issue97](https://github.com/Gaebabi/codex-switch
 
 ## Verification status
 
-Source implementation, native command/PTY captures and authenticated account/continuation checks are pending. Existing Linux two-account desktop launch observations do not establish this CLI feature. Final commands, results, source/client versions, pictures and remaining limitations will be recorded here and in the PR.
+The implementation builds without errors/warnings. A local normal-user network-disabled container passes14 real headless-command/storage/native-client contracts with fictional credentials; native x64/ARM64 also passed these contracts at checkpointc1eeb04, before capture failed because its declared runner dependencies omitted xdotool. The dependency is corrected in source. The earlier metadata-only session assumption was corrected: actual saved CLI/exec work is required, not an empty app-server record. These are offline checks, not real authentication or inference. Native terminal capture, final six protected checks and authenticated continuation remain pending in PR98. Existing desktop login observations do not establish this new CLI feature.

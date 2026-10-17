@@ -17,6 +17,8 @@ Linux仍为集成预览版。原生密钥环、已安装UI和程序包验证，�
 
 ## 使用与功能
 
+**Linux终端命令是源码1.41.0的新功能，不包含在以上1.40.7下载中。** `CodexSwitch cli`无需显示服务器即可管理现有加密账号；`cli switch <account> --resume <CLI-session-UUID>`将手动切换与官方CLI恢复连接起来。`--continue`明确请求发送后续消息，`--exec --continue`选择非交互执行。需要经过验证的原生CLI、校验和以及已解锁的受支持Secret Service。隔离验证、真实账号恢复和桌面支持分别记录。[命令、设置与当前验证范围](development/LINUX_TERMINAL.md)。
+
 1. Windows运行`CodexSwitch.exe`；Mac运行`Install.command`后打开已安装的**Codex Switch.app**。Linux需要完整预览包及受支持的Secret Service。
 2. **+**通过官方浏览器页面登录各账号。如果自动选择了之前的账号，请使用独立的浏览器配置或隐私窗口。Windows可右键点击**↻**导入当前登录。
 3. 比较额度后点击**Switch**。**不会自动轮换账号。** Linux用户请先通过本工具的**Start Codex**启动Codex。

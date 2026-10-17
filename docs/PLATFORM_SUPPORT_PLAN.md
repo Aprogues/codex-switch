@@ -20,6 +20,7 @@ Source1.40.0/issue74/PR75 implements ordinary Linux account/usage, explicit chec
 | Mac arm64 / x64 | 1.27.6 self-contained ZIP | Cross-publish/package checks; native login/switch/resume, Intel-device acceptance and notarization remain open |
 | Linux x64 / arm64 | Unsigned tar.gz/deb/rpm installation/UI preview candidates | Declared storage/client/policy/SQLite/peer and controlled close; fresh Ubuntu24.04/Debian13/Fedora44 minimal-container install/update/removal/bootstrap UI. Actual account/handoff, full desktop/display/accessibility and supported Release promotion remain pending |
 | WSL / remote / headless / CLI-only | No dedicated supported setup | Do not assume desktop restoration or share credentials across homes/OSes |
+| Linux terminal, source1.41.0 | Headless encrypted-account commands and exact CLI/exec session resume; not in published1.40.7 | Explicit native executable/SHA and unlocked supported Secret Service required; offline verification is distinct from authenticated continuation. [Commands/current evidence](development/LINUX_TERMINAL.md) |
 
 English stays the shared default. Published 1.27.6 UI supports English/Korean. Source 1.28.0 adds nine UI catalogues and extensible local packs, tracked in [#16](https://github.com/Gaebabi/codex-switch/issues/16) and the [translator guide](LOCALIZATION.md). Contributions in other languages and for other environments are welcome.
 
@@ -90,7 +91,7 @@ The upstream Linux ChatGPT desktop preview includes Codex and uses a `chatgpt` l
 
 Source1.40.4 upgrades Avalonia.Desktop/Fluent together to **12.1.4**, subject to issue83's native regression gates. Begin with X11/XWayland. The native Wayland backend remains experimental and needs explicit setup and separate acceptance; the package upgrade alone does not enable or certify it. Do not call XWayland evidence native Wayland acceptance. [Avalonia release details](https://avaloniaui.net/blog/release-12-1)
 
-CLI-only mode advertises verified account/usage operations; it must not claim desktop chat restoration or automatically resume existing CLI processes. Shared login affects CLI/IDE clients, so ownership/quiescence must be checked before changes.
+GUI CLI-only selection does not restore desktop chats. Source1.41.0 separately adds explicit terminal account/session commands and an official saved-session resume launch; it does not adopt an existing running CLI process. Shared login affects CLI/IDE clients, so quiescence is required before changes. SSH/headless needs an existing unlocked supported keyring, not just a shell; full desktop acceptance remains separate.
 
 ## Security and release gates
 
