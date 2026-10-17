@@ -1,21 +1,31 @@
-# Codex Switch 1.40.7: native Windows and Linux windows
+# Codex Switch1.40.7: actual app windows with OS-specific captions
 
-Actual application windows from source1.40.7/.NET10.0.13. Capture revisions are recorded **per image**: the Windows and supporting Xfce frames retain `a3f4d5f3a2e0c54378f5371682b1d928700c6c50`; the Linux account overview uses the exact released source `7645e74e5285b3f8458333a0381a4a12e36eb357`. [Original/presentation hashes and scope](gallery.json). The overview's native x64 capture comes from [Linux39020165299](https://github.com/Gaebabi/codex-switch/actions/runs/39020165299), whose x64/ARM64 jobs passed before PR92 merged.
+Native application captures with fictional demo accounts. [Per-image original/output hashes, capture revisions and pixel-preservation receipt](gallery.json). Original pixels remain unchanged at1:1 on a centered1000×800 solid `#18202b` canvas. Metadata is removed; no personal desktop, account, authentication or cursor pixels are used.
 
-![Actual Windows application with the visible CPU download button](windows.png)
+## Windows x64
 
-Windows uses the published WPF application with fictional accounts and sensor inputs. The download icon is a real button; driver/worker authorization remains explicit. This picture does not claim physical CPU availability. [Actual app before/after and sensor security evidence](../../evidence/cpu-setup/README.md).
+![Actual Windows app with demo accounts and CPU setup button](windows.png)
 
-![Actual native Linux app showing four fictional demo accounts](linux.png)
+**Windows x64 · native WPF app:** fictional demo accounts and the actual CPU download/setup button. The app's own titlebar and controls are preserved. This checks rendering, not a physical CPU reading. Capture `a3f4d5f3a2e0c54378f5371682b1d928700c6c50`; [Windows verification](https://github.com/Gaebabi/codex-switch/actions/runs/39011565929) and [CPU before/after](../../evidence/cpu-setup/README.md).
 
-The main Linux image shows **four fictional demo accounts** in the actual published Linux app, using its existing isolated UI verification mode. It presents the account cards, remaining quota and manual Switch controls without using any personal account or a real login. [Native source/runtime/original image receipt](linux-demo.json). This original app-owned X11 capture has no surrounding window-manager frame; none was synthesized or borrowed from another OS. It is a native UI confirmation, not authenticated account-switch/continuation acceptance.
+## Linux x64: account cards and actual OS titlebar together
 
-## Supporting installed-desktop evidence
+![Actual dark Linux app and original Xfce titlebar in one capture](linux-framed.png)
 
-![Retained installed Linux app with its original Xfce titlebar](linux-desktop.png)
+**Linux x64 · dark app · actual X11/Xfwm4 OS frame:** four fictional account cards and the real window-manager titlebar captured together. The titlebar is neither synthesized nor attached afterward. Only this app's original direct-parent frame was captured; the desktop/root window was excluded.
 
-Linux uses the ordinary per-user installed app with an empty account home and real Xfce/xfwm4 frame in isolated Debian13 userspace. [53-check session receipt](linux-session.json) covers lifecycle, original encrypted-key preservation, automatic initialization after unlock and offline managed-client integration. It is not a booted VM, full GNOME/KDE/Wayland/ARM64 desktop or authenticated active-chat continuation claim. Linux stays an unsigned integration preview.
+![Actual light Linux app and original Xfce titlebar in one capture](linux-framed-light.png)
 
-All original app pixels remain unchanged at1:1, centered on a solid1000×800 `#18202b` background. Existing titlebars are preserved, and no missing window-manager decoration is fabricated. No personal desktop, cursor, account identity or authentication pixels are captured. Metadata is removed and final images visually inspected. The retained empty-home installed-desktop image and53-check receipt establish their original lifecycle scope; the demo overview improves feature visibility. The published1.40.7 package/verification assets remain unchanged and keep their original release-time gallery; current main documentation contains this correction.
+**Linux x64 · light app · same actual OS frame:** the same four demo accounts and genuine window controls. Light/dark refers to the app; the OS titlebar retains its real Xfwm4 theme. No personal login or account action is pictured.
 
-**MacBook real-device screenshot remains reserved for the maintainer.** macOS downloads remain1.40.2. Do not relabel CI pictures as the owner's MacBook capture.
+Linux pictures come from `919b8c2229d6989b53fa70b4591b5b5899ed5bd6`, source1.40.7/.NET10.0.13, native Ubuntu24.04 x64 with real Xfwm4 on an owned X11 display. [Native CI](https://github.com/Gaebabi/codex-switch/actions/runs/39031306150) verifies12 language/theme/size captures per architecture using the actual app's explicit isolated demo mode. [App PID/direct-parent frame and source/hash proof](linux-framed.json). Titlebar and cards are part of one original capture; export preserves every frame pixel without a separate frame layer.
+
+Checks require original `_NET_WM_PID`, direct child membership, non-root parent, actual Xfwm4 and the same parent after capture. A missing/unrelated frame fails. Four-card layout and text clipping pass before each capture. The ordinary installed Xfce session separately repeats both themes and requires original vault bytes and an empty auth home. This is native app rendering, not authenticated switching/continuation or full booted GNOME/KDE/Wayland desktop acceptance.
+
+## Retained historical verification
+
+The [unframed demo](linux.png) and its [released-source7645e74 receipt](linux-demo.json) remain as before evidence. The [empty-home installed Xfce window](linux-desktop.png) and [53-check session receipt](linux-session.json) retain sourcea3f4d5f and their initialization/lifecycle scope. Neither is substituted for the new framed account view.
+
+Published1.40.7 binaries, tag/checksums and its release-time verification archive remain unchanged. This is a current-main capture/documentation correction with per-image provenance. Linux remains unsigned integration preview; demo cards do not establish real login.
+
+**macOS · real MacBook screenshot: pending the maintainer.** Existing1.40.2 downloads remain. No other OS or CI image substitutes for the owner's MacBook capture.
