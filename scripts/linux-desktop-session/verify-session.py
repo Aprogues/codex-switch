@@ -277,6 +277,30 @@ try:
     run(['xdotool', 'windowactivate', '--sync', window])
     run(['xdotool', 'key', 'ctrl+w'])
     wait_for(lambda: not Path('/proc/' + str(pid)).exists())
+    framed_directory = results / 'framed-demo'
+    before_framed_vault = ordinary_vault.read_bytes()
+    framed_environment = dict(os.environ, CODEX_SWITCH_CAPTURE_WM_FRAMES='1')
+    run([str(executable), '--verify-ui', str(framed_directory)], env=framed_environment, stdout=private_log, stderr=private_log, timeout=120)
+    framed_render = json.loads((framed_directory / 'render-report.json').read_text())
+    framed_report = json.loads((framed_directory / 'wm-report.json').read_text())
+    check('Actual installed Linux app renders four fictional cards inside twelve original Xfce frames', framed_render['failures'] == 0 and len(framed_render['checks']) == 12 and framed_report['failures'] == 0 and len(framed_report['frames']) == 12)
+    frame_records = []
+    for frame in framed_report['frames']:
+        check('Native frame capture binds app PID/direct parent and excludes desktop: ' + frame['File'], frame['WindowManager'] == 'Xfwm4' and frame['OriginalAppPidVerified'] and frame['DirectParentFrameVerified'] and frame['DesktopRootExcluded'] and frame['DemoAccounts'] == 4)
+        if frame['File'] not in ('en-dark-800x600-native-wm.png', 'en-light-800x600-native-wm.png'):
+            continue
+        name = 'accounts-' + ('dark' if '-dark-' in frame['File'] else 'light') + '-native-frame.png'
+        with Image.open(framed_directory / frame['File']) as source:
+            source.load()
+            check('Actual account overview includes the original WM border and titlebar: ' + name, source.width > 800 and source.height > 600 and source.width < 900 and source.height < 700)
+            clean = Image.new('RGB', source.size)
+            clean.paste(source.convert('RGB'))
+            clean.save(results / name)
+        record = dict(frame, file=name, sha256=hashlib.sha256((results / name).read_bytes()).hexdigest(), width=clean.width, height=clean.height)
+        frame_records.append(record)
+        images.append({'file': name, 'width': clean.width, 'height': clean.height, 'sha256': record['sha256'], 'capture': 'Actual installed application in isolated UI demo mode, four fictional accounts and verified original direct-parent Xfce frame; no composited titlebar or real login'})
+    check('Both native dark/light account overviews preserve the ordinary vault bytes and empty auth home', len(frame_records) == 2 and ordinary_vault.read_bytes() == before_framed_vault and not (ordinary_home / 'auth.json').exists())
+    (results / 'framed-accounts.json').write_text(json.dumps({'schema': 1, 'expected': expected, 'renderChecks': len(framed_render['checks']), 'nativeFramesVerified': len(framed_report['frames']), 'frames': frame_records, 'scope': framed_report['scope']}, indent=2) + '\n')
     cli_home = root / 'ordinary-cli-only'
     cli_home.mkdir(mode=0o700)
     (cli_home / 'config.toml').write_text('cli_auth_credentials_store = "file"\nanalytics.enabled = false\n')
