@@ -24,7 +24,6 @@ internal sealed class PawnCpuReader : IDisposable
         var (eax, ebx, ecx, edx) = X86Base.CpuId(0, 0);
         var vendor = Encoding.ASCII.GetString(BitConverter.GetBytes(ebx)) + Encoding.ASCII.GetString(BitConverter.GetBytes(edx)) + Encoding.ASCII.GetString(BitConverter.GetBytes(ecx));
         var processor = X86Base.CpuId(1, 0);
-        if ((processor.Ecx & int.MinValue) != 0) return;
         var signature = processor.Eax;
         _amd = vendor == "AuthenticAMD" && CpuRegisters.Family(signature) is 0x17 or 0x19 or 0x1a;
         _intel = vendor == "GenuineIntel" && CpuRegisters.Family(signature) == 6 && eax >= 6 && (X86Base.CpuId(6, 0).Eax & 1) != 0;

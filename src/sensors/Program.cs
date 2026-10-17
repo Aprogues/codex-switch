@@ -36,7 +36,7 @@ internal static class Program
                 using var send = new CancellationTokenSource(TimeSpan.FromSeconds(5));
                 CpuSample value;
                 try { value = failure != null ? failure with { At = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() } : reader!.Read(); }
-                catch (Win32Exception error) { value = CpuSensorProtocol.Missing(error.NativeErrorCode == 5 ? "AccessDenied" : "ReadFailed"); }
+                catch (Win32Exception error) { value = Failure(error); }
                 catch (InvalidDataException) { value = CpuSensorProtocol.Missing("ReadFailed"); }
                 await CpuSensorProtocol.WriteAsync(pipe, value, send.Token);
                 await Task.Delay(2000);
@@ -50,7 +50,7 @@ internal static class Program
         failure = null;
         try { return new PawnCpuReader(); }
         catch (UnauthorizedAccessException) { failure = CpuSensorProtocol.Missing("AccessDenied"); return null; }
-        catch (Win32Exception error) { failure = CpuSensorProtocol.Missing(error.NativeErrorCode == 5 ? "AccessDenied" : "ReadFailed"); return null; }
+        catch (Win32Exception error) { failure = Failure(error); return null; }
         catch (InvalidDataException) { failure = CpuSensorProtocol.Missing("ReadFailed"); return null; }
     }
     private static CpuSample ReadOnce()
@@ -58,9 +58,11 @@ internal static class Program
         using var reader = CreateReader(out var failure);
         if (failure != null) return failure;
         try { return reader!.Read(); }
-        catch (Win32Exception error) { return CpuSensorProtocol.Missing(error.NativeErrorCode == 5 ? "AccessDenied" : "ReadFailed"); }
+        catch (Win32Exception error) { return Failure(error); }
         catch (InvalidDataException) { return CpuSensorProtocol.Missing("ReadFailed"); }
     }
+    private static CpuSample Failure(Win32Exception error) => CpuSensorProtocol.Missing(error.NativeErrorCode switch
+    { 5 => "AccessDenied", 1 or 50 => "PlatformUnsupported", _ => "ReadFailed" }) with { Error = error.NativeErrorCode };
     [DllImport("kernel32.dll", SetLastError = true)] [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool GetNamedPipeServerProcessId(SafePipeHandle pipe, out uint process);
 }

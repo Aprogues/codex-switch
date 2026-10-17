@@ -69,7 +69,7 @@ internal sealed class WindowsCpuTemperature : IAsyncDisposable
                 var state = Enum.Parse<TemperatureState>(sample.State);
                 var at = DateTimeOffset.FromUnixTimeMilliseconds(sample.At);
                 var reading = state == TemperatureState.Available ? TemperatureReading.From(sample.Celsius!.Value, CpuSensorProtocol.Source, sample.Sensor, at) :
-                    TemperatureReading.Missing(state, CpuSensorProtocol.Source, code: state switch { TemperatureState.ProviderMissing => "thermal.cpu_setup_required", TemperatureState.AccessDenied => "thermal.cpu_enable_required", _ => null }, at: at);
+                    TemperatureReading.Missing(state, CpuSensorProtocol.Source, code: state switch { TemperatureState.ProviderMissing => "thermal.cpu_setup_required", TemperatureState.AccessDenied => "thermal.cpu_enable_required", _ => sample.Error.HasValue ? "Win32 " + sample.Error.Value : null }, at: at);
                 Volatile.Write(ref _current, reading);
                 _started!.TrySetResult();
             }
