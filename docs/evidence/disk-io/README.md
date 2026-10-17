@@ -28,4 +28,6 @@ The [identifier-free native receipt](verification.json) is separate from screens
 
 Portable checks cover bounded capability bytes, unsupported/ambiguous profiles, real zero/binary units, peak expiry, sustained independent busy/latency gates, recovery/gaps, invalid/stale data and nine complete language packs. Existing storage, account/client/security, manual switching/continuation and GPU/temperature contracts remain intact. [Sampling, profile policy and limitations](../../DISK_IO.md).
 
+The final source adds a platform-case-sensitive drive-cache identity regression, raising Windows hardware coverage from21 at capture to22. CPU86 is merged at mainfd16694 and integrated before the final PR88 head. These follow-ups do not change the displayed disk layout/fixture values; final artifacts independently validate the current implementation.
+
 The capture checkpoint passes native Windows [Verify39006942301](https://github.com/Gaebabi/codex-switch/actions/runs/39006942301); final exact-head six checks, final artifact/source validation, recorded author self-review and protected-main merge are tracked in PR88. CPU85/86 is a separate dependency and its owner physical-reading limitation remains explicit. No local window/UAC, benchmark, personal installation update or binary Release is included; published downloads remain1.40.2.

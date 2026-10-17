@@ -1,5 +1,7 @@
 # Built-in Windows CPU sensor evidence
 
+PR86 is merged at main `fd16694d2f7135f26df428ec5b5d27be757f811c` after all six checks at final head `96c1564a89e15adeffb44eacdc082f746c37c2b0` ([Verify39007076415](https://github.com/Gaebabi/codex-switch/actions/runs/39007076415), [Linux39007076314](https://github.com/Gaebabi/codex-switch/actions/runs/39007076314)) and [author self-review](https://github.com/Gaebabi/codex-switch/pull/86#pullrequestreview-5556535233), with identical reviewed/merged trees. [Final native receipt](final-verification.json) records app/worker checks1/5/7 and signed driver/module enforcement. This final hosted CPU reports **ReadFailed, Win3255, nativeSensorValueAccepted=false**; the implementation preserves the error. It does not establish owner physical CPU success. The pictures below retain their original capture revision and fictional-value scope; final-head image artifact digests/state/menu were independently verified.
+
 Issue85 / PR86, source1.40.5. Capture and production verification checkpoint: `ecbe30fdb4b6d36b7f1ef3035ceb4a6fe02a7adc`, native Windows x64/.NET10.0.13 on disposable hosted CI. No maintainer desktop window, personal data, account action or physical CPU acceptance is included. Published binaries remain1.40.2.
 
 | Existing actual Windows baseline | New feature confirmation: actual Windows app |
