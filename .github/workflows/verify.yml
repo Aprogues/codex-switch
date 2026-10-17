@@ -137,7 +137,11 @@ jobs:
         run: |
           $taskProcess = Start-Process artifacts/win-x64/CodexSwitch.exe -ArgumentList @('--verify-ui','artifacts/native-ui/windows/raw') -WindowStyle Hidden -PassThru
           if (!$taskProcess.WaitForExit(45000)) { throw 'Owned UI evidence process did not finish' }
-          if ($taskProcess.ExitCode -ne 0) { throw 'Native Windows UI verification failed' }
+          if ($taskProcess.ExitCode -ne 0) {
+            $taskReceipt = Get-Content -LiteralPath artifacts/native-ui/windows/raw/receipt.json -Raw | ConvertFrom-Json
+            $taskReceipt.cases | Where-Object { -not $_.passed } | ConvertTo-Json -Compress
+            throw 'Native Windows UI verification failed'
+          }
       - name: Validate isolated Windows window exports
         env:
           EVIDENCE_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -146,6 +150,20 @@ jobs:
         with:
           name: native-ui-windows
           path: artifacts/native-ui/windows/public
+          if-no-files-found: error
+          retention-days: 14
+      - name: Reproduce the original account-warning footer on the same native worker
+        env:
+          CODEX_SWITCH_DISPOSABLE_RUNNER: 'true'
+        run: python scripts/capture-account-warning-baseline.py --output artifacts/account-warnings/before
+      - name: Verify corrected account-warning controls and original native app pixels
+        env:
+          EVIDENCE_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: python scripts/verify-account-warning-evidence.py artifacts/native-ui/windows/raw artifacts/account-warnings/after/public --revision "${{ env.EVIDENCE_REVISION }}"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: account-warning-windows
+          path: artifacts/account-warnings/*/public
           if-no-files-found: error
           retention-days: 14
       - name: Package the same verified native Windows application

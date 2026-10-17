@@ -151,8 +151,14 @@ internal static class NativeUiEvidence
                     window.Width = 800; window.Height = 560;
                     cases.Add(new { name = name + "-disk-confirmation", passed = true, scope = "Fictional disk throughput/profile/latency in real native app; not manufacturer rating or physical benchmark" });
                 }
+                await AccountWarningEvidence.CaptureAsync(window, service, directory);
             }
-            catch (Exception error) { exit = 1; cases.Add(new { name = "native-window", passed = false, error = error.GetType().Name }); Console.Error.WriteLine("Isolated UI verification: " + error.Message); }
+            catch (Exception error)
+            {
+                var cause = error.GetBaseException(); exit = 1;
+                cases.Add(new { name = "native-window", passed = false, error = cause.GetType().Name, message = cause.Message, stack = cause.StackTrace });
+                Console.Error.WriteLine("Isolated UI verification: " + cause.Message);
+            }
             finally
             {
                 File.WriteAllText(Path.Combine(directory, "receipt.json"), JsonSerializer.Serialize(new { schema = 1, os = "Windows",
