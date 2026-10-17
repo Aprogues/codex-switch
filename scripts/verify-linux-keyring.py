@@ -27,6 +27,7 @@ p.add_argument('--inside',action='store_true')
 p.add_argument('--terminal-assembly',type=Path,help='Run the dedicated headless terminal contracts in the owned GNOME session')
 p.add_argument('--terminal-app',type=Path)
 p.add_argument('--terminal-capture',action='store_true')
+p.add_argument('--terminal-lifecycle',action='store_true',help='Additional real CLI exec/resume verification; requires an actually network-disabled owned container')
 a=p.parse_args()
 if sys.platform!='linux':raise SystemExit('Native Linux is required')
 assembly=a.assembly.resolve();report=a.report.resolve()
@@ -35,7 +36,7 @@ if (a.terminal_assembly is None)!=(a.terminal_app is None) or a.terminal_assembl
     raise SystemExit('Terminal contracts require both the built assembly/app and the owned GNOME provider')
 if a.terminal_assembly is not None:
     a.terminal_assembly=a.terminal_assembly.resolve(strict=True);a.terminal_app=a.terminal_app.resolve(strict=True)
-elif a.terminal_capture:raise SystemExit('Terminal capture requires the complete headless contract selection')
+elif a.terminal_capture or a.terminal_lifecycle:raise SystemExit('Terminal lifecycle/capture requires the complete headless contract selection')
 
 if a.provider=='ksecrets-current' and not a.inside and not a.owned_xvfb:
     env=dict(os.environ)
@@ -68,6 +69,7 @@ if not a.inside:
         if a.storage_only:command.append('--storage-only')
         if a.terminal_assembly is not None:command+=['--terminal-assembly',str(a.terminal_assembly),'--terminal-app',str(a.terminal_app)]
         if a.terminal_capture:command.append('--terminal-capture')
+        if a.terminal_lifecycle:command.append('--terminal-lifecycle')
         subprocess.run(command,env=env,check=True,timeout=240)
     finally:
         if root.parent!=Path(tempfile.gettempdir()).resolve() or not root.name.startswith('codex-linux-keyring-test-') or root.is_symlink() or root.stat().st_uid!=os.geteuid():raise SystemExit('Unexpected diagnostic cleanup root')
@@ -235,8 +237,11 @@ try:
             private_log.write(task.stdout);private_log.write(task.stderr);private_log.flush()
             raise RuntimeError('Native headless terminal contracts failed; inspect private diagnostics')
         terminal=json.loads(task.stdout)
-        if terminal['failed'] or terminal['passed']!=14 or terminal['architecture']!=a.architecture:raise RuntimeError('Complete native headless terminal verification is required')
+        if terminal['failed'] or terminal['passed']!=15 or terminal['architecture']!=a.architecture:raise RuntimeError('Complete native headless terminal verification is required')
         verify_owner()
+        if a.terminal_lifecycle:
+            sandbox=root/'codex-linux-terminal-test-contracts';report.parent.mkdir(parents=True,exist_ok=True)
+            subprocess.run([sys.executable,str(Path(__file__).with_name('verify-linux-terminal-lifecycle.py')),'--app',str(a.terminal_app),'--home',str(sandbox/'home'),'--data',str(sandbox/'vault'),'--cli',str(native),'--report',str(report.parent/'terminal-lifecycle.json'),'--revision',os.environ['EVIDENCE_REVISION']],env=terminal_environment,check=True,timeout=150)
         if a.terminal_capture:
             sandbox=root/'codex-linux-terminal-test-contracts'
             subprocess.run([sys.executable,str(Path(__file__).with_name('capture-linux-terminal.py')),'--app',str(a.terminal_app),'--home',str(sandbox/'home'),'--data',str(sandbox/'vault'),'--client',str(native),'--sha',terminal_environment['CODEX_SWITCH_STANDALONE_CLI_SHA'],'--output',str(report.parent),'--revision',os.environ['EVIDENCE_REVISION']],env=terminal_environment,check=True,timeout=120)

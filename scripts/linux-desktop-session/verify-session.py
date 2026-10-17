@@ -172,6 +172,14 @@ try:
     handoff = json.loads(run(['/contracts/handoff/CodexSwitch.LinuxHandoff.Tests', str(root / 'codex-linux-handoff-test-integration')], capture_output=True, timeout=200).stdout)
     check('Production Linux account/coordinator/metadata/managed desktop integration passes offline', handoff['failed'] == 0 and handoff['passed'] == 8)
     phases.append(handoff)
+    terminal_root = root / 'codex-linux-terminal-test-integration'
+    terminal_env = dict(os.environ, CODEX_SWITCH_STANDALONE_CLI='/usr/lib/chatgpt/resources/codex', CODEX_SWITCH_STANDALONE_CLI_SHA=hashlib.sha256(Path('/usr/lib/chatgpt/resources/codex').read_bytes()).hexdigest())
+    for variable in ('DISPLAY', 'WAYLAND_DISPLAY', 'XAUTHORITY'): terminal_env.pop(variable, None)
+    terminal = json.loads(run(['/contracts/terminal/CodexSwitch.LinuxTerminal.Tests', str(terminal_root), '/opt/codex-switch/CodexSwitch'], env=terminal_env, capture_output=True, timeout=180).stdout)
+    check('Actual installed headless terminal account contracts pass without DISPLAY', terminal['passed'] == 15 and terminal['failed'] == 0)
+    phases.append(terminal)
+    lifecycle = json.loads(run([sys.executable, '/work/verify-linux-terminal-lifecycle.py', '--app', '/opt/codex-switch/CodexSwitch', '--home', str(terminal_root / 'home'), '--data', str(terminal_root / 'vault'), '--cli', '/usr/lib/chatgpt/resources/codex', '--report', str(results / 'terminal-lifecycle.json'), '--revision', expected['testRevision']], env=terminal_env, capture_output=True, timeout=150).stdout)
+    check('Official CLI exact-session resume persists one Continue after headless switching and returns normal interruption honestly', lifecycle['passed'] == 1 and lifecycle['failed'] == 0 and not lifecycle['authenticatedInference'])
     ordinary_home = root / 'ordinary-codex'
     ordinary_home.mkdir(mode=0o700)
     (ordinary_home / 'config.toml').write_text('cli_auth_credentials_store = "file"\nanalytics.enabled = false\n')

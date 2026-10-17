@@ -83,6 +83,8 @@ var notTty = await Invoke("switch", first.Key, "--resume", id);
 Check("Interactive resume without a TTY fails before changing the login", notTty.Code != 0 && originalVault.SequenceEqual(File.ReadAllBytes(vault.FilePath)) && originalAuth.SequenceEqual(File.ReadAllBytes(Path.Combine(home, "auth.json"))));
 var control = LinuxTerminalCommands.CreateResumeStart(client.Cli, home, project, id, true, false);
 Check("Resume launch binds the original descriptor, UUID and folder with one explicit follow-up and no permission override", control.FileName == client.Cli.ExecutionPath && control.WorkingDirectory == project && control.ArgumentList.SequenceEqual(new[] { "resume", "--no-daemon", id, "Continue" }) && !control.UseShellExecute && !control.RedirectStandardInput && !control.RedirectStandardOutput);
+var batch = LinuxTerminalCommands.CreateResumeStart(client.Cli, home, project, id, true, true);
+Check("Noninteractive resume exposes real upstream JSON events without a permission or session-selection override", batch.ArgumentList.SequenceEqual(new[] { "exec", "resume", "--json", id, "Continue" }) && batch.WorkingDirectory == project && batch.Environment["CODEX_HOME"] == home && !batch.UseShellExecute);
 foreach (var malformed in new[] { new[] { "switch", first.Key, "--continue" }, new[] { "resume", "--last" }, new[] { "resume", id, "--exec" }, new[] { "list", "--data-dir", data, "--data-dir", root } })
 {
     try { LinuxTerminalCommands.Parse(malformed); throw new InvalidOperationException("Unsafe command arguments were accepted."); }

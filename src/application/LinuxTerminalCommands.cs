@@ -180,7 +180,7 @@ internal static class LinuxTerminalCommands
         var start = new ProcessStartInfo(executable.ExecutionPath) { UseShellExecute = false, WorkingDirectory = cwd };
         if (exec) start.ArgumentList.Add("exec");
         start.ArgumentList.Add("resume");
-        if (!exec) start.ArgumentList.Add("--no-daemon");
+        start.ArgumentList.Add(exec ? "--json" : "--no-daemon");
         start.ArgumentList.Add(session);
         if (followUp) start.ArgumentList.Add("Continue");
         start.Environment["CODEX_HOME"] = home;
