@@ -173,8 +173,11 @@ internal sealed class MainWindow : Window
         var bar = new Grid { Background = Color("chrome"), Height = 40 };
         bar.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); bar.ColumnDefinitions.Add(new ColumnDefinition()); bar.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         var identity = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(12, 0, 0, 0) };
-        identity.Children.Add(AppIdentity.Glyph(Color("text"), 18)); var title = Label("Codex Switch", 12, "text", FontWeights.SemiBold); title.Margin = new Thickness(8, 0, 0, 0); identity.Children.Add(title); bar.Children.Add(identity);
-        var controls = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
+        identity.Children.Add(AppIdentity.Glyph(Color("text"), 18)); var title = Label("Codex Switch", 12, "text", FontWeights.SemiBold); title.Margin = new Thickness(8, 0, 0, 0); identity.Children.Add(title);
+        var version = Label("v" + typeof(MainWindow).Assembly.GetName().Version!.ToString(3), 10, "muted");
+        version.Name = "RunningVersionLabel"; version.Margin = new Thickness(6, 0, 0, 0); version.VerticalAlignment = VerticalAlignment.Center; version.FlowDirection = FlowDirection.LeftToRight;
+        identity.Children.Add(version); bar.Children.Add(identity);
+        var controls = new StackPanel { Name = "TitleBarActions", Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
         controls.Children.Add(_add); controls.Children.Add(_refresh);
         var language = NewButton(Loc.LanguageCode + " ▾", null, false, true); language.Padding = new Thickness(10, 0, 10, 0); language.Background = Brushes.Transparent; language.ToolTip = Loc.LanguageName + " · " + Loc.T("언어 설정");
         language.Name = "LanguageButton";

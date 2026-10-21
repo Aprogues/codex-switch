@@ -51,7 +51,15 @@ internal static class NativeUiEvidence
                     window.PrepareUiEvidence(language, dark); window.Width = size.Item1; window.Height = size.Item2;
                     window.UpdateLayout(); await Task.Delay(300); await window.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.Render);
                     var name = language + "-" + (dark ? "dark" : "light") + "-" + size.Item1 + "x" + size.Item2;
-                    Capture(window, Path.Combine(directory, name + ".png")); cases.Add(new { name, passed = true });
+                    var version = Descendants<TextBlock>(window).Single(t => t.Name == "RunningVersionLabel");
+                    var actions = Descendants<StackPanel>(window).Single(t => t.Name == "TitleBarActions");
+                    Assert(version.IsVisible && version.Text == "v" + typeof(Program).Assembly.GetName().Version!.ToString(3), "Titlebar does not identify the running assembly version");
+                    var versionBounds = version.TransformToAncestor(window).TransformBounds(new Rect(new System.Windows.Size(version.ActualWidth, version.ActualHeight)));
+                    var actionBounds = actions.TransformToAncestor(window).TransformBounds(new Rect(new System.Windows.Size(actions.ActualWidth, actions.ActualHeight)));
+                    Assert(versionBounds.Width > 0 && versionBounds.Height > 0 && versionBounds.Left >= 0 && versionBounds.Right <= window.ActualWidth && versionBounds.Top >= 0 && versionBounds.Bottom <= 40,
+                        "Running version is clipped outside the titlebar");
+                    Assert(!versionBounds.IntersectsWith(actionBounds), "Running version overlaps titlebar actions");
+                    Capture(window, Path.Combine(directory, name + ".png")); cases.Add(new { name, passed = true, runningVersion = version.Text, versionWithinTitlebar = true, titlebarActionsSeparate = true });
                 }
                 foreach (var dark in new[] { true, false })
                 {

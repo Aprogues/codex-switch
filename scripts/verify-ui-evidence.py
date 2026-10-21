@@ -41,12 +41,22 @@ for path in paths:
 runtime=data['runtime'];version=data.get('appVersion',data.get('version'));architecture=data['architecture']
 if not re.fullmatch(r'\.NET \d+\.\d+\.\d+',runtime) or not re.fullmatch(r'\d+\.\d+\.\d+',version) or architecture not in ('X64','Arm64'):
     raise SystemExit('Unexpected runtime/version/architecture metadata')
+caption_checks=[]
+if args.os=='Windows':
+    for case in data['cases']:
+        if re.fullmatch(r'(en|ko)-(dark|light)-(500x360|800x560)',case['name']):
+            if case.get('passed') is not True or case.get('runningVersion')!='v'+version or case.get('versionWithinTitlebar') is not True or case.get('titlebarActionsSeparate') is not True:
+                raise SystemExit('Visible loaded version and separate titlebar action bounds required')
+            caption_checks.append({'case':case['name'],'runningVersion':case['runningVersion'],'versionWithinTitlebar':True,'titlebarActionsSeparate':True})
+    if len(caption_checks)!=8 or len({case['case'] for case in caption_checks})!=8:
+        raise SystemExit('Both themes, languages and window sizes require titlebar checks')
 rendering='Windows native WPF' if args.os=='Windows' else data.get('rendering')
 if args.os=='macOS' and rendering!='Software (CI native window)':raise SystemExit('Unexpected Mac evidence rendering mode')
 if args.os=='Linux' and (rendering!='Software (X11 native window)' or data.get('display')!='X11/Xvfb'):raise SystemExit('Unexpected Linux evidence rendering/display mode')
 value={'schema':1,'revision':args.revision,'os':args.os,'architecture':architecture,'runtime':runtime,'appVersion':version,'images':images,
     'rendering':rendering,
     'scope':'Published app on the stated OS; native own windows/popups and explicitly labeled WPF tooltip component renders, synthetic accounts only. No personal desktop/credentials/Codex action or account-switch/resume acceptance.'}
+if args.os=='Windows':value['runningVersionChecks']=caption_checks
 (args.destination/'evidence.json').write_text(json.dumps(value,indent=2)+'\n',encoding='utf-8')
 print(json.dumps({'os':args.os,'architecture':architecture,'runtime':runtime,
     'nativeScreenshots':sum(i['capture']=='Native own window or popup' for i in images),
