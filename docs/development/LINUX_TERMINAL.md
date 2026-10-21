@@ -1,6 +1,6 @@
 # Linux terminal account switching and session resume
 
-Source1.41.0 implements the terminal commands in [issue97](https://github.com/Gaebabi/codex-switch/issues/97), with real two-account Linux x64 contextual CLI resumption verified. Published1.40.7 does not contain them: [build current source](../INSTALL.md#linux-preview) until a separate binary release includes them. GUI preview, fictional-card screenshots and desktop active-chat acceptance retain their separate scope.
+Source1.41.0 implements the terminal commands in [issue97](https://github.com/Gaebabi/codex-switch/issues/97), with real two-account Linux x64 contextual CLI resumption verified. [Windows/Linux Release1.41.1](https://github.com/Gaebabi/codex-switch/releases/tag/v1.41.1) includes these Linux commands in the x64/ARM64 packages; no source build or global .NET installation is required. GUI preview, fictional-card screenshots and desktop active-chat acceptance retain their separate scope.
 
 ## Commands
 

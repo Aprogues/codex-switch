@@ -1,5 +1,7 @@
 # Operations
 
+Release1.41.1 publishes seven reviewed Windows/Linux packages with exact-head six-job native CI, immutable package provenance, unchanged protection, author self-review and merged-tree equality. [Publication gates](RELEASE_1_41_1.md) require draft asset SHA256/size checks and public download verification. Keep capture source distinct from final candidate source; preserve existing releases and macOS1.40.2. Owner data/installations are outside release verification.
+
 Issue99 Windows warning verification uses the existing isolated native `--verify-ui` mode and fictional account/disk inputs. The current host captures actual failed/healthy/recovered card controls, tooltip HWNDs and footer bounds; a pinned external source archive receives diagnostic-only hosting for the same-input baseline while original production source hashes stay unchanged. Never run these visible captures on the owner's gaming desktop or publish the attached personal screenshot. The full verified Windows package can be staged for the next ordinary restart; preserve current process/sensor lifetime and original shortcut arguments.
 
 Issue97's [terminal delivery contract](LINUX_TERMINAL.md) requires early headless dispatch, the existing encrypted vault and explicit verified native CLI, serialized account mutation and exact saved-session resumption. Native x64/ARM64 and owned PTY evidence must distinguish offline policy/lifecycle checks from real authenticated continuation. Existing owner accounts/keyring and published binaries remain preserved.

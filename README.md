@@ -1,7 +1,7 @@
 <p align="center"><img src="assets/macos/app-icon.png" width="88" height="88" alt="Codex Switch app icon" /></p>
 <h1 align="center">Codex Switch</h1>
 
-Switch Codex accounts manually, automatically resume eligible unfinished local chats, and see the remaining quota before choosing your next account. **1.40.7 — Windows and Linux preview; macOS downloads remain 1.40.2.**
+Switch Codex accounts manually, automatically resume eligible unfinished local chats, and see the remaining quota before choosing your next account. **1.41.1 — Windows and Linux preview; macOS downloads remain 1.40.2.**
 
 [English](README.md) / [한국어](docs/README.ko.md) / [日本語](docs/README.ja.md) / [简体中文](docs/README.zh-CN.md)
 
@@ -11,17 +11,19 @@ Complete packages include the .NET runtime; no source build or .NET installation
 
 | Platform | Download |
 | --- | --- |
-| Windows x64 | [ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.7/CodexSwitch-v1.40.7-win-x64.zip) |
+| Windows x64 | [ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.41.1/CodexSwitch-v1.41.1-win-x64.zip) |
 | macOS15+ Apple Silicon | [ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-osx-arm64.zip) |
 | macOS15+ Intel | [ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-osx-x64.zip) |
-| Linux x64 **preview** | [DEB](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.7/CodexSwitch-v1.40.7-preview-linux-x64.deb) / [RPM](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.7/CodexSwitch-v1.40.7-preview-linux-x64.rpm) / [tar.gz](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.7/CodexSwitch-v1.40.7-preview-linux-x64.tar.gz) |
-| Linux ARM64 **preview** | [DEB](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.7/CodexSwitch-v1.40.7-preview-linux-arm64.deb) / [RPM](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.7/CodexSwitch-v1.40.7-preview-linux-arm64.rpm) / [tar.gz](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.7/CodexSwitch-v1.40.7-preview-linux-arm64.tar.gz) |
+| Linux x64 **preview** | [DEB](https://github.com/Gaebabi/codex-switch/releases/download/v1.41.1/CodexSwitch-v1.41.1-preview-linux-x64.deb) / [RPM](https://github.com/Gaebabi/codex-switch/releases/download/v1.41.1/CodexSwitch-v1.41.1-preview-linux-x64.rpm) / [tar.gz](https://github.com/Gaebabi/codex-switch/releases/download/v1.41.1/CodexSwitch-v1.41.1-preview-linux-x64.tar.gz) |
+| Linux ARM64 **preview** | [DEB](https://github.com/Gaebabi/codex-switch/releases/download/v1.41.1/CodexSwitch-v1.41.1-preview-linux-arm64.deb) / [RPM](https://github.com/Gaebabi/codex-switch/releases/download/v1.41.1/CodexSwitch-v1.41.1-preview-linux-arm64.rpm) / [tar.gz](https://github.com/Gaebabi/codex-switch/releases/download/v1.41.1/CodexSwitch-v1.41.1-preview-linux-arm64.tar.gz) |
 
-[Release notes and SHA256 checksums](https://github.com/Gaebabi/codex-switch/releases/tag/v1.40.7). Windows/Linux packages are unsigned. Mac bundles are ad-hoc signed and **not Apple-notarized**; follow [Mac setup](docs/MACOS.md).
+[Release notes and SHA256 checksums](https://github.com/Gaebabi/codex-switch/releases/tag/v1.41.1). Windows/Linux packages are unsigned. Mac bundles are ad-hoc signed and **not Apple-notarized**; follow [Mac setup](docs/MACOS.md).
 
 Linux is an integration preview. Native storage, installed UI and package tests are distinct from supported account handoff and full desktop acceptance. Desktop integration requires approved OpenAI Linux client26.1007.71326, an existing file credential policy and X11/XWayland; newer clients require review. CLI-only mode needs an explicit executable checksum and does not resume desktop chats. [Requirements and limits](docs/development/LINUX.md) / [Linux installation](docs/development/LINUX_PACKAGES.md)
 
-**Linux terminal commands are new in source1.41.0 and are not in the1.40.7 downloads above.** `CodexSwitch cli` manages the existing encrypted accounts without DISPLAY; `cli switch <account> --resume <CLI-session-UUID>` combines manual switching and official CLI resumption. `--continue` explicitly submits a follow-up; `--exec --continue` selects noninteractive continuation. A verified native CLI and an unlocked supported Secret Service are required. Real two-account contextual CLI resumption is verified on Linux x64; native ARM64/offline tests and full desktop acceptance have separate scopes. [Commands, actual screenshots and exact verification limits](docs/development/LINUX_TERMINAL.md).
+Windows1.41.1 shows refresh failures beside the affected account; hover or click its warning icon for details. Resource and disk rows remain visible. [Actual before/after](docs/media/release-1.41.1/README.md).
+
+**Linux1.41.1 downloads include terminal account switching and saved CLI-session resumption, introduced in source1.41.0.** `CodexSwitch cli` manages the existing encrypted accounts without DISPLAY; `cli switch <account> --resume <CLI-session-UUID>` combines manual switching and official CLI resumption. `--continue` explicitly submits a follow-up; `--exec --continue` selects noninteractive continuation. A verified native CLI and an unlocked supported Secret Service are required. Real two-account contextual CLI resumption is verified on Linux x64; native ARM64/offline tests and full desktop acceptance have separate scopes. [Commands, actual screenshots and exact verification limits](docs/development/LINUX_TERMINAL.md).
 
 ## Get started
 
@@ -44,18 +46,18 @@ Linux is an integration preview. Native storage, installed UI and package tests 
 
 ## Actual app screenshots
 
-Actual application titlebars/controls are preserved on a solid background. Captions and source/runtime/hash receipts distinguish fictional UI inputs, ordinary Linux execution and authenticated acceptance. [Current gallery](docs/media/release-1.40.7/README.md)
+Actual application titlebars/controls are preserved on a solid background. Captions and source/runtime/hash receipts distinguish fictional UI inputs, ordinary Linux execution and authenticated acceptance. [Current gallery](docs/media/release-1.41.1/README.md)
 
-![Codex Switch running on Windows](docs/media/release-1.40.7/windows.png)
+![Codex Switch running on Windows](docs/media/release-1.41.1/windows.png)
 
 **Windows x64:** actual WPF app with fictional demo accounts and the visible CPU setup button; no personal account or desktop.
 
-![Linux app demo accounts and actual Xfce OS titlebar in the same capture](docs/media/release-1.40.7/linux-framed.png)
+![Linux app demo accounts and actual Xfce OS titlebar in the same capture](docs/media/release-1.41.1/linux-x64-dark.png)
 
-**Linux x64 · X11/Xfwm4:** the actual OS titlebar and four fictional demo account cards were captured together. No titlebar composition or personal login. [Light theme, source/hash receipts and verification scope](docs/media/release-1.40.7/README.md).
+**Linux x64 · X11/Xfwm4:** the actual OS titlebar and four fictional demo account cards were captured together. No titlebar composition or personal login. [Light theme, source/hash receipts and verification scope](docs/media/release-1.41.1/README.md).
 
 **MacBook screenshot:** reserved for the maintainer's real-device capture.
-<!-- MacBook screenshot slot: add docs/media/release-1.40.7/macbook.png and its privacy/provenance receipt, then embed here. Never substitute a different OS image or mockup. -->
+<!-- MacBook screenshot slot: add docs/media/release-1.41.1/macbook.png and its privacy/provenance receipt, then embed here. Never substitute a different OS image or mockup. -->
 
 ## Contribute
 

@@ -1,15 +1,15 @@
 <p align="center"><img src="../assets/macos/app-icon.png" width="88" height="88" alt="Codex Switch app icon" /></p>
 <h1 align="center">Codex Switch</h1>
 
-Codexアカウントを手動で切り替え、再開可能な未完了ローカルチャットを自動で再開します。次のアカウントの残量も確認できます。**Windows・Linuxプレビューは1.40.7、macOSダウンロードは1.40.2です。**
+Codexアカウントを手動で切り替え、再開可能な未完了ローカルチャットを自動で再開します。次のアカウントの残量も確認できます。**Windows・Linuxプレビューは1.41.1、macOSダウンロードは1.40.2です。**
 
 [English](../README.md) / [한국어](README.ko.md) / 日本語 / [简体中文](README.zh-CN.md)
 
 ## ダウンロード
 
-- [Windows x64 ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.7/CodexSwitch-v1.40.7-win-x64.zip)
+- [Windows x64 ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.41.1/CodexSwitch-v1.41.1-win-x64.zip)
 - macOS15以降：[Apple Silicon ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-osx-arm64.zip) / [Intel ZIP](https://github.com/Gaebabi/codex-switch/releases/download/v1.40.2/CodexSwitch-v1.40.2-osx-x64.zip)
-- Linux **プレビュー** x64・ARM64：[DEB・RPM・tar.gzとSHA256](https://github.com/Gaebabi/codex-switch/releases/tag/v1.40.7)
+- Linux **プレビュー** x64・ARM64：[DEB・RPM・tar.gzとSHA256](https://github.com/Gaebabi/codex-switch/releases/tag/v1.41.1)
 
 .NETを同梱しており、ビルドやランタイムのインストールは不要です。フォルダー・アプリ全体を保持してください。Windows/Linuxは未署名、Macはアドホック署名で**Apple未公証**です。[インストール](INSTALL.md) / [Mac初回起動](MACOS.md)
 
@@ -17,7 +17,9 @@ Linuxは統合プレビューです。キーストア・インストール済み
 
 ## 使い方と機能
 
-**Linux端末コマンドはソース1.41.0の新機能で、上記1.40.7の配布物には含まれません。** `CodexSwitch cli`で画面サーバーなしに既存の暗号化アカウントを管理し、`cli switch <account> --resume <CLI-session-UUID>`で手動切り替えと公式CLIの再開を実行します。`--continue`は追加メッセージ送信を明示し、`--exec --continue`は非対話実行です。検証済みのネイティブCLI・チェックサムと、ロック解除済みの対応Secret Serviceが必要です。Linux x64で実際の2アカウント切り替え後に元の文脈を保持したCLI再開を確認しました。ARM64・オフライン検証と完全なデスクトップ対応は別の範囲です。[コマンド・実際の画像・検証範囲](development/LINUX_TERMINAL.md)。
+Windows1.41.1では更新エラーを対象アカウントの警告アイコンに表示します。ホバーまたはクリックで詳細を確認でき、下部のリソース・ディスク表示を隠しません。[実際の変更前後](media/release-1.41.1/README.md)。
+
+**Linux1.41.1の配布物には、ソース1.41.0で追加した端末のアカウント切り替えと保存済みCLIセッションの再開が含まれます。** `CodexSwitch cli`で画面サーバーなしに既存の暗号化アカウントを管理し、`cli switch <account> --resume <CLI-session-UUID>`で手動切り替えと公式CLIの再開を実行します。`--continue`は追加メッセージ送信を明示し、`--exec --continue`は非対話実行です。検証済みのネイティブCLI・チェックサムと、ロック解除済みの対応Secret Serviceが必要です。Linux x64で実際の2アカウント切り替え後に元の文脈を保持したCLI再開を確認しました。ARM64・オフライン検証と完全なデスクトップ対応は別の範囲です。[コマンド・実際の画像・検証範囲](development/LINUX_TERMINAL.md)。
 
 1. Windowsは`CodexSwitch.exe`、Macは`Install.command`でインストールした**Codex Switch.app**を開きます。Linuxは完全なプレビューパッケージと対応するSecret Serviceが必要です。
 2. **+**で公式ブラウザー画面から各アカウントをログインします。以前のアカウントが自動選択される場合は、別のブラウザープロファイル・プライベートウィンドウを使います。Windowsは**↻**の右クリックで現在のログインを取り込めます。
@@ -33,17 +35,17 @@ Linuxは統合プレビューです。キーストア・インストール済み
 
 ## 実際のアプリ画面
 
-[Windows/Linux最新画像と検証範囲](media/release-1.40.7/README.md)。実際のタイトルバーを残して単色背景に配置し、架空のUI入力と実アカウント検証を明記します。
+[Windows/Linux最新画像と検証範囲](media/release-1.41.1/README.md)。実際のタイトルバーを残して単色背景に配置し、架空のUI入力と実アカウント検証を明記します。
 
-![Windows実行画面](media/release-1.40.7/windows.png)
+![Windows実行画面](media/release-1.41.1/windows.png)
 
 **Windows x64:** 実際のWPFアプリに架空のデモアカウントとCPU設定ボタンを表示しています。個人アカウントやデスクトップは使用していません。
-![実際のXfce OSタイトルバーと4つのデモアカウントを同時に撮影したLinuxアプリ](media/release-1.40.7/linux-framed.png)
+![実際のXfce OSタイトルバーと4つのデモアカウントを同時に撮影したLinuxアプリ](media/release-1.41.1/linux-x64-dark.png)
 
-**Linux x64 · X11/Xfwm4:** 実際のOSタイトルバーと架空のデモアカウント4つを同じウィンドウで撮影しました。タイトルバーの合成や個人のログイン情報はありません。[ライトテーマ・出典・ハッシュ・検証範囲](media/release-1.40.7/README.md)。
+**Linux x64 · X11/Xfwm4:** 実際のOSタイトルバーと架空のデモアカウント4つを同じウィンドウで撮影しました。タイトルバーの合成や個人のログイン情報はありません。[ライトテーマ・出典・ハッシュ・検証範囲](media/release-1.41.1/README.md)。
 
 **MacBook実機のスクリーンショットは後日追加予定です。**
-<!-- MacBook screenshot slot: media/release-1.40.7/macbook.png; privacy/provenance review required. -->
+<!-- MacBook screenshot slot: media/release-1.41.1/macbook.png; privacy/provenance review required. -->
 
 [貢献](../CONTRIBUTING.md) / [セキュリティ](../SECURITY.md) / [検証資料](evidence/README.md) / [消費予測](FORECAST.md)
 
