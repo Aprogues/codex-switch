@@ -44,18 +44,18 @@ Linux is an integration preview. Native storage, installed UI and package tests 
 
 ## Actual app screenshots
 
-Actual application titlebars/controls are preserved on a solid background. Captions and source/runtime/hash receipts distinguish fictional UI inputs, ordinary Linux execution and authenticated acceptance. [Current gallery](docs/media/release-1.40.7/README.md)
+Actual application titlebars/controls are preserved on a solid background. Captions and source/runtime/hash receipts distinguish fictional UI inputs, ordinary Linux execution and authenticated acceptance. [Current gallery](docs/media/release-1.41.1/README.md)
 
-![Codex Switch running on Windows](docs/media/release-1.40.7/windows.png)
+![Codex Switch running on Windows](docs/media/release-1.41.1/windows.png)
 
 **Windows x64:** actual WPF app with fictional demo accounts and the visible CPU setup button; no personal account or desktop.
 
-![Linux app demo accounts and actual Xfce OS titlebar in the same capture](docs/media/release-1.40.7/linux-framed.png)
+![Linux app demo accounts and actual Xfce OS titlebar in the same capture](docs/media/release-1.41.1/linux-x64-dark.png)
 
-**Linux x64 · X11/Xfwm4:** the actual OS titlebar and four fictional demo account cards were captured together. No titlebar composition or personal login. [Light theme, source/hash receipts and verification scope](docs/media/release-1.40.7/README.md).
+**Linux x64 · X11/Xfwm4:** the actual OS titlebar and four fictional demo account cards were captured together. No titlebar composition or personal login. [Light theme, source/hash receipts and verification scope](docs/media/release-1.41.1/README.md).
 
 **MacBook screenshot:** reserved for the maintainer's real-device capture.
-<!-- MacBook screenshot slot: add docs/media/release-1.40.7/macbook.png and its privacy/provenance receipt, then embed here. Never substitute a different OS image or mockup. -->
+<!-- MacBook screenshot slot: add docs/media/release-1.41.1/macbook.png and its privacy/provenance receipt, then embed here. Never substitute a different OS image or mockup. -->
 
 ## Contribute
 
