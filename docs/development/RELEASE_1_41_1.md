@@ -8,15 +8,17 @@ Issue [#103](https://github.com/Gaebabi/codex-switch/issues/103) authorizes Wind
 - Linux packages include `CodexSwitch cli`: existing encrypted account management without DISPLAY, manual switching and exact saved CLI/exec-session resumption. `--continue` explicitly requests a follow-up. A verified standalone native CLI and unlocked supported Secret Service are required. [Commands and genuine two-account x64 verification scope](LINUX_TERMINAL.md).
 - Current app captures retain original Windows controls and actual Linux Xfce frames, fictional account cards and per-image provenance. No personal account/screen pixels, tokens, raw diagnostics or authentication data enter publication.
 
-## Delivery checkpoints
+## Required publication gates
 
-- [ ] Prepare focused source/docs branch from current main; preserve the original local branch/index/worktree and personal data.
-- [ ] Run all six protected checks at final head: repository, Windows, macOS arm64/Intel regression, native Linux x64/ARM64. Mac regression does not publish a new Mac binary.
-- [ ] Inspect actual native app screenshots, seven package hashes, source/version/RID/runtime, inventories and sensor-worker binding. Attach sanitized receipts/evidence.
-- [ ] Record author review (not independent approval), merge under unchanged protection and compare reviewed/merged trees.
-- [ ] Stage draft `v1.41.1`, upload seven packages plus checksums/verification/evidence, check every GitHub asset digest/size, publish and verify downloads and four README languages.
+- Prepare a focused source/docs branch from current main; preserve the original local branch/index/worktree and personal data.
+- Run all six protected checks at final head: repository, Windows, macOS arm64/Intel regression, native Linux x64/ARM64. Mac regression does not publish a new Mac binary.
+- Inspect actual native app screenshots, seven package hashes, source/version/RID/runtime, inventories and sensor-worker binding. Attach sanitized receipts/evidence.
+- Record author review (not independent approval), merge under unchanged protection and compare reviewed/merged trees.
+- Stage draft `v1.41.1`, upload seven packages plus checksums/verification/evidence, check every GitHub asset digest/size, publish and verify downloads and four README languages.
 
 The published Release and its `VERIFICATION.json` provide the authoritative final source, CI, package/evidence checksums and publication record. Until publication, new download links are staged release targets.
+
+[Ten inspected native app/popup/terminal images and their exact capture provenance](../media/release-1.41.1/README.md) are retained in source. The [implementation-tree receipt](../media/release-1.41.1/implementation-tree.json) compares every captured implementation/build-input tree to the release branch. Capture-run cancellation after its completed capture steps does not imply a failed capture or final build success; final package promotion requires separate successful final-head CI and its own provenance.
 
 ## Evidence and security boundaries
 

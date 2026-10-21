@@ -17,6 +17,8 @@ Linux仍为集成预览版。原生密钥环、已安装UI和程序包验证，�
 
 ## 使用与功能
 
+Windows1.41.1将刷新错误显示在对应账号旁的警告图标中。悬停或点击即可查看原因，底部资源和磁盘区域保持可见。[实际前后截图](media/release-1.41.1/README.md)。
+
 **Linux1.41.1下载包含源码1.41.0新增的终端账号切换和已保存CLI会话恢复功能。** `CodexSwitch cli`无需显示服务器即可管理现有加密账号；`cli switch <account> --resume <CLI-session-UUID>`将手动切换与官方CLI恢复连接起来。`--continue`明确请求发送后续消息，`--exec --continue`选择非交互执行。需要经过验证的原生CLI、校验和以及已解锁的受支持Secret Service。已在Linux x64上验证真实双账号切换后保留原有上下文的CLI恢复。ARM64、离线验证及完整桌面支持仍分别记录。[命令、实际截图与验证范围](development/LINUX_TERMINAL.md)。
 
 1. Windows运行`CodexSwitch.exe`；Mac运行`Install.command`后打开已安装的**Codex Switch.app**。Linux需要完整预览包及受支持的Secret Service。
