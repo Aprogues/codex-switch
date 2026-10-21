@@ -1,6 +1,6 @@
 # Current status
 
-Issue105/source1.41.2 adds a muted running-assembly version to the Windows titlebar. [Behavior and native evidence contract](RUNNING_VERSION.md). English/Korean, both themes and compact/large bounds are checked in the existing isolated native UI host. Exact-head CI, native pictures and review/merge are pending. Published packages remain1.41.1; owner processes and accounts are unchanged.
+Issue105/source1.41.2 adds a muted running-assembly version to the Windows titlebar. [Behavior and native evidence contract](RUNNING_VERSION.md) / [original native before/after](../evidence/running-version/README.md). Eight English/Korean theme/size version/bounds checks and local compilation passed. Final exact-head six-job CI, author review and protected merge are recorded in PR106. Published packages remain1.41.1; owner processes and accounts are unchanged.
 
 Release1.41.1/issue103: publish reviewed Windows x64 and Linux x64/ARM64 DEB/RPM/tar.gz packages, exact-source checksums and privacy-reviewed native app evidence. [Release checklist and publication boundaries](RELEASE_1_41_1.md) supersede earlier no-new-Release notes for these seven packages only. macOS downloads remain1.40.2. Original local work and personal data stay untouched; all six final-head checks, author review, protected merge and verified public asset publication are required.
 

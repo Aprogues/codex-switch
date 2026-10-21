@@ -8,4 +8,4 @@ The existing native `--verify-ui` host checks the loaded version, visible captio
 
 ## Evidence
 
-The [existing v1.41.1 Windows screen](../media/release-1.41.1/windows.png) is the real app baseline without a version label. Native post-implementation pictures and exact-source receipts are pending. This work does not publish a new binary Release, replace an installation or restart the owner's app/Codex.
+The [native before/after gallery](../evidence/running-version/README.md) contains original v1.41.1/v1.41.2 app pixels, exact source/image hashes and eight passing English/Korean theme/size checks. Capture/export steps completed at the implementation checkpoint; final exact-head protected CI/review is recorded in PR106. This work does not publish a new binary Release, replace an installation or restart the owner's app/Codex.
