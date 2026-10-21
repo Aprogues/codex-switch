@@ -1,5 +1,7 @@
 # Current plan
 
+Issue105/source1.41.2: identify the running Windows process with a subtle titlebar version from its loaded assembly. Require eight native language/theme/size checks, inspected fictional-account screenshots, privacy checks and the six protected final-head jobs before review/merge. [Contract](RUNNING_VERSION.md). No binary publication or owner app restart is included.
+
 Release1.41.1/issue103: publish reviewed Windows x64 and Linux x64/ARM64 DEB/RPM/tar.gz packages, exact-source checksums and privacy-reviewed native app evidence. [Release checklist and publication boundaries](RELEASE_1_41_1.md) supersede earlier no-new-Release notes for these seven packages only. macOS downloads remain1.40.2. Original local work and personal data stay untouched; all six final-head checks, author review, protected merge and verified public asset publication are required.
 
 Issue99/source1.41.1 fixes Windows account-warning placement: separate disk/global-status rows and a small accessible per-account warning tooltip action. [Delivery contract](ACCOUNT_WARNINGS.md). Require same-input native before/after, hover/click/keyboard/recovery/minimum-size checks, all six final-head checks and author review/merge. Stage a complete verified personal Windows package for the next normal restart without opening a local window or interrupting the working app/sensor session. Public binaries remain1.40.7.
