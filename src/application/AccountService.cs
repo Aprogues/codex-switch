@@ -397,6 +397,13 @@ internal sealed class AccountService
     private async Task<CodexRpc> OpenAccountRpcAsync(string home, LinuxClientSession? client, string? workspace, CancellationToken cancellation)
     {
         if (client != null) return await client.OpenIsolatedRpcAsync(home, workspace, cancellation).ConfigureAwait(false);
+        if (OperatingSystem.IsWindows())
+        {
+            // Desktop updates can remove paths cached when this service started.
+            cancellation.ThrowIfCancellationRequested();
+            var installation = await RuntimeLocator.FindAsync(cancellation).ConfigureAwait(false);
+            lock (Vault.SyncRoot) Installation = installation;
+        }
         var rpc = new CodexRpc(Installation.CliPath, home);
         try { await rpc.InitializeAsync(cancellation).ConfigureAwait(false); return rpc; }
         catch { await rpc.DisposeAsync().ConfigureAwait(false); throw; }
